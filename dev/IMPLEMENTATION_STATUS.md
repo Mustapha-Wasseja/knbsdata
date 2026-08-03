@@ -285,18 +285,31 @@ See `dev/source-discovery/source-audit.md`.
 
 ---
 
+## Priority 5 progress
+
+- [x] `knbs_status()` — offline by default (`live = interactive()`), live only
+      when asked. Unverified sources are never contacted. Wired into the weekly
+      `test-sources` workflow, which now fails only when a source that ought to
+      answer does not.
+- [x] Live verification against KeNADA: search, metadata, variables (including
+      `details = TRUE`), files, the download refusal, ambiguous-identifier
+      handling and `knbs_status(live = TRUE)` were all exercised against the
+      real service. Status reports `ok`, HTTP 200, ~1.4s.
+- [ ] Progress indicators for downloads — nothing downloads yet
+- [ ] Remaining vignettes
+- [ ] Source-status page in the pkgdown site
+
 ## Next three tasks
 
 1. Phase 1 (resume) — when `knbs.or.ke` is reachable, check `/wp-json/wp/v2/`
    first (audit F-07), then the publications listing, the CPI release format and
    `/data-portals/`. Re-test the TLS chain at the same time. Phases 4 and 5
    cannot start before this.
-2. A live smoke check against KeNADA. Every test is offline against fixtures, so
-   nothing yet proves the adapter works end to end against the real service
-   rather than against a faithful copy of it. `source_health()` exists for this;
-   wiring it into `knbs_status()` is the Priority 5 task.
-3. Decide open decision 8 (indicator period class) before Phase 5, since it
+2. Decide open decision 8 (indicator period class) before Phase 5, since it
    shapes the indicator schema and cannot easily be changed afterwards.
+3. Decide what to do about documentation download (audit F-09): either accept
+   the gap for 0.1.0 or accept HTML parsing of the related-materials page as a
+   documented exception to the plan's preference order.
 
 A 25-minute poll of `knbs.or.ke` during Phase 2 never succeeded, so the outage
 outlasted the session in which it was found.

@@ -62,6 +62,18 @@ knbs_sources()
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
+``` r
+# Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
+knbs_status()[, c("source_id", "status", "message")]
+#> # A tibble: 4 × 3
+#>   source_id         status      message                                   
+#>   <chr>             <chr>       <chr>                                     
+#> 1 kenada            not_checked Set live = TRUE to contact the source.    
+#> 2 knbs_publications unverified  Endpoint not verified; nothing to contact.
+#> 3 knbs_indicators   unverified  Endpoint not verified; nothing to contact.
+#> 4 fake_source       unverified  Endpoint not verified; nothing to contact.
+```
+
 Surveys (these contact the archive, so they are not run here):
 
 ``` r

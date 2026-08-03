@@ -36,15 +36,22 @@ jobs:
       - name: Check source health
         run: |
           library(knbsdata)
-          sources <- knbs_sources()
-          live <- sources[sources$stability != "discovery", ]
-          if (nrow(live) == 0L) {
-            cat("No verified sources yet; nothing to monitor.\n")
-            cat("Endpoint verification is Phase 1 (dev/source-discovery/source-audit.md).\n")
-            print(sources[, c("source_id", "stability", "base_url")])
-            quit(status = 0)
+          status <- knbs_status(live = TRUE, timeout = 30)
+          print(status[, c("source_id", "status", "http_status", "response_time_ms")])
+
+          unverified <- status[status$status == "unverified", ]
+          if (nrow(unverified) > 0L) {
+            cat("\nNot checked (endpoint still unverified):",
+                paste(unverified$source_id, collapse = ", "), "\n")
           }
-          # Once sources graduate from "discovery", replace this with
-          # knbs_status(live = TRUE) and fail the job on unhealthy sources.
-          stop("Verified sources exist but no health check is implemented yet.")
+
+          failed <- status[status$status == "unavailable", ]
+          if (nrow(failed) > 0L) {
+            cat("\n")
+            for (i in seq_len(nrow(failed))) {
+              cat(failed$source_id[[i]], ": ", failed$message[[i]], "\n", sep = "")
+            }
+            stop(nrow(failed), " source(s) did not answer. This usually means the ",
+                 "source changed or is down, not that the package is broken.")
+          }
         shell: Rscript {0}

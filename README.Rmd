@@ -62,6 +62,11 @@ library(knbsdata)
 knbs_sources()
 ```
 
+```{r}
+# Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
+knbs_status()[, c("source_id", "status", "message")]
+```
+
 Surveys (these contact the archive, so they are not run here):
 
 ```{r, eval = FALSE}

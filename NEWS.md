@@ -4,6 +4,16 @@ Early development. No KNBS data retrieval is exposed yet: the package has
 infrastructure and one audited source contract, but no public retrieval
 functions.
 
+## Source health
+
+* `knbs_status()` reports on each source. With `live = FALSE` — the default in
+  any non-interactive session — it contacts nothing and reports what the
+  registry knows. With `live = TRUE` it asks each verified source to answer a
+  small request. Sources whose endpoints are unverified are never contacted,
+  even when a live check is requested.
+* The weekly `test-sources` workflow now runs it, and fails only when a source
+  that ought to answer does not.
+
 ## Phase 3: survey catalogue
 
 * `knbs_search_surveys()`, `knbs_survey_metadata()`, `knbs_variables()` and

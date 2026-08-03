@@ -39,7 +39,11 @@ nada_get <- function(source, path, query = list(), call = rlang::caller_env()) {
     body_check = function(resp) nada_body_check(resp, source$source_id, call = call),
     call = call
   )
-  parse_json_response(resp, source_id = source$source_id, call = call)
+  payload <- parse_json_response(resp, source_id = source$source_id, call = call)
+  # Carried for the health check, which reports the status it actually saw
+  # rather than assuming one.
+  attr(payload, "knbs_http_status") <- httr2::resp_status(resp)
+  payload
 }
 
 #' Turn NADA's own failure messages into the right condition
@@ -245,18 +249,26 @@ source_health.knbs_source_nada <- function(source, ...) {
   started <- Sys.time()
   outcome <- tryCatch(
     {
-      nada_get(source, "catalog/search", list(ps = "1"))
-      list(status = "ok", message = "Catalogue search answered.")
+      payload <- nada_get(source, "catalog/search", list(ps = "1"))
+      list(
+        status = "ok",
+        http_status = attr(payload, "knbs_http_status") %||% NA_integer_,
+        message = "Catalogue search answered."
+      )
     },
     knbs_error = function(cnd) {
-      list(status = "unavailable", message = conditionMessage(cnd))
+      list(
+        status = "unavailable",
+        http_status = cnd$http_status %||% NA_integer_,
+        message = conditionMessage(cnd)
+      )
     }
   )
   tibble::tibble(
     source_id = source$source_id,
     operation = "search_surveys",
     status = outcome$status,
-    http_status = NA_integer_,
+    http_status = as.integer(outcome$http_status),
     response_time_ms = as.numeric(difftime(Sys.time(), started, units = "secs")) * 1000,
     checked_at = started,
     message = outcome$message
