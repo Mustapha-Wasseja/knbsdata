@@ -1,0 +1,649 @@
+{
+  "variable": {
+    "uid": "412503",
+    "sid": "13",
+    "fid": "F19",
+    "vid": "V753",
+    "name": "county",
+    "labl": "County",
+    "qstn": null,
+    "catgry": null,
+    "metadata": {
+      "file_id": "F19",
+      "vid": "V753",
+      "name": "county",
+      "var_intrvl": "discrete",
+      "var_dcml": "0",
+      "var_wgt": null,
+      "var_is_wgt": null,
+      "loc_start_pos": null,
+      "loc_end_pos": null,
+      "loc_width": "15",
+      "loc_rec_seg_no": null,
+      "labl": "County",
+      "var_imputation": null,
+      "var_security": null,
+      "var_resp_unit": null,
+      "var_analysis_unit": null,
+      "var_qstn_preqtxt": null,
+      "var_qstn_qstnlit": null,
+      "var_qstn_postqtxt": null,
+      "var_qstn_ivuinstr": null,
+      "var_universe": null,
+      "var_universe_clusion": null,
+      "var_sumstat": [
+        {
+          "value": "21773",
+          "type": "vald",
+          "wgtd": null
+        },
+        {
+          "value": "0",
+          "type": "invd",
+          "wgtd": null
+        },
+        {
+          "value": "1",
+          "type": "min",
+          "wgtd": null
+        },
+        {
+          "value": "47",
+          "type": "max",
+          "wgtd": null
+        },
+        {
+          "value": "24.527",
+          "type": "mean",
+          "wgtd": null
+        },
+        {
+          "value": "13.623",
+          "type": "stdev",
+          "wgtd": null
+        }
+      ],
+      "var_txt": null,
+      "var_catgry": [
+        {
+          "value": "1",
+          "labl": "Mombasa",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "460",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "2",
+          "labl": "Kwale",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "466",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "3",
+          "labl": "Kilifi",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "470",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "4",
+          "labl": "Tana River",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "435",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "5",
+          "labl": "Lamu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "417",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "6",
+          "labl": "Taita/Taveta",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "445",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "7",
+          "labl": "Garissa",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "422",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "8",
+          "labl": "Wajir",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "409",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "9",
+          "labl": "Mandera",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "421",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "10",
+          "labl": "Marsabit",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "347",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "11",
+          "labl": "Isiolo",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "399",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "12",
+          "labl": "Meru",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "534",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "13",
+          "labl": "Tharaka-Nithi",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "447",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "14",
+          "labl": "Embu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "454",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "15",
+          "labl": "Kitui",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "461",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "16",
+          "labl": "Machakos",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "483",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "17",
+          "labl": "Makueni",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "494",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "18",
+          "labl": "Nyandarua",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "448",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "19",
+          "labl": "Nyeri",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "502",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "20",
+          "labl": "Kirinyaga",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "466",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "21",
+          "labl": "Murang'a",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "485",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "22",
+          "labl": "Kiambu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "511",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "23",
+          "labl": "Turkana",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "413",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "24",
+          "labl": "West Pokot",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "435",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "25",
+          "labl": "Samburu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "421",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "26",
+          "labl": "Trans Nzoia",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "485",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "27",
+          "labl": "Uasin Gishu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "489",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "28",
+          "labl": "Elgeyo/Marakwet",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "440",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "29",
+          "labl": "Nandi",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "486",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "30",
+          "labl": "Baringo",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "437",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "31",
+          "labl": "Laikipia",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "462",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "32",
+          "labl": "Nakuru",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "493",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "33",
+          "labl": "Narok",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "457",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "34",
+          "labl": "Kajiado",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "393",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "35",
+          "labl": "Kericho",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "473",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "36",
+          "labl": "Bomet",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "486",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "37",
+          "labl": "Kakamega",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "495",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "38",
+          "labl": "Vihiga",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "457",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "39",
+          "labl": "Bungoma",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "487",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "40",
+          "labl": "Busia",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "472",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "41",
+          "labl": "Siaya",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "485",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "42",
+          "labl": "Kisumu",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "502",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "43",
+          "labl": "Homa Bay",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "479",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "44",
+          "labl": "Migori",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "473",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "45",
+          "labl": "Kisii",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "534",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "46",
+          "labl": "Nyamira",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "489",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        },
+        {
+          "value": "47",
+          "labl": "Nairobi City",
+          "is_missing": null,
+          "stats": [
+            {
+              "value": "554",
+              "type": "freq",
+              "wgtd": null
+            }
+          ]
+        }
+      ],
+      "var_codinstr": null,
+      "var_concept": [],
+      "var_format": {
+        "type": "numeric",
+        "schema": "other",
+        "category": null,
+        "name": null
+      },
+      "var_notes": null,
+      "var_val_range": {
+        "min": "1",
+        "max": "47"
+      },
+      "fid": "F19"
+    }
+  }
+}

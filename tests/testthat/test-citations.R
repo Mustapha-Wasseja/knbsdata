@@ -29,6 +29,23 @@ test_that("a citation supplied by the source takes precedence", {
   expect_false(grepl("Ignored title", text, fixed = TRUE))
 })
 
+test_that("an unpunctuated source citation does not run into what follows", {
+  # KeNADA states citations without a closing full stop, which ran straight
+  # into the retrieval sentence.
+  meta <- new_knbs_metadata(
+    citation = "2015-2016 Kenya Integrated Household Budget Survey",
+    source_url = "https://example.invalid/study"
+  )
+
+  text <- format(knbs_cite(meta))
+  expect_match(text, "Budget Survey. Available at", fixed = TRUE)
+  expect_false(grepl("Survey Available", text, fixed = TRUE))
+
+  # A citation that is already punctuated is left alone.
+  punctuated <- new_knbs_metadata(citation = "Producer. Title, 2020.")
+  expect_false(grepl("2020\\.\\.", format(knbs_cite(punctuated))))
+})
+
 test_that("the retrieval date can be omitted", {
   meta <- new_knbs_metadata(title = "X", release_date = as.Date("2020-04-10"))
   expect_false(grepl("Retrieved", format(knbs_cite(meta, include_retrieval_date = FALSE))))

@@ -4,11 +4,12 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-03
-- **Current phase:** Phase 2 complete → Phase 3 (survey catalogue MVP) ready to
-  start. Phase 1 remains partially blocked by a site outage.
+- **Current phase:** Phase 3 (survey catalogue MVP) complete except for
+  documentation download, which the source does not support. Phases 4 and 5
+  remain blocked by a site outage.
 - **Package version:** 0.0.0.9000
-- **Network access implemented:** the HTTP layer exists and is tested, but no
-  function calls a real source yet. Every test runs offline.
+- **Network access implemented:** yes, for the KeNADA survey catalogue. Every
+  test still runs offline against fixtures.
 
 ---
 
@@ -156,6 +157,54 @@ Full findings in [`dev/source-discovery/source-audit.md`](source-discovery/sourc
 
 ---
 
+## Phase 3: survey catalogue MVP — complete bar one task
+
+| Task | Status | Where |
+|---|---|---|
+| Implement survey adapter | done | `R/adapter-nada.R` |
+| `knbs_search_surveys()` | done | `R/surveys.R` |
+| `knbs_survey_metadata()` | done | `R/surveys.R` |
+| `knbs_variables()` | done | `R/surveys.R` |
+| `knbs_survey_files()` | done | `R/surveys.R` |
+| Classify access types | done | `R/standardise-surveys.R` |
+| Documentation download for public files | **not possible** — see below | — |
+| Microdata download where explicitly supported | refused, with an explanation | `knbs_download_microdata()` |
+| Survey vignette | done | `vignettes/survey-catalogue.Rmd` |
+
+### Exit criteria
+
+A user can:
+
+1. [x] Find a survey — `knbs_search_surveys()`
+2. [x] Read its metadata — `knbs_survey_metadata()`
+3. [x] Search its variables — `knbs_variables()`
+4. [x] List its data files — `knbs_survey_files()`
+5. [x] Understand access requirements — `access_type` and `downloadable`
+       columns, plus the print method's warning that "public use" does not mean
+       "downloadable"
+6. [ ] **Download public documentation — not possible.** The API exposes no
+       endpoint for questionnaires, reports or technical documents (audit F-09).
+       They exist only on HTML pages, and the plan defers HTML scraping.
+7. [x] Download public-use data only when legitimately available — it is not
+       available anywhere, so `knbs_download_microdata()` refuses and points at
+       the official process
+
+### What the adapter defends against
+
+- **F-08, the most consequential finding.** Unknown subpaths return `200` with
+  the *study* payload rather than a 404, so a renamed endpoint would deliver
+  plausible nonsense. `nada_expect()` checks every response for the fields the
+  operation requires and reports a study payload arriving in the wrong place as
+  `knbs_error_schema_changed`.
+- **F-02.** Detail endpoints key on `idno`; the numeric `id` is a 400.
+- **F-03.** `form_model: "public"` is translated to `public_use`, which the
+  print method explicitly annotates as "requires an account to download".
+- **F-04.** A study with no documented variables returns zero rows.
+- **F-10.** `variables?file_id=` is ignored by the source, so file filtering is
+  done client-side.
+
+---
+
 ## Deviations from the plan
 
 Recorded so they are visible rather than silent.
@@ -238,17 +287,16 @@ See `dev/source-discovery/source-audit.md`.
 
 ## Next three tasks
 
-1. Phase 3 — the KeNADA adapter: implement `source_search()`,
-   `source_metadata()`, `source_files()` and a variables operation against the
-   verified JSON API, using the fixtures in `dev/fixtures/kenada/`. Remember
-   that detail endpoints key on `idno`, and that an empty variable set is valid.
-2. Phase 3 — the public surface: `knbs_search_surveys()`,
-   `knbs_survey_metadata()`, `knbs_variables()`, `knbs_survey_files()`, plus a
-   `knbs_download_microdata()` that refuses and explains, and the survey
-   vignette.
-3. Phase 1 (resume) — when `knbs.or.ke` is reachable, check `/wp-json/wp/v2/`
+1. Phase 1 (resume) — when `knbs.or.ke` is reachable, check `/wp-json/wp/v2/`
    first (audit F-07), then the publications listing, the CPI release format and
-   `/data-portals/`. Re-test the TLS chain at the same time.
+   `/data-portals/`. Re-test the TLS chain at the same time. Phases 4 and 5
+   cannot start before this.
+2. A live smoke check against KeNADA. Every test is offline against fixtures, so
+   nothing yet proves the adapter works end to end against the real service
+   rather than against a faithful copy of it. `source_health()` exists for this;
+   wiring it into `knbs_status()` is the Priority 5 task.
+3. Decide open decision 8 (indicator period class) before Phase 5, since it
+   shapes the indicator schema and cannot easily be changed afterwards.
 
 A 25-minute poll of `knbs.or.ke` during Phase 2 never succeeded, so the outage
 outlasted the session in which it was found.

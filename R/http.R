@@ -70,9 +70,14 @@ knbs_request <- function(url, throttle = NULL) {
 #'
 #' @return An `httr2_response`.
 #' @noRd
+#' @param body_check Optional function of the response, consulted before the
+#'   generic status mapping. A source that describes its failures in the body
+#'   can use it to raise a more specific condition than the status alone allows.
+#' @noRd
 knbs_perform <- function(req,
                          source_id = NULL,
                          expect = NULL,
+                         body_check = NULL,
                          call = rlang::caller_env()) {
   resp <- tryCatch(
     httr2::req_perform(req),
@@ -90,6 +95,9 @@ knbs_perform <- function(req,
   )
 
   check_auth_gate(resp, source_id = source_id, call = call)
+  if (!is.null(body_check)) {
+    body_check(resp)
+  }
   check_http_status(resp, source_id = source_id, call = call)
   if (!is.null(expect)) {
     check_content_type(resp, expect = expect, source_id = source_id, call = call)

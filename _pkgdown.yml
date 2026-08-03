@@ -4,6 +4,17 @@ template:
   bootstrap: 5
 
 reference:
+- title: Surveys
+  desc: >
+    Discovering studies and their documentation. Metadata only: no supported
+    source permits programmatic download of microdata.
+  contents:
+  - knbs_search_surveys
+  - knbs_survey_metadata
+  - knbs_variables
+  - knbs_survey_files
+  - knbs_download_microdata
+
 - title: Sources
   desc: >
     What the package knows about each KNBS source, and how far that source has

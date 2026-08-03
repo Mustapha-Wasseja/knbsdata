@@ -78,6 +78,61 @@ knbs_metadata_fields <- function() {
 
 is_knbs_metadata <- function(x) inherits(x, "knbs_metadata")
 
+#' Metadata for a survey or study
+#'
+#' A `knbs_metadata` object with the study-level extras a survey catalogue
+#' carries: the descriptive sections, and how many variables are documented.
+#'
+#' @param ... Standard metadata fields.
+#' @param sections The source's descriptive sections, as supplied.
+#' @param variable_count Number of variables documented for the study.
+#' @param raw The unmodified source payload.
+#'
+#' @noRd
+new_knbs_survey_metadata <- function(...,
+                                     sections = NULL,
+                                     variable_count = NA_integer_,
+                                     raw = NULL) {
+  out <- new_knbs_metadata(..., raw = raw)
+  out["sections"] <- list(sections)
+  out["variable_count"] <- list(variable_count)
+  out["geographic_coverage"] <- list(json_chr(sections$study_info, "geog_coverage"))
+  out["unit_of_analysis"] <- list(json_chr(sections$study_info, "analysis_unit"))
+  out["series"] <- list(json_chr(sections$series_statement, "series_name"))
+  class(out) <- c("knbs_survey", class(out))
+  out
+}
+
+#' @export
+print.knbs_survey <- function(x, ...) {
+  knbs_cat("{.cls knbs_survey}")
+  fields <- list(
+    Title = x$title,
+    `Survey id` = x$resource_id,
+    Series = x$series,
+    Period = x$reference_period,
+    Producer = x$producer,
+    Coverage = x$geographic_coverage,
+    `Unit of analysis` = x$unit_of_analysis,
+    Access = x$access,
+    Variables = x$variable_count,
+    Catalogue = x$source_url
+  )
+  for (label in names(fields)) {
+    value <- fields[[label]]
+    if (is.null(value) || (length(value) == 1L && is.na(value))) {
+      next
+    }
+    knbs_cat("{label}: {format_metadata_value(value)}")
+  }
+  if (identical(x$access, "public_use")) {
+    cli::cat_line(cli::col_yellow(
+      "Public-use files exist, but this source requires an account to download them."
+    ))
+  }
+  invisible(x)
+}
+
 #' Inspect the provenance of a knbsdata object
 #'
 #' Returns the metadata attached to an object: where it came from, when it was

@@ -100,6 +100,20 @@ source_fetch <- function(source, query, ...) UseMethod("source_fetch")
 #' @noRd
 source_files <- function(source, resource_id, ...) UseMethod("source_files")
 
+#' List the variables described by a resource
+#' @noRd
+source_variables <- function(source, resource_id, ...) UseMethod("source_variables")
+
+#' Retrieve one variable's full record
+#'
+#' Optional: not every source documents variables individually, so this is not
+#' part of the contract every adapter must satisfy.
+#'
+#' @noRd
+source_variable_detail <- function(source, resource_id, variable_id, ...) {
+  UseMethod("source_variable_detail")
+}
+
 #' Check whether a source is answering
 #' @noRd
 source_health <- function(source, ...) UseMethod("source_health")
@@ -141,6 +155,16 @@ source_files.default <- function(source, resource_id, ...) {
 }
 
 #' @export
+source_variables.default <- function(source, resource_id, ...) {
+  adapter_not_implemented(source, "source_variables")
+}
+
+#' @export
+source_variable_detail.default <- function(source, resource_id, variable_id, ...) {
+  adapter_not_implemented(source, "source_variable_detail")
+}
+
+#' @export
 source_health.default <- function(source, ...) {
   adapter_not_implemented(source, "source_health")
 }
@@ -151,7 +175,49 @@ source_health.default <- function(source, ...) {
 #'
 #' @noRd
 adapter_contract <- function() {
-  c("source_search", "source_metadata", "source_fetch", "source_files", "source_health")
+  c(
+    "source_search", "source_metadata", "source_fetch", "source_files",
+    "source_variables", "source_health"
+  )
+}
+
+#' Which sources can carry out an operation?
+#'
+#' Discovery-stability sources are excluded: their endpoints are unverified, so
+#' there is nothing to call. The offline fixture source is excluded for the same
+#' reason, which keeps it out of the public functions.
+#'
+#' @param operation Operation name.
+#' @param source Optional explicit source id.
+#' @noRd
+resolve_source <- function(operation, source = NULL, call = rlang::caller_env()) {
+  if (!is.null(source)) {
+    src <- knbs_source(source, call = call)
+    check_operation(src, operation, call = call)
+    check_source_verified(src, call = call)
+    return(src)
+  }
+
+  sources <- read_source_registry()$sources
+  usable <- Filter(
+    function(s) {
+      operation %in% as.character(s$operations) && !identical(s$stability, "discovery")
+    },
+    sources
+  )
+
+  if (length(usable) == 0L) {
+    knbs_abort(
+      c(
+        "No verified source supports {.field {operation}} yet.",
+        "i" = "See {.fn knbs_sources} for what each source can do.",
+        "i" = "Sources stay unusable until their endpoints are verified."
+      ),
+      class = "knbs_error_source_unavailable",
+      call = call
+    )
+  }
+  knbs_source(usable[[1]]$source_id, call = call)
 }
 
 #' Which generics have a method for this adapter?

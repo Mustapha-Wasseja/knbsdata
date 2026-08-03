@@ -30,19 +30,18 @@ shape, keep the provenance attached to the data, and cite it correctly.
 
 ## Status
 
-**Early development — no retrieval function is exposed yet.**
+**Early development. The survey catalogue works; publications and indicators do
+not exist yet.**
 
-The package is at Phase 2 of its
-[implementation plan](knbsdata_implementation_plan.md). In place: package
-options, structured conditions, the source registry, the HTTP layer, the cache,
-query objects, metadata and citation classes, and the adapter contract — all
-proven end to end against an offline fixture source.
+The package is at Phase 3 of its
+[implementation plan](knbsdata_implementation_plan.md). Survey discovery is
+implemented against the Kenya National Data Archive: search studies, read their
+metadata, search their variables and list their data files.
 
-One real source has been audited and verified: the Kenya National Data Archive
-exposes a JSON API that needs no credentials for survey metadata. Its microdata
-downloads are gated behind a login, so the package will not fetch them. The
-publications and indicator sources have not been audited yet, because
-`knbs.or.ke` was unavailable throughout the audit. Findings are in
+Microdata downloads are gated behind an account at the archive, so the package
+will not fetch them — `knbs_download_microdata()` explains the official process
+and stops. Publications and aggregate indicators are not implemented, because
+`knbs.or.ke` was unavailable throughout the source audit. Findings are in
 [`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md)
 and progress in
 [`dev/IMPLEMENTATION_STATUS.md`](dev/IMPLEMENTATION_STATUS.md).
@@ -63,27 +62,32 @@ library(knbsdata)
 knbs_sources()
 ```
 
-```{r}
-# Session configuration
-knbs_option("timeout")
+Surveys (these contact the archive, so they are not run here):
+
+```{r, eval = FALSE}
+# Find a study
+studies <- knbs_search_surveys("household budget")
+
+# Read its documentation
+meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
+knbs_cite(meta)
+
+# Search its variables without downloading any microdata
+knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
+
+# See what it holds, and on what terms
+knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
 ```
 
 ## What it will look like
 
-These functions are specified but not yet implemented:
+These are specified but not yet implemented, and depend on sources that could
+not be audited:
 
 ```{r, eval = FALSE}
-# Search the supported KNBS catalogues
 knbs_search("consumer price index")
-
-# Download an indicator, with provenance attached
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
-knbs_metadata(cpi)
-knbs_cite(cpi)
-
-# Search survey metadata without downloading microdata
-knbs_search_surveys("household budget")
-knbs_variables(survey = "KIHBS-2015", search = "food expenditure")
+knbs_publications(topic = "economic survey", year = 2026)
 ```
 
 ## Access conditions

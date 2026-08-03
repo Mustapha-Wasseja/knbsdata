@@ -1,0 +1,32 @@
+{
+  "datafiles": {
+    "F19": {
+      "id": "2220",
+      "sid": "13",
+      "file_id": "F19",
+      "file_name": "HH_Information",
+      "description": null,
+      "case_count": "21773",
+      "var_count": "183",
+      "producer": null,
+      "data_checks": null,
+      "missing_data": null,
+      "version": null,
+      "notes": null
+    },
+    "F20": {
+      "id": "2221",
+      "sid": "13",
+      "file_id": "F20",
+      "file_name": "HH_Members_Information",
+      "description": null,
+      "case_count": "92846",
+      "var_count": "280",
+      "producer": null,
+      "data_checks": null,
+      "missing_data": null,
+      "version": null,
+      "notes": null
+    }
+  }
+}

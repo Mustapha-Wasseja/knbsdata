@@ -1,0 +1,45 @@
+{
+  "total": 463,
+  "variables": [
+    {
+      "uid": "412503",
+      "sid": "13",
+      "fid": "F19",
+      "vid": "V753",
+      "name": "county",
+      "labl": "County"
+    },
+    {
+      "uid": "412504",
+      "sid": "13",
+      "fid": "F19",
+      "vid": "V754",
+      "name": "strat",
+      "labl": "Sampling strata"
+    },
+    {
+      "uid": "412505",
+      "sid": "13",
+      "fid": "F19",
+      "vid": "V755",
+      "name": "resid",
+      "labl": "Urban/rural classification with peri-urban as urban"
+    },
+    {
+      "uid": "412506",
+      "sid": "13",
+      "fid": "F19",
+      "vid": "V756",
+      "name": "eatype",
+      "labl": "Urban/rural/peri-urban classification"
+    },
+    {
+      "uid": "412507",
+      "sid": "13",
+      "fid": "F19",
+      "vid": "V757",
+      "name": "qrt",
+      "labl": "Quarter of data collection"
+    }
+  ]
+}

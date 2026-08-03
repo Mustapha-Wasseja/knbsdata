@@ -18,13 +18,22 @@ test_that("the fake adapter satisfies the whole contract", {
 })
 
 test_that("an adapter that implements nothing fails loudly", {
-  # `nada` is registered but has no methods yet: that is a package bug, and it
-  # must not look like an empty result.
-  expect_false(any(adapter_methods("nada")))
+  # A registry entry naming an adapter with no methods is a package bug, and it
+  # must not look like an empty result. Constructed here rather than taken from
+  # the registry so that the test can never reach a network.
+  phantom <- structure(
+    list(source_id = "phantom", adapter = "phantom", operations = "search_surveys",
+         stability = "beta"),
+    class = c("knbs_source_phantom", "knbs_source")
+  )
+
   expect_error(
-    source_search(knbs_source("kenada"), new_knbs_query("survey")),
+    source_search(phantom, new_knbs_query("survey")),
     class = "knbs_error_invalid_argument"
   )
+  expect_error(source_metadata(phantom, "X"), class = "knbs_error_invalid_argument")
+  expect_error(source_variables(phantom, "X"), class = "knbs_error_invalid_argument")
+  expect_false(any(adapter_methods("phantom")))
 })
 
 test_that("the registry decides what a source may be asked to do", {

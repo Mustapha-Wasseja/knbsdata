@@ -108,7 +108,10 @@ cite_retrieval <- function(meta) {
 cite_plain <- function(meta, include_retrieval_date) {
   # A citation the source requires takes precedence over one we would compose.
   head <- if (!is.null(meta$citation)) {
-    trimws(meta$citation)
+    # A source-supplied citation may or may not be punctuated; the retrieval
+    # sentence that follows must not run into it.
+    supplied <- trimws(meta$citation)
+    if (grepl("[.!?]$", supplied)) supplied else paste0(supplied, ".")
   } else {
     parts <- c(
       meta$producer %||% "Kenya National Bureau of Statistics",

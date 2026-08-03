@@ -34,10 +34,6 @@ new_knbs_catalogue <- function(x, metadata) {
   new_knbs_data(x, metadata, class = "knbs_catalogue")
 }
 
-new_knbs_survey <- function(x, metadata) {
-  new_knbs_data(x, metadata, class = "knbs_survey")
-}
-
 is_knbs_data <- function(x) inherits(x, "knbs_data")
 
 #' @export
@@ -95,7 +91,7 @@ print.summary.knbs_data <- function(x, ...) {
 #' @export
 as_tibble.knbs_data <- function(x, ...) {
   attr(x, "knbs_metadata") <- NULL
-  class(x) <- setdiff(class(x), c("knbs_data", "knbs_catalogue", "knbs_survey", "knbs_indicator"))
+  class(x) <- setdiff(class(x), c("knbs_data", "knbs_catalogue", "knbs_indicator"))
   tibble::new_tibble(x, nrow = nrow(x))
 }
 

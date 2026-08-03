@@ -1,0 +1,64 @@
+{
+  "result": {
+    "rows": [
+      {
+        "id": "128",
+        "idno": "DDI-KEN-KNBS-KDHS-2022-V001",
+        "title": "Kenya Demographic and Health Survey 2022",
+        "nation": "Kenya",
+        "authoring_entity": "Kenya National Bureau of Statistics",
+        "form_model": "public",
+        "year_start": "2022",
+        "year_end": "2022",
+        "repositoryid": "central",
+        "link_da": null,
+        "repo_title": null,
+        "created": "2024-09-10T08:29:10+03:00",
+        "changed": "2024-09-10T13:25:17+03:00",
+        "total_views": "25804",
+        "total_downloads": "9152",
+        "url": "https://statistics.knbs.or.ke/nada/index.php/catalog/128"
+      },
+      {
+        "id": "104",
+        "idno": "DDI-KEN-KNBS-FHS-2021-V01",
+        "title": "2021 FINACCESS HOUSEHOLD SURVEY",
+        "nation": "Kenya",
+        "authoring_entity": "Kenya National Bureau of Statistics",
+        "form_model": "public",
+        "year_start": "2021",
+        "year_end": "2021",
+        "repositoryid": "central",
+        "link_da": null,
+        "repo_title": null,
+        "created": "2022-09-16T23:41:11+03:00",
+        "changed": "2022-09-27T23:29:25+03:00",
+        "total_views": "13742",
+        "total_downloads": "12596",
+        "url": "https://statistics.knbs.or.ke/nada/index.php/catalog/104"
+      },
+      {
+        "id": "127",
+        "idno": "DDI-KEN-KNBS-KTUS-2021-V001",
+        "title": "2021 Kenya Time Use Survey",
+        "nation": "Kenya",
+        "authoring_entity": "Kenya National Bureau of Statistics",
+        "form_model": "public",
+        "year_start": "2021",
+        "year_end": "2021",
+        "repositoryid": "central",
+        "link_da": null,
+        "repo_title": null,
+        "created": "2023-11-15T12:29:12+03:00",
+        "changed": "2023-11-15T12:33:36+03:00",
+        "total_views": "12960",
+        "total_downloads": "1691",
+        "url": "https://statistics.knbs.or.ke/nada/index.php/catalog/127"
+      }
+    ],
+    "found": "129",
+    "total": "129",
+    "limit": 3,
+    "offset": 0
+  }
+}

@@ -176,6 +176,35 @@ Working around it by disabling verification is not acceptable. If it persists,
 the mitigation is to raise it with KNBS and, until fixed, document the failure
 rather than bypass it.
 
+**F-08 — An unknown subpath does not 404. It returns the study record.**
+`GET /api/catalog/{idno}/definitely_not_an_endpoint` returns
+`200 {"status":"success","dataset":{...}}` — the same payload as the study
+endpoint. So do `/resources` and `/related_materials`, which are *not* real
+endpoints on this instance despite looking like them.
+
+This is the most dangerous behaviour found in the audit. A client that checks
+only the HTTP status would parse a study record as though it were the variables
+or files it asked for, and produce plausible nonsense. Every response must
+therefore be checked for the fields the operation requires, and a `dataset`
+payload arriving where it was not requested must be reported as a schema change.
+Implemented as `nada_expect()` in the adapter, with a test that pins it.
+
+**F-09 — Documentation and external resources are not exposed by the API.**
+Following from F-08, there is no JSON endpoint listing questionnaires, reports
+or technical documents. The study page has a `related-materials` HTML page
+(200, ~90 KB), and the study payload's `link_questionnaire`, `link_technical`
+and `link_report` fields were all `null` for the study checked.
+
+Consequently the plan's Phase 3 task "add documentation download for public
+files" **cannot be met from the API**, and HTML scraping is a last resort the
+plan explicitly defers. Documentation download is therefore not implemented;
+`knbs_survey_files()` lists data files only.
+
+**F-10 — Variable filtering is not applied server-side.**
+`/api/catalog/{idno}/variables?file_id=F19` returns all 463 variables, ignoring
+the parameter. Filtering by file must be done client-side, which the package
+does.
+
 **F-07 — Archived evidence suggests the main site is WordPress with a REST API.**
 Wayback Machine records for `knbs.or.ke/wp-json*` show `/wp-json/` returning
 `200 application/json` and endpoints from the **Download Monitor** plugin
@@ -284,3 +313,6 @@ Copy this block for each new candidate source.
 | 2026-08-03 | knbs.or.ke | F-05 site returned 504 / timed out for the whole audit | Publications, indicators and geography left unaudited |
 | 2026-08-03 | knbs.or.ke | F-06 incomplete TLS chain (verify error 21) | Recorded as a risk to any R client; no bypass |
 | 2026-08-03 | knbs.or.ke | F-07 archived evidence of WordPress REST API and Download Monitor | First thing to verify when the site returns |
+| 2026-08-03 | kenada | F-08 unknown subpaths return the study payload with `200 success` | Every response is shape-checked by `nada_expect()`; covered by a test |
+| 2026-08-03 | kenada | F-09 no API endpoint for documentation or external resources | Documentation download not implemented; recorded as an unmet Phase 3 task |
+| 2026-08-03 | kenada | F-10 `variables?file_id=` is ignored server-side | Filtering by file is done client-side |

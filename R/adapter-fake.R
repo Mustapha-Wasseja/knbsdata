@@ -264,6 +264,21 @@ source_fetch.knbs_source_fake <- function(source, query, ...,
 }
 
 #' @export
+source_variables.knbs_source_fake <- function(source, resource_id, ...) {
+  check_operation(source, "variables")
+  resource <- fake_resource(resource_id, source$source_id)
+  fake_check_access(resource)
+
+  path <- fake_file(paste0("variables-", resource_id, ".json"))
+  if (!file.exists(path)) {
+    # A study catalogued without variable documentation is a normal outcome.
+    return(empty_tibble(knbs_variable_columns()))
+  }
+  variables <- parse_json_file(path, source_id = source$source_id)$variables
+  standardise_nada_variables(variables, resource_id, source$source_id)
+}
+
+#' @export
 source_health.knbs_source_fake <- function(source, ...) {
   tibble::tibble(
     source_id = source$source_id,

@@ -4,6 +4,26 @@ Early development. No KNBS data retrieval is exposed yet: the package has
 infrastructure and one audited source contract, but no public retrieval
 functions.
 
+## Phase 3: survey catalogue
+
+* `knbs_search_surveys()`, `knbs_survey_metadata()`, `knbs_variables()` and
+  `knbs_survey_files()` work against the Kenya National Data Archive.
+* `knbs_download_microdata()` refuses, explains that the archive requires an
+  account, and points at the official access process. It exists so that the
+  refusal is explicit rather than looking like an oversight.
+* Access types are translated into a canonical vocabulary. `public_use` means
+  public-use files exist, not that they can be downloaded; the print method says
+  so rather than leaving it to be inferred.
+* Unknown identifiers fall back to a catalogue search: one match is used,
+  several are reported so you can choose, none is a plain not-found.
+* The adapter checks the shape of every response, not just its status. This API
+  answers unknown subpaths with `200` and the *study* record rather than a 404,
+  so a renamed endpoint would otherwise deliver plausible nonsense.
+* New vignette, `survey-catalogue`.
+
+Not implemented: documentation download. The API exposes no endpoint for
+questionnaires, reports or technical documents, and HTML scraping is deferred.
+
 ## Phase 2: core infrastructure
 
 * HTTP layer (`knbs_request()`, `knbs_perform()`) on httr2, with a transparent

@@ -1,0 +1,8 @@
+{
+  "total": 3,
+  "variables": [
+    {"uid": "1", "sid": "1", "fid": "F1", "vid": "V1", "name": "county", "labl": "County"},
+    {"uid": "2", "sid": "1", "fid": "F1", "vid": "V2", "name": "hhsize", "labl": "Household size"},
+    {"uid": "3", "sid": "1", "fid": "F1", "vid": "V3", "name": "expfood", "labl": "Food consumption expenditure"}
+  ]
+}
