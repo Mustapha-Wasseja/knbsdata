@@ -11,8 +11,24 @@ reference:
   contents:
   - knbs_sources
 
+- title: Provenance
+  desc: >
+    Every object the package returns carries where it came from, when it was
+    retrieved and how to cite it.
+  contents:
+  - knbs_metadata
+  - knbs_cite
+
 - title: Configuration
   desc: Session options controlling caching, timeouts and retries.
   contents:
   - knbs_option
   - knbs_options
+
+- title: Cache
+  desc: Inspecting and clearing locally cached responses.
+  contents:
+  - knbs_cache_dir
+  - knbs_cache_info
+  - knbs_cache_clear
+  - knbs_cache_prune

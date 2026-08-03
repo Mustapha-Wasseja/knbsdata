@@ -1,5 +1,13 @@
 # Small internal helpers ------------------------------------------------------
 
+# cli's cli_* functions signal conditions that land on stderr, which is right
+# for messages and wrong for print methods: `print()` output belongs on stdout
+# where capture.output() and the console expect it. This formats cli inline
+# markup and writes the result to stdout.
+knbs_cat <- function(text, .envir = parent.frame()) {
+  cli::cat_line(cli::format_inline(text, .envir = .envir))
+}
+
 # Drop NULL elements from a list, preserving names.
 compact_list <- function(x) {
   x[!vapply(x, is.null, logical(1))]

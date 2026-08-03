@@ -1,0 +1,46 @@
+{
+  "resources": [
+    {
+      "resource_id": "FAKE-SURVEY-001",
+      "title": "Fake Household Survey 2020",
+      "description": "An offline fixture standing in for a household survey.",
+      "resource_type": "survey",
+      "topic": "households",
+      "frequency": "irregular",
+      "geography": "national",
+      "reference_start": "2020-01-01",
+      "reference_end": "2020-12-31",
+      "release_date": "2021-03-15",
+      "access": "public",
+      "source_url": "https://example.invalid/fake/FAKE-SURVEY-001"
+    },
+    {
+      "resource_id": "FAKE-SURVEY-002",
+      "title": "Fake Restricted Survey 2021",
+      "description": "A fixture whose files require an approved application.",
+      "resource_type": "survey",
+      "topic": "households",
+      "frequency": "irregular",
+      "geography": "national",
+      "reference_start": "2021-01-01",
+      "reference_end": "2021-12-31",
+      "release_date": "2022-06-30",
+      "access": "restricted",
+      "source_url": "https://example.invalid/fake/FAKE-SURVEY-002"
+    },
+    {
+      "resource_id": "FAKE-CPI",
+      "title": "Fake consumer price index, all items",
+      "description": "A fixture standing in for a monthly price index.",
+      "resource_type": "indicator",
+      "topic": "prices",
+      "frequency": "monthly",
+      "geography": "national",
+      "reference_start": "2020-01-01",
+      "reference_end": "2020-03-01",
+      "release_date": "2020-04-10",
+      "access": "public",
+      "source_url": "https://example.invalid/fake/FAKE-CPI"
+    }
+  ]
+}

@@ -21,17 +21,22 @@ cite it correctly.
 
 ## Status
 
-**Early development — no data retrieval is implemented yet.**
+**Early development — no retrieval function is exposed yet.**
 
-The package is at Phase 0 of its [implementation
-plan](knbsdata_implementation_plan.md): the foundations (options,
-structured conditions, source registry, tests, CI) are in place, but no
-KNBS endpoint has been verified. Every source in the registry is at
-stability `discovery` and no function makes a network request. Endpoint
-verification is Phase 1, tracked in
-[`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md).
+The package is at Phase 2 of its [implementation
+plan](knbsdata_implementation_plan.md). In place: package options,
+structured conditions, the source registry, the HTTP layer, the cache,
+query objects, metadata and citation classes, and the adapter contract —
+all proven end to end against an offline fixture source.
 
-Progress is tracked in
+One real source has been audited and verified: the Kenya National Data
+Archive exposes a JSON API that needs no credentials for survey
+metadata. Its microdata downloads are gated behind a login, so the
+package will not fetch them. The publications and indicator sources have
+not been audited yet, because `knbs.or.ke` was unavailable throughout
+the audit. Findings are in
+[`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md)
+and progress in
 [`dev/IMPLEMENTATION_STATUS.md`](dev/IMPLEMENTATION_STATUS.md).
 
 ## Installation
@@ -51,10 +56,10 @@ knbs_sources()
 #> # A tibble: 4 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
-#> 1 kenada            Kenya Natio… survey_cat… <chr [5]>  discovery source_defined
+#> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  discovery none          
 #> 3 knbs_indicators   KNBS Aggreg… indicator_… <chr [3]>  discovery none          
-#> 4 fake_source       Offline tes… fake        <chr [4]>  discovery none          
+#> 4 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 

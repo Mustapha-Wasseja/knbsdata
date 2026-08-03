@@ -99,6 +99,8 @@ sources:
     operations:
       - search_surveys
       - survey_metadata
+      - variables
+      - files
       - list_indicators
       - get_indicator
     authentication: none
@@ -109,3 +111,4 @@ sources:
     terms_url: null
     notes:
       - Serves stored fixtures so that public functions can be tested offline.
+      - Fixtures live in inst/extdata/fake/; no network request is ever made.

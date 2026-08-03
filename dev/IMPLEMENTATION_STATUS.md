@@ -4,11 +4,11 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-03
-- **Current phase:** Phase 1 (source discovery) — survey catalogue done, three
-  sources blocked by a site outage
+- **Current phase:** Phase 2 complete → Phase 3 (survey catalogue MVP) ready to
+  start. Phase 1 remains partially blocked by a site outage.
 - **Package version:** 0.0.0.9000
-- **Network access implemented:** none (the audit used `curl` directly, not
-  package code)
+- **Network access implemented:** the HTTP layer exists and is tested, but no
+  function calls a real source yet. Every test runs offline.
 
 ---
 
@@ -50,8 +50,67 @@ place where phase progress, open decisions and blockers are recorded.
 
 ### Exported so far
 
-`knbs_option()`, `knbs_options()`, `knbs_sources()`. Nothing else is exported;
-every other function named in the plan is unimplemented.
+See the Phase 2 section below for the current export list.
+
+---
+
+## Phase 2: core infrastructure — complete
+
+| Task | Status | Where |
+|---|---|---|
+| `knbs_request()` | done | `R/http.R` |
+| Retry and error handling | done | `R/http.R` — status → condition class map |
+| Cache | done | `R/cache.R` |
+| Registry loader | done in Phase 0 | `R/registry.R` |
+| Query object | done | `R/query.R` |
+| Base adapter contract | done | `R/source-generic.R` |
+| JSON parser | done | `R/parse-json.R` |
+| CSV / HTML parsers | deferred | not needed until a source requires them |
+| Metadata classes | done | `R/metadata.R`, `R/knbs-data.R` |
+| `knbs_cite()` | done | `R/citations.R` — plain, BibTeX, RIS |
+| Print methods | done | `R/knbs-data.R`, `R/metadata.R`, `R/query.R` |
+| Fixture test helpers | done | `tests/testthat/helper-cache.R` |
+| Fake adapter | done | `R/adapter-fake.R`, `inst/extdata/fake/` |
+
+### Exit criteria
+
+- [x] A mock source can be searched and fetched end to end — the `fake_source`
+      adapter runs search → metadata → files → fetch → cite entirely offline
+- [x] Cache behaviour is tested — hit, miss, refresh, disabled, expiry,
+      corruption, checksum mismatch, parser-version mismatch, prune, clear
+- [x] Metadata survive supported operations — provenance is restored through
+      row subsetting via `vec_restore()`
+- [x] Errors use package-specific classes throughout
+- [x] 297 test assertions pass; 0 lints
+
+### Exported so far
+
+`knbs_option()`, `knbs_options()`, `knbs_sources()`, `knbs_metadata()`,
+`knbs_cite()`, `knbs_cache_dir()`, `knbs_cache_info()`, `knbs_cache_clear()`,
+`knbs_cache_prune()`.
+
+No retrieval function is exported yet: `knbs_search()`,
+`knbs_search_surveys()`, `knbs_get_indicator()` and the rest arrive with their
+adapters in Phases 3 to 6.
+
+### Design decisions taken in Phase 2
+
+1. **The auth gate is handled in the HTTP layer, not per adapter.** A `Refresh`
+   header naming a login page becomes `knbs_error_authentication_required` for
+   every source, so no future adapter can forget it.
+2. **`print()` methods write to stdout.** cli's `cli_*()` functions signal
+   conditions that land on stderr, which is right for messages and wrong for
+   print output; `knbs_cat()` formats cli markup and writes to stdout.
+3. **Cache keys include parser and schema version**, so upgrading the package
+   invalidates entries a new parser would read differently.
+4. **A cache entry that fails its checksum is discarded, not returned.** The
+   caller simply refetches.
+5. **The registry decides what a source may be asked to do.** `check_operation()`
+   refuses any operation a source does not declare, which is what keeps
+   KeNADA's undeclared download operation unreachable rather than merely
+   discouraged.
+6. **CSV and HTML parsers were not built.** Nothing needs them yet; building
+   them now would be speculative.
 
 ---
 
@@ -179,17 +238,20 @@ See `dev/source-discovery/source-audit.md`.
 
 ## Next three tasks
 
-1. Phase 2 — build the core infrastructure now that a real source contract is
-   known: `knbs_request()` on `httr2`, the cache, the query object, the metadata
-   and citation classes, and the fake adapter, tested against the KeNADA
-   fixtures already captured. The `Refresh`-header auth gate (F-03) must be
-   handled in the HTTP layer, not in the adapter.
-2. Phase 3 — the survey-catalogue vertical slice: search → metadata →
-   standardise → attach provenance → print → cite, against KeNADA. This is fully
-   unblocked.
+1. Phase 3 — the KeNADA adapter: implement `source_search()`,
+   `source_metadata()`, `source_files()` and a variables operation against the
+   verified JSON API, using the fixtures in `dev/fixtures/kenada/`. Remember
+   that detail endpoints key on `idno`, and that an empty variable set is valid.
+2. Phase 3 — the public surface: `knbs_search_surveys()`,
+   `knbs_survey_metadata()`, `knbs_variables()`, `knbs_survey_files()`, plus a
+   `knbs_download_microdata()` that refuses and explains, and the survey
+   vignette.
 3. Phase 1 (resume) — when `knbs.or.ke` is reachable, check `/wp-json/wp/v2/`
    first (audit F-07), then the publications listing, the CPI release format and
    `/data-portals/`. Re-test the TLS chain at the same time.
+
+A 25-minute poll of `knbs.or.ke` during Phase 2 never succeeded, so the outage
+outlasted the session in which it was found.
 
 ---
 

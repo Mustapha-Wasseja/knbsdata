@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "file_id": "F1",
+      "file_name": "household.csv",
+      "file_type": "microdata",
+      "format": "csv",
+      "size": 20480,
+      "access": "public",
+      "downloadable": true,
+      "download_url": "https://example.invalid/fake/FAKE-SURVEY-001/household.csv",
+      "checksum": null
+    },
+    {
+      "file_id": "F2",
+      "file_name": "questionnaire.pdf",
+      "file_type": "questionnaire",
+      "format": "pdf",
+      "size": 4096,
+      "access": "public",
+      "downloadable": true,
+      "download_url": "https://example.invalid/fake/FAKE-SURVEY-001/questionnaire.pdf",
+      "checksum": null
+    },
+    {
+      "file_id": "F3",
+      "file_name": "confidential_unit_records.csv",
+      "file_type": "microdata",
+      "format": "csv",
+      "size": 81920,
+      "access": "restricted",
+      "downloadable": false,
+      "download_url": null,
+      "checksum": null
+    }
+  ]
+}

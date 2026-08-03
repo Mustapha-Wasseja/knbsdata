@@ -1,0 +1,18 @@
+{
+  "resource_id": "FAKE-SURVEY-001",
+  "title": "Fake Household Survey 2020",
+  "resource_type": "survey",
+  "producer": "Offline test source",
+  "release_date": "2021-03-15",
+  "reference_period": "2020-01-01/2020-12-31",
+  "version": "v01",
+  "revision_status": "final",
+  "geographic_level": "national",
+  "access": "public",
+  "licence": "Fixture licence, not a real one",
+  "citation": "Offline test source. Fake Household Survey 2020, version v01.",
+  "notes": [
+    "This study exists only as a package fixture.",
+    "No request is made to any network when it is read."
+  ]
+}

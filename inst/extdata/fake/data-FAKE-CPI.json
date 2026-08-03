@@ -1,0 +1,14 @@
+{
+  "indicator_id": "FAKE-CPI",
+  "indicator_name": "Fake consumer price index, all items",
+  "unit": "index",
+  "frequency": "monthly",
+  "release_date": "2020-04-10",
+  "observations": [
+    {"period": "2020-01", "value": 104.2, "geo_code": "0", "geo_name": "Kenya", "status": "final"},
+    {"period": "2020-02", "value": 105.1, "geo_code": "0", "geo_name": "Kenya", "status": "final"},
+    {"period": "2020-03", "value": null, "geo_code": "0", "geo_name": "Kenya", "status": "not_available"},
+    {"period": "2020-01", "value": 103.8, "geo_code": "047", "geo_name": "Nairobi City", "status": "final"},
+    {"period": "2020-02", "value": 104.6, "geo_code": "047", "geo_name": "Nairobi City", "status": "provisional"}
+  ]
+}

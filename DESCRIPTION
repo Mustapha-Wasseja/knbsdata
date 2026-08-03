@@ -19,8 +19,13 @@ Depends:
     R (>= 4.1)
 Imports:
     cli,
+    httr2 (>= 1.0.0),
+    jsonlite,
     rlang (>= 1.1.0),
     tibble,
+    tools,
+    utils,
+    vctrs,
     yaml
 Suggests:
     covr,
