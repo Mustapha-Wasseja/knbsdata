@@ -17,3 +17,6 @@ dev/notebooks/*_files/
 *.pem
 *_token*
 *cookies*
+
+# Editor/sync temp artefacts
+*.tmp.*
