@@ -1,0 +1,107 @@
+# knbsdata source registry
+#
+# One entry per supported or candidate source. Nothing in this file is a
+# verified endpoint yet: every base_url is the placeholder
+# "PLACEHOLDER_TO_VERIFY" and every source is at stability "discovery" until the
+# Phase 1 source-discovery audit records a checked URL, the terms of use and the
+# access conditions. The registry validator refuses to let a source with an
+# unverified base_url claim a higher stability level.
+#
+# Never store credentials, tokens or cookies in this file.
+
+schema_version: 1
+
+sources:
+  - source_id: kenada
+    source_name: Kenya National Data Archive
+    owner: Kenya National Bureau of Statistics
+    source_type: survey_catalogue
+    base_url: PLACEHOLDER_TO_VERIFY
+    adapter: nada
+    operations:
+      - search_surveys
+      - survey_metadata
+      - variables
+      - files
+      - download_public_files
+    authentication: source_defined
+    formats:
+      - html
+      - xml
+      - json
+      - zip
+    stability: discovery
+    last_verified: null
+    terms_url: null
+    notes:
+      - Do not assume public microdata access.
+      - Inspect the catalogue and any documented endpoints during discovery.
+      - Access type must be recorded per study, not per catalogue.
+
+  - source_id: knbs_publications
+    source_name: KNBS Publications
+    owner: Kenya National Bureau of Statistics
+    source_type: publication_catalogue
+    base_url: PLACEHOLDER_TO_VERIFY
+    adapter: publications
+    operations:
+      - search_publications
+      - publication_metadata
+      - download_publication
+    authentication: none
+    formats:
+      - html
+      - pdf
+      - xlsx
+      - csv
+    stability: discovery
+    last_verified: null
+    terms_url: null
+    notes:
+      - Prefer a machine-readable listing over HTML scraping.
+      - Record the official filename and checksum for every download.
+
+  - source_id: knbs_indicators
+    source_name: KNBS Aggregate Indicators
+    owner: Kenya National Bureau of Statistics
+    source_type: indicator_portal
+    base_url: PLACEHOLDER_TO_VERIFY
+    adapter: indicators
+    operations:
+      - list_indicators
+      - get_indicator
+      - indicator_metadata
+    authentication: none
+    formats:
+      - json
+      - csv
+      - xlsx
+      - sdmx
+    stability: discovery
+    last_verified: null
+    terms_url: null
+    notes:
+      - Base years and units must be read from source metadata, never hard-coded.
+      - Confirm whether explicit release or vintage identifiers are exposed.
+
+  # Internal fixture source used by tests (plan section 28, step 4). It never
+  # touches the network and is not intended for users.
+  - source_id: fake_source
+    source_name: Offline test source
+    owner: knbsdata test fixtures
+    source_type: fake
+    base_url: PLACEHOLDER_TO_VERIFY
+    adapter: fake
+    operations:
+      - search_surveys
+      - survey_metadata
+      - list_indicators
+      - get_indicator
+    authentication: none
+    formats:
+      - json
+    stability: discovery
+    last_verified: null
+    terms_url: null
+    notes:
+      - Serves stored fixtures so that public functions can be tested offline.

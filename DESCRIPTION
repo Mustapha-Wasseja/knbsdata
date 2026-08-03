@@ -1,0 +1,36 @@
+Package: knbsdata
+Title: Discover, Retrieve and Cite Official Kenyan Statistics
+Version: 0.0.0.9000
+Authors@R:
+    person("Mustapha", "Wasseja", , "muswaseja@gmail.com", role = c("aut", "cre"))
+Description: An R client and standardisation layer for official data and
+    statistical products published by the Kenya National Bureau of
+    Statistics (KNBS). Provides a consistent interface for discovering
+    surveys, publications, aggregate indicators and geographic reference
+    data, standardises them into documented schemas, preserves provenance
+    metadata such as release dates and checksums, and generates
+    reproducible citations. This is an independent open-source project and
+    is not an official KNBS product.
+License: MIT + file LICENSE
+URL: https://github.com/Mustapha-Wasseja/knbsdata,
+    https://Mustapha-Wasseja.github.io/knbsdata/
+BugReports: https://github.com/Mustapha-Wasseja/knbsdata/issues
+Depends:
+    R (>= 4.1)
+Imports:
+    cli,
+    rlang (>= 1.1.0),
+    tibble,
+    yaml
+Suggests:
+    covr,
+    knitr,
+    rmarkdown,
+    spelling,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-GB
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

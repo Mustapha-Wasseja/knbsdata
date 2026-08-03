@@ -1,0 +1,18 @@
+url: https://Mustapha-Wasseja.github.io/knbsdata/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Sources
+  desc: >
+    What the package knows about each KNBS source, and how far that source has
+    been verified.
+  contents:
+  - knbs_sources
+
+- title: Configuration
+  desc: Session options controlling caching, timeouts and retries.
+  contents:
+  - knbs_option
+  - knbs_options

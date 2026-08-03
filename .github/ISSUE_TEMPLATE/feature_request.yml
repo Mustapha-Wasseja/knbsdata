@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest a capability, source or indicator for knbsdata
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: What are you trying to do that knbsdata makes hard today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed interface
+      description: What would the function call and its output look like?
+      render: r
+
+  - type: input
+    id: source
+    attributes:
+      label: Official source
+      description: >
+        The KNBS page or system that publishes this data. Requests backed by an
+        official, machine-readable source are much easier to implement.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which part of the package?
+      options:
+        - Aggregate indicators
+        - Survey catalogue and metadata
+        - Publications
+        - Geography or classifications
+        - Caching, citations or metadata
+        - Documentation
+        - Other

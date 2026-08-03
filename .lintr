@@ -1,0 +1,7 @@
+linters: linters_with_defaults(
+    line_length_linter(120),
+    object_name_linter(styles = c("snake_case", "symbols")),
+    indentation_linter = NULL
+  )
+encoding: "UTF-8"
+exclusions: list("tests/testthat.R")

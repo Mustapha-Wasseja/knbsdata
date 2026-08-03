@@ -1,0 +1,63 @@
+name: Data source change
+description: A KNBS source has moved, changed shape, or changed its access rules
+labels: ["source-change"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when the package itself is fine but the source has changed:
+        a moved endpoint, a renamed field, a new access requirement, a schema
+        change, or a source that has gone away.
+
+  - type: input
+    id: source-id
+    attributes:
+      label: Source id
+      description: From `knbs_sources()`, for example `kenada`.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: change-type
+    attributes:
+      label: What changed?
+      options:
+        - Endpoint moved or removed
+        - Response schema changed (fields added, renamed or removed)
+        - File format changed
+        - Access conditions or licence changed
+        - Authentication now required
+        - Rate limiting or blocking
+        - Source is unavailable
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: >
+        The URL you observed, the error knbsdata raised, and what the source
+        returns now. Public URLs only — never session-bound URLs, tokens or
+        cookies.
+    validations:
+      required: true
+
+  - type: input
+    id: observed-on
+    attributes:
+      label: Observed on
+      description: Date you observed the change (YYYY-MM-DD).
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have not included credentials, cookies or personal data.
+          required: true
+        - label: >
+            The information here came from publicly accessible pages, not from
+            circumventing an access control.
+          required: true

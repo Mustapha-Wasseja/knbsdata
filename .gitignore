@@ -1,0 +1,19 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.httr-oauth
+.DS_Store
+docs/
+inst/doc/
+*.tar.gz
+*.Rcheck/
+dev/fixtures/scratch/
+dev/notebooks/*_files/
+
+# Never commit credentials, cookies or session state (see SECURITY.md)
+.Renviron
+.env
+*.pem
+*_token*
+*cookies*

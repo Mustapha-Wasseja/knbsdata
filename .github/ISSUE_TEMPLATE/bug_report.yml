@@ -1,0 +1,43 @@
+name: Bug report
+description: Something in knbsdata behaves incorrectly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not paste credentials, tokens, cookies or any microdata
+        contents into this issue.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reprex
+    attributes:
+      label: Reproducible example
+      description: >
+        A minimal example, ideally a reprex. Include the exact function call and
+        the full error message, including its condition class if you have it.
+      render: r
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Which source was involved, if any (see `knbs_sources()`)?
+
+  - type: textarea
+    id: session-info
+    attributes:
+      label: Session info
+      description: Output of `sessionInfo()` or `sessioninfo::session_info()`.
+      render: r
+    validations:
+      required: true

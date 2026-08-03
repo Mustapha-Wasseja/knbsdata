@@ -1,0 +1,50 @@
+# Live source monitor.
+#
+# Deliberately separate from R-CMD-check: ordinary tests never touch the
+# network (plan section 21.1). This workflow is the only place where live KNBS
+# sources are contacted, it runs on a schedule and on demand, and a failure here
+# means "a source changed", not "the package is broken".
+on:
+  schedule:
+    # Mondays at 05:00 UTC
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+name: test-sources.yaml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  test-sources:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
+          needs: check
+
+      - name: Check source health
+        run: |
+          library(knbsdata)
+          sources <- knbs_sources()
+          live <- sources[sources$stability != "discovery", ]
+          if (nrow(live) == 0L) {
+            cat("No verified sources yet; nothing to monitor.\n")
+            cat("Endpoint verification is Phase 1 (dev/source-discovery/source-audit.md).\n")
+            print(sources[, c("source_id", "stability", "base_url")])
+            quit(status = 0)
+          }
+          # Once sources graduate from "discovery", replace this with
+          # knbs_status(live = TRUE) and fail the job on unhealthy sources.
+          stop("Verified sources exist but no health check is implemented yet.")
+        shell: Rscript {0}
