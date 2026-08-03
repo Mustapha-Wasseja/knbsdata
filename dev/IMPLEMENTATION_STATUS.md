@@ -41,7 +41,10 @@ place where phase progress, open decisions and blockers are recorded.
 - [x] `lintr::lint_package()`: 0 lints
 - [x] A minimal pkgdown site builds (`docs/`, git-ignored)
 - [x] No test touches the network
-- [x] Git repository initialised on branch `main` (nothing committed yet)
+- [x] Pushed to `Mustapha-Wasseja/knbsdata` (private) on branch `main`
+- [x] CI green on first run: R CMD check passed on all five matrix
+      combinations (macOS release, Windows release, Ubuntu release / oldrel-1 /
+      devel), lint passed, pkgdown built and deployed to `gh-pages`
 
 ### Exported so far
 
@@ -106,9 +109,10 @@ Section 35 of the plan. Do not resolve these silently in code.
    tier 4 "do not automate").
 2. **Author identity incomplete.** `DESCRIPTION` lists Mustapha Wasseja
    <muswaseja@gmail.com>; the licence copyright holder is a placeholder.
-3. **Repository not yet on GitHub.** Git is initialised locally on `main` with
-   nothing committed. Workflows and badges point at
-   `Mustapha-Wasseja/knbsdata`; they are inert until the repository is pushed.
+3. **Repository is private.** Pushed to `Mustapha-Wasseja/knbsdata` on `main`.
+   The pkgdown workflow deploys to a `gh-pages` branch, which GitHub Pages will
+   not serve from a private repository on a free plan, so the documentation site
+   badge and URL stay dark until the repository is made public.
 
 ---
 
