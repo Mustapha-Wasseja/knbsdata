@@ -4,9 +4,11 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-03
-- **Current phase:** Phase 0 complete → Phase 1 (source discovery) not started
+- **Current phase:** Phase 1 (source discovery) — survey catalogue done, three
+  sources blocked by a site outage
 - **Package version:** 0.0.0.9000
-- **Network access implemented:** none
+- **Network access implemented:** none (the audit used `curl` directly, not
+  package code)
 
 ---
 
@@ -53,6 +55,48 @@ every other function named in the plan is unimplemented.
 
 ---
 
+## Phase 1: source discovery — partially complete
+
+Full findings in [`dev/source-discovery/source-audit.md`](source-discovery/source-audit.md).
+
+| Task | Status |
+|---|---|
+| Audit survey catalogue | **done** — KeNADA, tier 2 for metadata |
+| Audit publications catalogue | **blocked** — `knbs.or.ke` unavailable |
+| Audit aggregate indicator portals | **blocked** — same host |
+| Audit geography reference sources | **blocked** — same host |
+| Identify APIs and machine-readable downloads | done for KeNADA |
+| Record terms and access restrictions | done for KeNADA |
+| Build `source-registry.yml` | updated: `kenada` verified |
+| Build registry validator | done in Phase 0 |
+| Write source audit | done for what could be reached |
+| Classify sources by support tier | 1 of 4 |
+
+### Exit criteria
+
+- [x] At least one survey source is implementation-ready — **KeNADA metadata**
+- [ ] At least one publication source is implementation-ready — blocked
+- [ ] At least one aggregate indicator family is implementation-ready — blocked
+- [x] Every chosen source has fixtures and documented legal access — KeNADA has
+      7 fixtures in `dev/fixtures/kenada/` and its access conditions recorded
+
+### What the audit established
+
+- The KeNADA NADA JSON API is enabled and needs no credentials for study search,
+  study metadata, variables and data-file listings. 129 studies, 1969–2022.
+  No HTML scraping is needed for the survey catalogue.
+- **Microdata download is gated behind a login** and must not be automated. The
+  gate is signalled by a `Refresh` header to `/auth/login`, not a 3xx, so an
+  unwary client would read it as a successful empty response.
+- `form_model: "public"` means public-use files, **not** freely downloadable.
+- Detail endpoints key on the DDI `idno`, not the numeric `id`.
+- Variable metadata is missing for some studies, including the most recent one.
+- `knbs.or.ke` returned 504 / timed out for the entire audit, and serves an
+  incomplete TLS certificate chain that strict clients such as `curl` and
+  `httr2` will reject.
+
+---
+
 ## Deviations from the plan
 
 Recorded so they are visible rather than silent.
@@ -85,10 +129,10 @@ Section 35 of the plan. Do not resolve these silently in code.
 |---|---|---|
 | 1 | Package licence | **MIT, provisionally.** Chosen as the plan's default so Phase 0 could complete; not confirmed by the maintainer. Copyright holder currently reads "knbsdata authors" — set a real holder before any release. |
 | 2 | Formal KNBS affiliation | None. Disclaimer in README and DESCRIPTION states the package is independent. |
-| 3 | Which indicator source is stable enough | Unknown — Phase 1 |
-| 4 | Does the survey catalogue expose a machine-readable API | Unknown — Phase 1 |
-| 5 | Which public-use microdata may be downloaded programmatically | Unknown — Phase 1. Default is "none until proven otherwise". |
-| 6 | Which geographies and boundaries have clear licences | Unknown — Phase 1/6 |
+| 3 | Which indicator source is stable enough | Still unknown — the candidate host was down for the whole audit |
+| 4 | Does the survey catalogue expose a machine-readable API | **Resolved: yes.** KeNADA exposes the NADA JSON API, unauthenticated for metadata (audit F-01) |
+| 5 | Which public-use microdata may be downloaded programmatically | **Resolved: none.** KeNADA gates every download behind a login (audit F-03). `knbs_download_microdata()` must refuse and point at the official process |
+| 6 | Which geographies and boundaries have clear licences | Still unknown. KeNADA exposes `nation` only, so this depends on the main site |
 | 7 | `sf` as Import or Suggest | Neither yet. Plan recommends Suggest until boundaries are implemented. |
 | 8 | Indicator period class | Undecided. Plan's practical first release: integer for annual, `Date` at period start for monthly/quarterly, plus `period_label` and explicit `frequency`. |
 | 9 | All dimensions as columns vs a `dimensions` list-column | Undecided. Plan recommends stable core columns plus recognised dimensions, list-column only when necessary. |
@@ -103,10 +147,13 @@ Section 35 of the plan. Do not resolve these silently in code.
 
 ## Blockers
 
-1. **No verified KNBS endpoint.** Nothing in the registry has a real URL. Phases
-   3–5 cannot start until Phase 1 establishes at least one usable source, and it
-   is possible that some phases turn out not to be feasible (metadata-only, or
-   tier 4 "do not automate").
+1. **`knbs.or.ke` was unavailable throughout the Phase 1 audit** (504 from the
+   origin; `curl` timed out). It hosts publications, indicators and reference
+   data, so three of the four source families could not be assessed. Phase 4
+   (publications) and Phase 5 (indicators) cannot start until it is reachable.
+   Phase 3 (survey catalogue) is unblocked and can proceed now.
+   Secondary risk on the same host: the TLS chain is incomplete (audit F-06),
+   so even once it is up, `httr2` may fail certificate verification.
 2. **Author identity incomplete.** `DESCRIPTION` lists Mustapha Wasseja
    <muswaseja@gmail.com>; the licence copyright holder is a placeholder.
 3. **Repository is private.** Pushed to `Mustapha-Wasseja/knbsdata` on `main`.
@@ -120,9 +167,11 @@ Section 35 of the plan. Do not resolve these silently in code.
 
 | Source | Tier | Base URL verified | Terms reviewed | Fixtures |
 |---|---|---|---|---|
-| `kenada` (survey catalogue) | not assessed | no | no | no |
+| `kenada` — metadata | 2 | yes (2026-08-03) | yes — no site-wide terms page; per-study `data_access` | 7 files |
+| `kenada` — microdata download | 3 (metadata only) | n/a — gated | yes — login required | n/a |
 | `knbs_publications` | not assessed | no | no | no |
 | `knbs_indicators` | not assessed | no | no | no |
+| geography | not assessed | no | no | no |
 
 See `dev/source-discovery/source-audit.md`.
 
@@ -130,15 +179,17 @@ See `dev/source-discovery/source-audit.md`.
 
 ## Next three tasks
 
-1. Phase 1 — audit the KNBS survey catalogue: landing page, catalogue software,
-   whether a documented machine-readable endpoint exists, terms of use, robots
-   policy, access conditions per study. Record it in the audit template and
-   assign a tier.
-2. Phase 1 — do the same for the publications catalogue and for whichever system
-   publishes aggregate indicators (CPI first).
-3. Phase 2 — build the HTTP layer (`knbs_request()`), the cache, and the fake
-   adapter, so that a search → metadata → standardise → cite slice can be proven
-   end to end against fixtures before any real source is wired in.
+1. Phase 2 — build the core infrastructure now that a real source contract is
+   known: `knbs_request()` on `httr2`, the cache, the query object, the metadata
+   and citation classes, and the fake adapter, tested against the KeNADA
+   fixtures already captured. The `Refresh`-header auth gate (F-03) must be
+   handled in the HTTP layer, not in the adapter.
+2. Phase 3 — the survey-catalogue vertical slice: search → metadata →
+   standardise → attach provenance → print → cite, against KeNADA. This is fully
+   unblocked.
+3. Phase 1 (resume) — when `knbs.or.ke` is reachable, check `/wp-json/wp/v2/`
+   first (audit F-07), then the publications listing, the CPI release format and
+   `/data-portals/`. Re-test the TLS chain at the same time.
 
 ---
 

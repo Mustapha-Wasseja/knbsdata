@@ -13,29 +13,33 @@ schema_version: 1
 
 sources:
   - source_id: kenada
-    source_name: Kenya National Data Archive
+    source_name: Kenya National Data Archive (KeNADA)
     owner: Kenya National Bureau of Statistics
     source_type: survey_catalogue
-    base_url: PLACEHOLDER_TO_VERIFY
+    base_url: https://statistics.knbs.or.ke/nada/index.php/api
+    landing_page: https://statistics.knbs.or.ke/nada/index.php/home
     adapter: nada
+    # download_public_files is deliberately NOT declared: microdata download is
+    # gated behind a login (audit finding F-03). The package lists files and
+    # their access conditions but must never fetch them.
     operations:
       - search_surveys
       - survey_metadata
       - variables
       - files
-      - download_public_files
-    authentication: source_defined
+    authentication: none
     formats:
-      - html
-      - xml
       - json
-      - zip
-    stability: discovery
-    last_verified: null
+    stability: experimental
+    last_verified: 2026-08-03
     terms_url: null
     notes:
-      - Do not assume public microdata access.
-      - Inspect the catalogue and any documented endpoints during discovery.
+      - NADA JSON API, verified 2026-08-03; tier 2 (public but undocumented by KNBS).
+      - Detail endpoints key on the DDI idno, not the numeric id; resolve id -> idno first.
+      - A Refresh header pointing at /auth/login means authentication is required,
+        not an empty successful response.
+      - form_model "public" means public-use files, not downloadable without an account.
+      - Variable metadata is absent for some studies; an empty variable set is valid.
       - Access type must be recorded per study, not per catalogue.
 
   - source_id: knbs_publications

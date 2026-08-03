@@ -2,14 +2,39 @@ test_that("the shipped registry is valid", {
   expect_no_error(read_source_registry())
 })
 
-test_that("no shipped source claims verified status yet", {
+test_that("verified and unverified sources are marked consistently", {
   # Phase 1 gate: a source may only leave "discovery" once its base_url, terms
   # and access conditions have been checked and recorded in the source audit.
   sources <- knbs_sources()
+  verified <- sources$base_url != "PLACEHOLDER_TO_VERIFY"
 
-  expect_true(all(sources$stability == "discovery"))
-  expect_true(all(sources$base_url == "PLACEHOLDER_TO_VERIFY"))
-  expect_true(all(is.na(sources$last_verified)))
+  # Unverified: still in discovery, no verification date.
+  expect_true(all(sources$stability[!verified] == "discovery"))
+  expect_true(all(is.na(sources$last_verified[!verified])))
+
+  # Verified: HTTPS endpoint and a recorded verification date.
+  expect_true(all(startsWith(sources$base_url[verified], "https://")))
+  expect_true(all(!is.na(sources$last_verified[verified])))
+
+  # Nothing has earned "stable" yet: that needs fixtures, monitoring and a
+  # documented schema contract.
+  expect_false(any(sources$stability == "stable"))
+})
+
+test_that("kenada is registered as audited, metadata-only", {
+  kenada <- knbs_sources()[knbs_sources()$source_id == "kenada", ]
+
+  expect_identical(nrow(kenada), 1L)
+  expect_identical(kenada$stability, "experimental")
+  expect_identical(kenada$last_verified, as.Date("2026-08-03"))
+
+  # Microdata download is gated behind a login (audit finding F-03), so the
+  # source must not advertise a download operation.
+  expect_false("download_public_files" %in% kenada$operations[[1]])
+  expect_true(all(
+    c("search_surveys", "survey_metadata", "variables", "files") %in%
+      kenada$operations[[1]]
+  ))
 })
 
 test_that("knbs_sources() returns the documented schema", {
@@ -36,7 +61,10 @@ test_that("knbs_sources() filters by operation and status", {
   expect_false("knbs_publications" %in% surveys$source_id)
 
   expect_identical(nrow(knbs_sources(status = "stable")), 0L)
-  expect_identical(nrow(knbs_sources(status = "discovery")), nrow(knbs_sources()))
+  expect_identical(
+    nrow(knbs_sources(status = c("discovery", "experimental"))),
+    nrow(knbs_sources())
+  )
 
   # Multiple operations must all be supported by the same source.
   both <- knbs_sources(operation = c("search_surveys", "get_indicator"))

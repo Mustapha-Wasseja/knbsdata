@@ -1,0 +1,142 @@
+{
+  "status": "success",
+  "dataset": {
+    "id": "13",
+    "repositoryid": "central",
+    "type": "survey",
+    "idno": "KEN-KNBS-KIHBS-2015-2016-v01",
+    "title": "Kenya Integrated Household Budget Survey 2015-2016",
+    "year_start": "2015",
+    "year_end": "2016",
+    "nation": "Kenya",
+    "published": "1",
+    "authoring_entity": "Kenya National Bureau of Statistics",
+    "created": "2021-09-23T12:22:48+03:00",
+    "changed": "2022-06-01T16:15:23+03:00",
+    "varcount": "463",
+    "total_views": "274346",
+    "total_downloads": "1221056",
+    "formid": "2",
+    "data_access_type": "public",
+    "remote_data_url": null,
+    "link_study": null,
+    "link_questionnaire": null,
+    "link_indicator": null,
+    "link_technical": null,
+    "link_report": null,
+    "metadata": {
+      "doc_desc": {
+        "title": "Kenya Integrated Household Budget Survey 2005-2006",
+        "idno": "DDI-KEN-KNBS-KIHBS-2015-2016-v01",
+        "producers": [
+          {
+            "name": "Kenya National Bureau of Statistics",
+            "abbreviation": "KNBS",
+            "affiliation": "Ministry Of Devolution & National Planning",
+            "role": "Survey implementation and documentation"
+          }
+        ],
+        "prod_date": "2015-10-13",
+        "version_statement": {
+          "version": "KIHBS 2015-2016 V01"
+        }
+      },
+      "study_desc": {
+        "title_statement": {
+          "idno": "KEN-KNBS-KIHBS-2015-2016-v01",
+          "title": "Kenya Integrated Household Budget Survey 2015-2016",
+          "alt_title": "KIHBS 2015-2016"
+        },
+        "authoring_entity": [
+          {
+            "name": "Kenya National Bureau of Statistics",
+            "affiliation": "Ministry Of Devolution & National Planning"
+          }
+        ],
+        "production_statement": {
+          "copyright": "(c) 2018, Kenya National Bureau of Statistics",
+          "funding_agencies": [
+            {
+              "name": "Government of Kenya",
+              "abbreviation": "GOK",
+              "role": "Funding"
+            },
+            {
+              "name": "The World Bank",
+              "abbreviation": "WB",
+              "role": "Funding"
+            }
+          ]
+        },
+        "distribution_statement": {
+          "contact": [
+            {
+              "name": "Director General",
+              "affiliation": "KNBS",
+              "email": "directorgeneral@knbs.or.ke",
+              "uri": "www.knbs.or.ke"
+            }
+          ]
+        },
+        "series_statement": {
+          "series_name": "Integrated Survey (non-LSMS) [hh/is]",
+          "series_info": "The eighth household survey"
+        },
+        "version_statement": {
+          "version_date": "2015-10-13"
+        },
+        "study_info": {
+          "abstract": "The 2015/16 Kenya Integrated Household Budget Survey (KIHBS) was conducted over a 12-month period to obtain up-to-date data on a range of socioeconomic indicators used to monitor the implementation of development initiatives. The Survey collected data on household characteristics, housing conditions, education, general health characteristics, nutrition, household income and credit, household transfers, information communication technology, domestic tourism, shocks to household welfare and access to justice. The findings are presented at national, county, rural and urban domains.\n\nHousehold Characteristics\nThe findings of the 2015/16 KIHBS basic characteristics of the population show that the sex ratio is 97.5. About 70 per cent of households were headed by males and the reported average household size was 4 members. The age dependency ratio declined to 81.6 per cent in 2015/16 KIHBS as compared to 84.0 per cent recorded in 2005/06 KIHBS. Majority (54.4%) of the population aged 18 years and above are in monogamous unions. At the national level, 8.4 per cent of children were orphans.\n\nHousing Conditions and amenities\nInformation regarding housing conditions and ownership, access to water, energy, sanitation and waste disposal was collected in the 2015/16 KIHBS. Bungalow was the most common dwelling type of housing occupied by 55.4 per cent of the households. About 60 per cent of households reported that they owned the dwellings that they resided in. The findings show that 72.6 per cent of households use improved drinking water sources. The statistics show that six out ten households had access to improved human waste disposal methods. Overall, 41.4 per cent of households were connected to electricity from the main grid.\n\nEducation\nFindings on education are presented for; pre-primary, primary, secondary, middle level college and university levels; and informal education, Madrassa/Duksi. Nationally, 89.4 per cent of the population aged three years and above had ever attended school. The overall Gross Attendance (GAR) for pre-primary, primary and secondary levels was 94.4 per cent, 107.2 per cent and 66.2 per cent, respectively. The population aged 3 years and above that did not have any educational qualification was 49.7 per cent. Most of the population aged 3 years and above that had not attended school cited not being allowed to attend by parent(s) as the reason for non-attendance. The proportion of the population aged 15-24 years that was literate, based on respondents' self -assessment, was 88.3 per cent.\n\nGeneral Health Characteristics\nGeneral health characteristics discussed in the report comprise: morbidity by sex, health seeking behaviour, utilization of health care services and facilities, disability and engagement in economic activities and health insurance coverage. Information on child survival such as place of delivery, assistance during delivery, immunization and incidences of diarrhoea is also presented. The results show that two out of ten individuals reported a sickness or injury over the four weeks preceding the survey. Majority of the individuals (55.5 %) with a sickness or injury visited a health worker at a health facility for diagnosis. Disabilities were reported by 2.8 per cent of the population. Slightly more than a third of persons with disabilities reported having\ndifficulty in engaging in economic activities. moderately stunted. A higher proportion (32.4%) of children in the rural areas were moderately stunted compared to those in urban areas (24.5%). Overall, 13.0 per cent of children were moderately wasted while 6.7 per cent were moderately underweight. The statistics further indicate that 98.8 per cent of children aged 0-59 months were ever breast fed. The mean length of breastfeeding nationally stood at 16.8 months. Porridge was the most common type of first supplement given to majority (35.9%) of children aged 0-23 months. The survey findings show that eight out of ten children participated in community-based nutritional programmes.\n\nHousehold Income and Credit\nHousehold income is the aggregate earnings of all household members. It includes all forms of income arising from employment, household enterprises, agricultural produce, rent, pension and financial investment. The discussion in this report focuses on income from rent, pension, financial investment and other related incomes. Information is also provided on access and sources of credit. At national level, 7.2 per cent of households reported having received income from rent, pension, financial investment and other related incomes within the 12 months preceding the survey. A third of the households sought credit and over 90 per cent successfully acquired credit.\n\nHousehold Transfers\nTransfers constitute income, in cash or in kind, that the household receives without working for it and it augments household income by improving its welfare. Three out of ten households reported having received cash transfers within the 12 months preceding the survey period. The average amount received per household from cash transfers was KSh. 27,097. Majority of households received cash transfers through a family member. Money transfer agents were the preferred mode of transmitting money for most beneficiaries of transfers received from outside Kenya. Over half of the households gave out transfers in kind. \n\nInformation and Communication Technology\nThe 2015/16 KIHBS collected information on ICT equipment use and ownership. Findings show that three in every four individuals aged 18 years and above owned a mobile phone with an average number of 1.3 SIM cards per person. The most commonly used ICT equipment is the radio and mobile phone, reported by 79.3 per cent and 68.5 per cent of individuals aged 3 years and above, respectively. The highest proportion (50.3%) of those that did not own a mobile phone cited its high cost as the reason. Urban areas had the highest proportion of population with ownership of a mobile phone. Nairobi City County had the highest proportion of population with a mobile phone while Turkana County had the lowest. The population aged 3 years and above that reported using internet over the last three months preceding the survey was 16.6 per cent. Three in every ten households had internet connectivity and use of internet in mobility was reported as the most common place of use of internet. The internet was used mainly for social networking. No need to use the internet was the most predominant reason for not using the internet reported by 30.1 per cent of those who did not use it.\n\nDomestic Tourism\nDomestic tourism comprises activities of residents travelling to and staying at least over a night in places outside their usual environment within the country, for not more than 12 months, for leisure, business or other purposes. At national level, 13.4 per cent of individuals reported that they travelled within Kenya in the 3 months preceding the survey. Visiting friends and relatives was reported by the highest proportion (71.1%) of individuals taking trips. Majority of those who took a trip (66.4%) reported that they sponsored themselves. Transport costs accounted for the largest share (38.4%) of expenditure on domestic tourism. Majority of those who did not take a trip reported high cost as a reason.\n\nShocks to Household Welfare\nA shock is an event that may trigger a decline in the well-being of an individual, a community, a region, or even a nation. The report presents information on shocks which occurred during the five-year period preceding the survey and had a negative impact on households' economic status or welfare. Three in every five households reported having experienced at least one shock within the five years preceding the survey. A large rise infood prices was reported by the highest proportion (30.1 per cent) of households as a first severe shock. Most households reported that they spent their savings to cope with the shock(s).\n\nJustice\nThe survey sought information from household members on their experiences regarding grievances/disputes, resolution mechanisms, status of grievance/dispute resolution and costs incurred. Majority of households (26.2%) experienced grievances related to succession and inheritance. Approximately seven out of ten households that experienced grievances reported that they were resolved by parties from whom they sought interventions. Lawyers on average received the highest amount of money (KSh 59,849) paid to a primary organization for grievance resolution through a formal channel. Courts accounted for the highest informal costs averaging KSh 6,260 in grievance resolution.",
+          "coll_dates": [
+            {
+              "start": "2015-09-01",
+              "end": "2016-08-31",
+              "cycle": ""
+            }
+          ],
+          "nation": [
+            {
+              "name": "KENYA",
+              "abbreviation": "KEN"
+            }
+          ],
+          "geog_coverage": "The survey covers all the Counties in Kenya based on the following levels National, Urban, Rural and County",
+          "analysis_unit": "Households Indviduals within Households and Community",
+          "data_kind": "Sample survey data [ssd]",
+          "notes": "Updating National Accounts\nThe System of National Accounts (SNA) is important in monitoring overall macroeconomic growth. The system provides a comprehensive economic analysis through five institutional sectors of which the household sector is one of them. The household budget survey is a basic source of data useful in the analyses of household production, income generation and use of goods and services as well as measure of household consumption expenditure in Gross Domestic Product (GDP). The 2015/16 Kenya Integrated Household Budget Survey (KIHBS) is expected to provide comprehensive information on household consumption and income generation required for compilation and updating of National Accounts statistics. \n\nThe survey will facilitate the following:\n\n(i)\tProvide estimates of total household consumption expenditure as a component of expenditure on GDP;\n(ii)\tUpdate classification of household consumption expenditure components by Classification of Individual Consumption by Purpose (COICOP);\n(iii)\tAnalyze the household sector as an institutional unit composed of households and unincorporated enterprises owned by households as an integral part of households;\n(iv)\tProvide estimates of household saving and social contribution, transfers and income tax;\n(v)\tProvide detailed information on household enterprises for informal activity estimates in the household sector; and\n(vi)\tProvide data on remuneration of domestic servants, services received in-kind and payments for licenses and fees.\n\nUpdating weights and expanding scope of  Consumer Price Index (CPI) \nThe KIHBS 2015/16 shall be relied upon heavily to obtain more recent household consumption expenditure patterns to update weights for both rural and urban components of the Consumer Price Index (CPI). The survey results are useful in the selection of new market baskets of goods and services, determination of the relative importance of CPI components and cost weights for the market baskets.\n\nThe KIHBS 2015/16 shall be undertaken with the following Consumer Price Indices specific objectives:\n(i)\tUpdate of CPI weights: Update the national CPI with the new weights across all counties to reflect the new consumption patterns. In line with the national CPI, the Common Market for Eastern and Southern Africa (COMESA) will use the weights to compute the EAC-HCPI weights. \n(i)\tExpansion of CPI scope: The current CPI covers 25 data collection zones in 13 urban centers. It will be expanded to cover more zones in 47 counties in order to derive new weights for compilation of rural and urban CPI in line with the devolved structures of governance to meet the new data needs.\n1.0.4\tAssessment of Labour force indicators\nThe 2015/16 KIHBS will provide labor force characteristics in terms of economically active population, participation rates and unemployment. \n\nNutrition and Food Security \nThe survey will provide direct/indirect indicators on food security, and nutrition (particularly for the under-fives) and assess the status of obesity in Kenya. The survey will facilitate assessment of the three pillars of food security:-\n1. Food availability: sufficient quantities of food available on a consistent basis.\n2. Food accessibility: having sufficient resources to obtain appropriate foods for a nutritious diet.\n3. Food utilization: appropriate use based on knowledge of basic nutrition and care, as well as adequate water and sanitation."
+        },
+        "method": {
+          "data_collection": {
+            "data_collectors": [
+              {
+                "name": "Kenya National Bureau of Statistics",
+                "abbreviation": "KNBS",
+                "affiliation": "Ministry Of Devolution & National Planning"
+              }
+            ],
+            "sampling_procedure": "Design and Sample Selection\nThe second Kenya Integrated Household Budget Survey 2015/16 will be the eighth household budget survey to be conducted in Kenya following those conducted in 1981/82, 1983/84, 1992, 1994, 1997 and 2005/06. The KIHBS 2015/16 is a multi-indicator survey in nature with the main objective of updating the household consumption patterns in all the Counties.  \n\nKIHBS 2015/16 is designed to provide estimates for various indicators at the County-level. A total of 50 study domains are envisaged. These are; all the forty-seven (47) counties (Each as a separate domain), urban and rural (each as a separate domain at National level), and lastly the National-level aggregate. \n\nSampling frame\nThe sampling frame used for KIHBS 2015/16 is the fifth National Sample Survey and Evaluation Program (NASSEP V) master frame developed from the Population and Housing Census (KPHC) conducted in Kenya in 2009. The census frame is a complete list of all census enumeration areas (EA) created for the KPHC 2009. Kenya is administratively divided into forty-seven counties; sub-divided into a number of districts, districts to divisions, divisions to locations and finally to sub-locations.\n\nBased on 2009 KPHC the size of the counties in terms of number of households varies greatly, from 0.3% for Lamu County, to 11.2% for Nairobi County. The urbanization of the counties varies also greatly, with Nairobi County and Mombasa County having 100% urban, while for in West Pokot County the urban area represents only 9%. In Kenya, 38% of the households are in urban areas. \n\n The population distribution is slightly different from the household distribution. About 68% of the population lives in rural areas. This means that the average household size is smaller in urban areas than in rural areas.\n\nThe National Sample Survey and Evaluation Program (NASSEP V) master sample frame has been developed from a total of 96,252 Enumerations Areas (EAs) created during the cartographic and mapping exercise. The rural EAs accounts for 61.7 per cent (59,407) of the total, while urban areas represent 38.3 per cent (36,844) of the EAs.\n\nThe Fifth National Sample Survey and Evaluation Program (NASSEP V) master sample, has a total number of 5,360 clusters. Among them, 2,568 are in urban areas and 2,792 are in rural areas. The number of clusters allocated to each county varies from 48 clusters for the Lamu County to 288 clusters for the Nairobi County. This master sample is large enough to meet the sample size requirement for the KIHBS 2014/15. \n\nSample Size and Allocation\nKIHBS 2015/16 being a multi indicator survey that provides estimates at the county level requires a balance of several factors that include precision, cost and domains. The survey will capture data using both Paper and electronic version questionnaires at the household level. The sample design takes into consideration all the indicators in the survey by selecting a cross cutting indicator.  \n\nThe sample for KIHBS 2015/16 will be a stratified sample selected in two stages from the master sample frame. Stratification will be achieved by separating each county into urban and rural areas; in total, 92 sampling strata have been created since Nairobi County and Mombasa County have only urban areas. Samples will be selected independently in each sampling stratum, by a two stage selection. In the first stage 2,388 clusters will be selected with equal probability and with independent selection in each sampling stratum with the sample allocation given in Table 2.5 below. The clusters will serve as a primary sampling unit for the selection of households in the second stage. A fixed number of 10 households will be selected from each selected cluster. \n\nThe county with minimum sample size has 44 clusters, while the county with maximum has 80 clusters. This distribution of clusters will allow for further sub-domain analysis.  In total, the national sample size for KIHBS 2015/16 comprises a total of 23,880 households from 2,388 clusters. The CAPI will be administered to some selected households in each cluster.",
+            "coll_mode": "Face-to-face [f2f]",
+            "research_instrument": "The proposed KIHBS 2015/16 instruments design will be modeled on the KIHBS 2005/06. The instruments will include: KIHBS main questionnaire instruments- a household questionnaire, diary questionnaire, market questionnaire, survey instruction manuals and cluster maps, the Electronic version instruments- short questionnaire. KNBS will seek technical support in developing these survey questionnaires to address the multiple objectives of the survey.  KIHBS 2015/16 is expected to use three questionnaires, the household questionnaire, which will incorporate the community questions, the diary (purchases and consumption) and the market price questionnaire. During the adaptation of these questionnaires, input will be sought from key stakeholders expected to use the resultant data. \n \nThe household survey instruments will consist of several modules.  The key information to be obtained from the modules of the main questionnaire include:\na)\tInformation on the Household Members, including: demographic (sex, age, etc), education (school attendance, highest grade completed, etc), health (morbidity and mortality, fertility, etc), labor, under-five malnutrition (child nutrition, delivery care, breastfeeding, etc).  \nb)\tHousing Conditions and Amenities: Tenure; type of dwelling; construction materials; household utilities; household assets and ICT ownership and services.\nc)\tConsumption and Expenditure: Consumption and expenditure on food items, regular non-food items and durable goods and services. \nd)\tRecent Shocks to Household Welfare: This section collects information on household shocks, referred here as negative economic and social impact on Household, resulting from an event/ occurrence that negatively affected the welfare of the household.\ne)\tSources of income: Agricultural holdings /outputs, livestock, household enterprise, household transfers and credits.   \nf)\tOther modules: The questionnaire will have in addition, the domestic tourism module, hunger and social protection questions.\n\nThe other survey instruments will consist of \ng)\tMarket/price Questionnaire:  The questionnaire will collect market prices and quantities. \nh)\tDiary:  The diary questionnaire will collect information on purchases and consumption of the household on a daily basis for the next 7days. This will entail daily recording of households' purchases and consumption.\ni)\tElectronic version Questionnaire:  Short questionnaire fielded in conjunction with the KIHBS main questionnaire to additional households in the sampled clusters with the intention of collecting data on key indicators (e.g., employment) and various correlates of well-being.  \n\nNote: The KIHBS main questionnaire which will be in hard copy will be administered to 10 Households in each cluster. The electronic version questionnaire will be filled in conjunction with the main KIHBS questionnaire through CAPI.  This component will be tested during the survey on additional Households in the cluster to assess its robustness in collecting information on poverty and labour force. This version of the questionnaire will be implemented continuously (every quarter) for 4 to 5 years after the yearlong KIHBS survey is completed to produce quarterly poverty and labour force indicators.",
+            "weight": "The weighting of the 2015/16 KIHBS was based on the selection probabilities in each domain. The design weights were adjusted using the survey response to give the final weights. This was necessitated by the survey data being not self-weighting since the sample allocation was not proportional to the size of the strata. Additionally, some of the sampled households did not respond to the interviews while others could not be accessed. The resulting data has therefore been weighted to be representative at the national level as well as at county level.",
+            "cleaning_operations": "Each team will have an editor as well other editors at the HQ for second entry",
+            "method_notes": "This survey will employ 100% data verification and data capture\n\nThe KIHBS 2015/16 survey will employ capturing information using paper and Electronic version questionnaires. The paper questionnaire will involve filling the main KIHBS, market and the diary questionnaires. The electronic version questionnaire will capture data using the CAPI system on tablets.\n\nThe filled questionnaires (main KIHBS, market and the diary questionnaires) and the entered data in soft copy are submitted to the HQ  for second data entry.  Once the data is received at the headquarters, additional edit checks will be performed by reserve research  assistant, data entry personnel. Second data entry will be performed, cluster by cluster to produce a report on the inconsistencies for action by the field teams. At the end of the data entry process at the headquarters, the following datasets will be obtained;\n1. KIHBS main questionnaire dataset.\n2. Market prices and quantities dataset\n3. Electronic version questionnaire (CAPI) dataset \n4. Diary dataset.\n\nOnce the main KIHBS questionnaire is completed, the data entry personnel will also perform data edit checks before keying the data into the computer. Subsequently, the data is captured in the field using laptops. The laptops will have the CS Pro program installed and the data will be captured using a developed data capture screen. Finally, the team's supervisor will also perform data quality checks before it is sent through internet (from 3G network modems) to the central depository at KNBS Data Processing Centre in Nairobi."
+          }
+        },
+        "data_access": {
+          "dataset_use": {
+            "contact": [
+              {
+                "name": "Kenya National Bureau of Statistics",
+                "affiliation": "Ministry Of Devolution & National Planning",
+                "email": "directorgeneral@knbs.or.ke",
+                "uri": "www.knbs.or.ke"
+              }
+            ],
+            "cit_req": "2015-2016 Kenya Integrated Household Budget Survey",
+            "disclaimer": "The user of the data acknowledges that the original collector of the data, the authorized distributor of the data bear no responsibility for use of the data or for interpretations or inferences based upon such uses."
+          }
+        }
+      }
+    }
+  }
+}
