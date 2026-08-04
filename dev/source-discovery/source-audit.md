@@ -323,3 +323,4 @@ Copy this block for each new candidate source.
 | 2026-08-03 | kenada | F-08 unknown subpaths return the study payload with `200 success` | Every response is shape-checked by `nada_expect()`; covered by a test |
 | 2026-08-03 | kenada | F-09 no API endpoint for documentation or external resources | Documentation download not implemented; recorded as an unmet Phase 3 task |
 | 2026-08-03 | kenada | F-10 `variables?file_id=` is ignored server-side | Filtering by file is done client-side |
+| 2026-08-04 | knbs.or.ke | Re-checked at the start of Phase 4: still `504 Gateway Time-out` from the origin, and still timing out from the command line. Outage confirmed at roughly five hours. | Publications adapter not written; only the source-independent download layer was built |

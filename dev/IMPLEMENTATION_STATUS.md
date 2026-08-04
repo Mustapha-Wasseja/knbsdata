@@ -3,10 +3,11 @@
 Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
-- **Last updated:** 2026-08-03
-- **Current phase:** Phase 3 (survey catalogue MVP) complete except for
-  documentation download, which the source does not support. Phases 4 and 5
-  remain blocked by a site outage.
+- **Last updated:** 2026-08-04
+- **Current phase:** Phase 3 complete. Phase 4 half delivered — its
+  source-independent download layer is built and tested, but its adapter is
+  blocked by a site outage now in its fifth hour. Phases 5 and 6 blocked on the
+  same host.
 - **Package version:** 0.0.0.9000
 - **Network access implemented:** yes, for the KeNADA survey catalogue. Every
   test still runs offline against fixtures.
@@ -205,6 +206,57 @@ A user can:
 - **F-04.** A study with no documented variables returns zero rows.
 - **F-10.** `variables?file_id=` is ignored by the source, so file filtering is
   done client-side.
+
+---
+
+## Phase 4: publications — blocked, half delivered
+
+`knbs.or.ke` was still returning `504 Gateway Time-out` when Phase 4 was
+attempted, roughly four hours after the outage was first recorded. The
+publications catalogue lives there, so its endpoints remain unaudited and
+unverifiable.
+
+**The adapter was not written.** Writing `source_search()` and
+`source_metadata()` for a publications source would mean inventing an endpoint,
+a response shape and a file-URL pattern, which is precisely what the plan
+forbids ("Do not guess production endpoints"). A guessed adapter would also look
+finished, which is worse than an absent one.
+
+| Task | Status |
+|---|---|
+| Implement publication adapter | **blocked** — source unavailable |
+| `knbs_publications()` | **blocked** — needs the adapter |
+| `knbs_download_publication()` | **blocked** — needs the file-URL pattern |
+| Add metadata sidecar | **done** — `write_sidecar()` |
+| Add checksums | **done** — SHA-256 over the written file |
+| Add citation support | **done in Phase 2** — `knbs_cite()` works from any metadata |
+| Add publication examples | blocked |
+
+### What was delivered: the download layer (`R/download.R`)
+
+Source-independent, so none of it depended on the unavailable site. It is
+internal until an adapter produces URLs for it.
+
+- Streams to a temporary file and only moves it into place once the transfer,
+  the type check and the checksum have all succeeded, so a failed download
+  cannot leave a half-written file that looks complete.
+- Refuses a response that is a web page where a document was requested. This is
+  the same class of failure as audit F-03: a gate or error page served with
+  status 200, which would otherwise be written to disk under a `.pdf` name and
+  reported as success.
+- SHA-256 over the file as written, not as received.
+- `<file>.metadata.json` sidecar, so provenance survives the file being moved
+  out of an R session, and a CSV manifest in the plan's section 11.9 schema.
+- Refuses archive entries that would escape the destination — `../`, absolute
+  unix paths, Windows drive paths — before extracting anything, so a malicious
+  archive is rejected whole rather than partly unpacked.
+- Will not overwrite an existing file unless asked.
+
+Tested with the single network-touching function mocked, so the suite stays
+offline: 40 assertions covering checksums, filename preservation through query
+strings, the HTML-instead-of-document refusal, overwrite protection, directory
+creation, sidecar contents, manifest schema and five kinds of unsafe archive
+entry.
 
 ---
 

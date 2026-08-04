@@ -4,6 +4,16 @@ Early development. No KNBS data retrieval is exposed yet: the package has
 infrastructure and one audited source contract, but no public retrieval
 functions.
 
+## Download layer (internal)
+
+* Added the machinery a download needs to be trustworthy: streaming to a
+  temporary file, refusing a web page served where a document was requested,
+  SHA-256 over the file as written, a `<file>.metadata.json` provenance sidecar,
+  a CSV manifest, overwrite protection, and rejection of archive entries that
+  would write outside the destination.
+* Nothing exposes it yet. It is the half of the publications work that did not
+  depend on `knbs.or.ke`, which was unavailable throughout.
+
 ## Source health
 
 * `knbs_status()` reports on each source. With `live = FALSE` — the default in
