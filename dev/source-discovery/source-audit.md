@@ -200,6 +200,13 @@ files" **cannot be met from the API**, and HTML scraping is a last resort the
 plan explicitly defers. Documentation download is therefore not implemented;
 `knbs_survey_files()` lists data files only.
 
+> **Decision: accepted as a known gap for 0.1.0.** The only route would be
+> parsing the `related-materials` HTML page, which sits sixth in the plan's
+> preference order and would need re-testing on every site change for a feature
+> whose output is a list of links. Users can reach the same documents through
+> the `catalogue_url` returned by `knbs_search_surveys()`. Revisit if KNBS
+> exposes an endpoint, or if demand justifies a tested HTML parser.
+
 **F-10 — Variable filtering is not applied server-side.**
 `/api/catalog/{idno}/variables?file_id=F19` returns all 463 variables, ignoring
 the parameter. Filtering by file must be done client-side, which the package

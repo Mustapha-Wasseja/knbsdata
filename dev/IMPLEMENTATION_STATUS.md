@@ -167,7 +167,7 @@ Full findings in [`dev/source-discovery/source-audit.md`](source-discovery/sourc
 | `knbs_variables()` | done | `R/surveys.R` |
 | `knbs_survey_files()` | done | `R/surveys.R` |
 | Classify access types | done | `R/standardise-surveys.R` |
-| Documentation download for public files | **not possible** — see below | — |
+| Documentation download for public files | **out of scope for 0.1.0** — decided | — |
 | Microdata download where explicitly supported | refused, with an explanation | `knbs_download_microdata()` |
 | Survey vignette | done | `vignettes/survey-catalogue.Rmd` |
 
@@ -182,9 +182,12 @@ A user can:
 5. [x] Understand access requirements — `access_type` and `downloadable`
        columns, plus the print method's warning that "public use" does not mean
        "downloadable"
-6. [ ] **Download public documentation — not possible.** The API exposes no
-       endpoint for questionnaires, reports or technical documents (audit F-09).
-       They exist only on HTML pages, and the plan defers HTML scraping.
+6. [x] **Download public documentation — accepted as out of scope for 0.1.0.**
+       The API exposes no endpoint for questionnaires, reports or technical
+       documents (audit F-09); the only route is parsing the related-materials
+       HTML page, which sits sixth in the plan's preference order. Users reach
+       the same documents through the `catalogue_url` column. Revisit if KNBS
+       exposes an endpoint.
 7. [x] Download public-use data only when legitimately available — it is not
        available anywhere, so `knbs_download_microdata()` refuses and points at
        the official process
@@ -307,9 +310,10 @@ See `dev/source-discovery/source-audit.md`.
    cannot start before this.
 2. Decide open decision 8 (indicator period class) before Phase 5, since it
    shapes the indicator schema and cannot easily be changed afterwards.
-3. Decide what to do about documentation download (audit F-09): either accept
-   the gap for 0.1.0 or accept HTML parsing of the related-materials page as a
-   documented exception to the plan's preference order.
+3. Add the remaining vignettes (`getting-started`, `reproducible-citations`)
+   and a source-status page for the pkgdown site.
+
+Decided: documentation download is out of scope for 0.1.0 (audit F-09).
 
 A 25-minute poll of `knbs.or.ke` during Phase 2 never succeeded, so the outage
 outlasted the session in which it was found.

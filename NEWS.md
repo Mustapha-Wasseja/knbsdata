@@ -31,8 +31,10 @@ functions.
   so a renamed endpoint would otherwise deliver plausible nonsense.
 * New vignette, `survey-catalogue`.
 
-Not implemented: documentation download. The API exposes no endpoint for
-questionnaires, reports or technical documents, and HTML scraping is deferred.
+Not implemented, and out of scope for 0.1.0: documentation download. The archive
+exposes no endpoint for questionnaires, reports or technical documents; the only
+route would be parsing an HTML page. Use the `catalogue_url` column to reach
+them on the archive's own site.
 
 ## Phase 2: core infrastructure
 

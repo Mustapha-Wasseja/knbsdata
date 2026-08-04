@@ -37,6 +37,12 @@ present no supported source permits programmatic download of microdata, so
 \code{downloadable} is \code{FALSE} throughout; use \code{catalogue_url} from
 \code{\link[=knbs_search_surveys]{knbs_search_surveys()}} to reach the official access process.
 }
+\details{
+This lists data files only. Questionnaires, reports and technical documents
+are out of scope: the archive publishes no machine-readable listing of them,
+and retrieving them would mean parsing a web page. They are linked from the
+study's page on the archive, which \code{catalogue_url} points to.
+}
 \examples{
 \dontrun{
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")

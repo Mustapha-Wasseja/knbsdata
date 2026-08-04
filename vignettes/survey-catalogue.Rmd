@@ -122,6 +122,12 @@ Two columns matter most:
 - `downloadable` describes what this package will do. At present it is `FALSE`
   for every file from every supported source.
 
+This lists **data files only**. Questionnaires, reports and technical documents
+are not covered: the archive publishes no machine-readable listing of them, so
+retrieving them would mean parsing a web page, which this package does not do.
+Use the `catalogue_url` column from `knbs_search_surveys()` to open the study on
+the archive's own site, where the documentation is linked.
+
 ## Downloading microdata
 
 You cannot do this through `knbsdata`, and that is deliberate:
@@ -145,6 +151,34 @@ This matters for a subtler reason too. The gate is signalled by an HTTP
 status code sees `200 OK` and an empty body — and could report "no data" where
 the honest answer is "you need an account". The package treats that as an
 authentication error.
+
+## Handling errors
+
+Every failure carries a specific condition class, so you can react to the
+particular problem rather than matching on message text:
+
+```{r, eval = FALSE}
+result <- tryCatch(
+  knbs_survey_metadata("Kenya"),
+  knbs_error_ambiguous_resource = function(cnd) {
+    message("Several studies match; using the first.")
+    knbs_survey_metadata(cnd$matches[[1]])
+  },
+  knbs_error_resource_not_found = function(cnd) NULL,
+  knbs_error_source_unavailable = function(cnd) NULL
+)
+```
+
+The classes you are most likely to want are
+`knbs_error_ambiguous_resource` (which carries the candidates in `$matches`),
+`knbs_error_resource_not_found`, `knbs_error_authentication_required` (which
+carries `$access_url`), `knbs_error_source_unavailable` and
+`knbs_error_schema_changed`. All of them inherit from `knbs_error`, so you can
+catch that instead to handle any package failure at once.
+
+One practical note: catch `error`, not `condition`. httr2 signals a benign
+`httr2_perform` condition on every request, so a `tryCatch(..., condition = )`
+handler will catch that first and never see your error.
 
 ## Citing what you used
 

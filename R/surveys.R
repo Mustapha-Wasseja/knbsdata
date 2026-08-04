@@ -234,6 +234,11 @@ knbs_variables <- function(survey,
 #' `downloadable` is `FALSE` throughout; use `catalogue_url` from
 #' [knbs_search_surveys()] to reach the official access process.
 #'
+#' This lists data files only. Questionnaires, reports and technical documents
+#' are out of scope: the archive publishes no machine-readable listing of them,
+#' and retrieving them would mean parsing a web page. They are linked from the
+#' study's page on the archive, which `catalogue_url` points to.
+#'
 #' @param survey A study identifier, or enough of its title to identify it.
 #' @param type Keep only files of this type.
 #' @param access Keep only files with these access types.
