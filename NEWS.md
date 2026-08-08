@@ -1,3 +1,5 @@
+# knbsdata (development version)
+
 # knbsdata 0.3.0
 
 Consumer prices arrive as data, completing the plan's headline example:
