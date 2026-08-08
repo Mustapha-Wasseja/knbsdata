@@ -1,4 +1,9 @@
-# knbsdata (development version)
+# knbsdata 0.2.0
+
+Three new source families join the survey catalogue: publications, census
+tables as tidy indicators, and geographic reference codes. Every family is
+audited, adapter-built, tested offline against fixtures and verified live;
+`vignette("source-status")` states what each supports and what remains absent.
 
 ## Geographic reference codes (Phase 6)
 

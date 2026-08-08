@@ -16,9 +16,10 @@ library(knbsdata)
 ```
 
 `knbsdata` is a client for official statistics published by the Kenya National
-Bureau of Statistics. Version 0.1.0 covers **survey and census study discovery**:
-finding studies, reading their documentation, searching their variables and
-listing their data files.
+Bureau of Statistics. It covers four source families: **survey and census
+study discovery**, **publications** (statistical releases, reports and
+workbooks, downloadable with verification), **census tables** as tidy
+observations, and **geographic reference codes** for county-level joins.
 
 Code that contacts the archive is shown but not run here, so building this
 vignette never depends on a live service.
@@ -69,8 +70,9 @@ Two different questions, two different columns:
 
 - `access_type` is what the **archive** permits. `public_use` means public-use
   files exist.
-- `downloadable` is what **this package** will do. It is `FALSE` everywhere in
-  0.1.0.
+- `downloadable` is what **this package** will do. For survey microdata it is
+  `FALSE` throughout; publications, by contrast, are served openly and can be
+  downloaded.
 
 Those differ because the archive requires an account for every download. The
 package does not automate sign-in, licence acceptance or approval workflows, so

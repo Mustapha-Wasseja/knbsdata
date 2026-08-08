@@ -15,7 +15,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(knbsdata)
 ```
 
-This page states plainly what version 0.1.0 can and cannot do, and why. It is
+This page states plainly what this release can and cannot do, and why. It is
 worth reading before relying on the package for anything that matters.
 
 ## Registered sources
@@ -42,7 +42,7 @@ there is nothing to call.
 | `stable` | A schema contract the package expects to keep. |
 | `deprecated` | Scheduled for removal. |
 
-Nothing in 0.1.0 is above `experimental`.
+Nothing in this release is above `experimental`.
 
 ## What works
 
