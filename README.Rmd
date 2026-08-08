@@ -42,16 +42,20 @@ shape, keep the provenance attached to the data, and cite it correctly.
   and Housing Census as tidy observations, with geography down to sub-county
   and an explicit CC BY 4.0 licence.
 - **Consumer prices**, against the KNBS CPI Explorer: the monthly index and
-  inflation from January 2009, nationally and by the CPI collection strata.
+  inflation from January 2009, nationally and by the CPI collection strata,
+  plus the retail prices of the CPI basket commodities.
+- **The economy**, against the KNBS Data Portal: 323 SDMX dataflows — GDP by
+  activity and expenditure, trade, balance of payments, county government
+  finance, employment and more.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Other running series — GDP, trade.** No machine-readable source for them
-  has been verified; their monthly and quarterly releases are available as
-  documents through `knbs_publications()`.
+- **Gross County Product as data.** Its five editions exist only as PDF
+  reports on every official portal; find and download them through
+  `knbs_publications("gross county product")`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
 - **Microdata downloads.** The survey archive requires an account for every

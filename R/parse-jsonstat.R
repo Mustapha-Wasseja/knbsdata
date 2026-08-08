@@ -100,6 +100,19 @@ parse_jsonstat <- function(payload, source_id = NULL, call = rlang::caller_env()
   list(table = out, meta = meta)
 }
 
+#' Coerce one JSON value cell to numeric
+#'
+#' Producers put strings, empty strings and symbols like "-" where numbers
+#' should be; all of those are missing values, reported as NA without console
+#' noise.
+#' @noRd
+jsonstat_cell <- function(v) {
+  if (is.null(v)) {
+    return(NA_real_)
+  }
+  suppressWarnings(as.numeric(v))
+}
+
 #' The value array, dense or sparse
 #' @noRd
 jsonstat_values <- function(value, n, source_id = NULL, call = rlang::caller_env()) {
@@ -114,19 +127,11 @@ jsonstat_values <- function(value, n, source_id = NULL, call = rlang::caller_env
         call = call
       )
     }
-    out[positions + 1L] <- vapply(
-      value,
-      function(v) if (is.null(v)) NA_real_ else as.numeric(v),
-      numeric(1)
-    )
+    out[positions + 1L] <- vapply(value, jsonstat_cell, numeric(1))
     return(out)
   }
 
-  out <- vapply(
-    value,
-    function(v) if (is.null(v)) NA_real_ else as.numeric(v),
-    numeric(1)
-  )
+  out <- vapply(value, jsonstat_cell, numeric(1))
   if (length(out) != n) {
     knbs_abort(
       c(

@@ -1,0 +1,40 @@
+{
+  "categoryGroups": [
+    {
+      "id": "CAT_DOMAIN_2",
+      "label": {"en": "ECONOMIC STATISTICS"},
+      "categories": [
+        {
+          "id": "201",
+          "label": {"en": "Macroeconomic accounts and statistics"},
+          "datasetIdentifiers": [],
+          "childrenCategories": [
+            {
+              "id": "20101",
+              "label": {"en": "National accounts"},
+              "datasetIdentifiers": ["KE1,DF_NAT_GDPCP,1.0"],
+              "childrenCategories": []
+            }
+          ]
+        },
+        {
+          "id": "202",
+          "label": {"en": "Prices"},
+          "datasetIdentifiers": ["KE1,DF_CPI_R,1.0"],
+          "childrenCategories": []
+        }
+      ]
+    }
+  ],
+  "datasetMap": {
+    "KE1,DF_NAT_GDPCP,1.0": {
+      "title": "Gross Domestic Product by Activity, Current  Prices",
+      "datasetType": "dataflow"
+    },
+    "KE1,DF_CPI_R,1.0": {
+      "title": "Consume Price Index by Region; Base Feb 2019 = 100",
+      "datasetType": "dataflow"
+    }
+  },
+  "datasetUncategorized": []
+}

@@ -19,8 +19,8 @@ test_that("the catalogue aggregates census and CPI sources", {
   local_knbsapi()
   catalogue <- knbs_indicators()
 
-  expect_identical(nrow(catalogue), 35L)
-  expect_setequal(unique(catalogue$source_id), c("knbs_indicators", "knbs_cpi"))
+  expect_identical(nrow(catalogue), 37L)
+  expect_setequal(unique(catalogue$source_id), c("knbs_indicators", "knbs_cpi", "knbs_opendata"))
 
   prices <- knbs_indicators(topic = "prices")
   expect_identical(nrow(prices), 3L)
@@ -253,8 +253,8 @@ test_that("one unreachable source degrades the catalogue with a warning", {
     catalogue <- knbs_indicators(refresh = TRUE),
     class = "knbs_warning_partial_failure"
   )
-  expect_identical(nrow(catalogue), 3L)
-  expect_identical(unique(catalogue$source_id), "knbs_cpi")
+  expect_identical(nrow(catalogue), 5L)
+  expect_setequal(unique(catalogue$source_id), c("knbs_cpi", "knbs_opendata"))
 })
 
 test_that("no source at all is an error", {

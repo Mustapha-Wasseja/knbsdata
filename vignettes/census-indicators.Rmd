@@ -16,16 +16,35 @@ library(knbsdata)
 ```
 
 `knbs_indicators()` lists what every verified indicator source serves, and
-`knbs_get_indicator()` returns one indicator as tidy observations. Two
+`knbs_get_indicator()` returns one indicator as tidy observations. Three
 families exist today: tables from the **2019 Population and Housing Census**
-(CC BY 4.0), and the **monthly consumer price series** from the KNBS CPI
-Explorer — index level and inflation from January 2009 onwards.
+(CC BY 4.0), the **monthly consumer price series** from the KNBS CPI
+Explorer, and the **323 economic dataflows of the KNBS Data Portal** — GDP,
+trade, balance of payments, county government finance and much else, in SDMX
+form.
 
 ```{r, eval = FALSE}
-knbs_indicators()                  # both families, source_id says which
+knbs_indicators()                  # all families, source_id says which
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+gdp <- knbs_get_indicator("DF_NAT_GDPCP")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 ```
+
+## The Data Portal (SDMX)
+
+Every dataflow keeps its SDMX id (`DF_NAT_GDPCP`, `DF_BOP_A`, `DF_CPI_R`…);
+`knbs_indicators(source = "knbs_opendata")` lists all 323 with their
+statistical domain as `topic`. Annual flows carry integer-year periods;
+monthly and quarterly ones carry first-of-period `Date`s, so `start` and
+`end` behave as everywhere else. Dimensions vary per flow and keep their SDMX
+ids as `<dim>`/`<dim>_label` column pairs, except single-category dimensions
+("Prices = Current prices", "Unit = Kenya Shillings"), which are facts about
+the whole dataflow and fold into `knbs_metadata()` notes instead of constant
+columns.
+
+Two cautions: the portal states **no licence**, and its geography codes are
+**SDMX area codes, not census territories** — `geo_level` is `NA` there, and
+they must never be joined against `knbs_geographies()`.
 
 Chunks that contact the services are shown but not run, so building this
 vignette never depends on them.

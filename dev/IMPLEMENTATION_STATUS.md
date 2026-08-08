@@ -12,21 +12,22 @@ place where phase progress, open decisions and blockers are recorded.
   with the F-24 region-substitution defence and F-26 empty-province behaviour
   tested, and the unstated licence carried in every result's metadata.
   Retail prices are delivered too (`knbs_retail_prices()`, audit F-27: the
-  full national history, no regional data exists). **The biggest open
-  opportunity is now audit F-28**: `opendata.knbs.or.ke` is a first-party
-  Istat DataBrowser hub carrying 323 SDMX dataflows — GDP, CPI by division
-  and region, BoP, trade, county government finance, employment and more —
-  found when a direct question exposed that the Phase 5 audit had probed it
-  only superficially. An adapter there would convert dozens of
-  document-only families into data; its data-query shape and licence remain
-  to be characterised first. Gross County Product, however, is PDF-only on
-  every official portal (checked exhaustively 2026-08-08); the only data
-  route for it would be a registered experimental PDF-table parser per plan
-  section 11.12. Other threads: COICOP divisional series (F-25),
-  classifications, boundaries, `knbs_search()`.
-- **Package version:** 0.1.0.9000
-- **Network access implemented:** three live sources — KeNADA, the website
-  media library, and the census data API. Every test still runs offline
+  full national history, no regional data exists). **The F-28 opportunity is
+  delivered**: the `sdmxhub` adapter serves all 323 dataflows of
+  `opendata.knbs.or.ke` through the same `knbs_indicators()` /
+  `knbs_get_indicator()` surface — GDP by activity, county government
+  finance by all 47 counties, CPI by region and the rest — with a
+  coordinate-alignment regression test on the sparse JSON-stat expansion and
+  a live cross-source check (hub CPI = CPI Explorer CPI = 154.91, June
+  2026). Gross County Product remains PDF-only on every official portal
+  (checked exhaustively 2026-08-08); the only data route for it would be a
+  registered experimental PDF-table parser per plan section 11.12. Other
+  threads: COICOP divisional series (F-25), classifications, boundaries,
+  `knbs_search()`.
+- **Package version:** 0.4.0.9000
+- **Network access implemented:** five live sources — KeNADA, the website
+  media library, the census data API, the CPI Explorer and the SDMX hub.
+  Every test still runs offline
   against fixtures.
 
 ---

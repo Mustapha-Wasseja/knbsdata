@@ -35,16 +35,19 @@ cite it correctly.
   down to sub-county and an explicit CC BY 4.0 licence.
 - **Consumer prices**, against the KNBS CPI Explorer: the monthly index
   and inflation from January 2009, nationally and by the CPI collection
-  strata.
+  strata, plus the retail prices of the CPI basket commodities.
+- **The economy**, against the KNBS Data Portal: 323 SDMX dataflows —
+  GDP by activity and expenditure, trade, balance of payments, county
+  government finance, employment and more.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Other running series — GDP, trade.** No machine-readable source for
-  them has been verified; their monthly and quarterly releases are
-  available as documents through `knbs_publications()`.
+- **Gross County Product as data.** Its five editions exist only as PDF
+  reports on every official portal; find and download them through
+  `knbs_publications("gross county product")`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
 - **Microdata downloads.** The survey archive requires an account for
@@ -71,28 +74,30 @@ library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
 knbs_sources()
-#> # A tibble: 5 × 8
+#> # A tibble: 6 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
 #> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 5 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 5 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 6 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
-#> # A tibble: 5 × 3
+#> # A tibble: 6 × 3
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
 #> 2 knbs_publications not_checked Set live = TRUE to contact the source.    
 #> 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    
 #> 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    
-#> 5 fake_source       unverified  Endpoint not verified; nothing to contact.
+#> 5 knbs_opendata     not_checked Set live = TRUE to contact the source.    
+#> 6 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
 Surveys (these contact the archive, so they are not run here):

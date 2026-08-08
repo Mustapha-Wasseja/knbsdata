@@ -77,6 +77,18 @@ no TLS listener exists — so traffic to it is unencrypted in transit. It
 carries public census aggregates and no credentials, and the registry records
 the exception explicitly rather than hiding it.
 
+**The economy**, via the KNBS Data Portal (`opendata.knbs.or.ke`): 323 SDMX
+dataflows across five statistical domains — GDP by activity and expenditure,
+GFCF, GNI, production accounts, CPI by division and region, balance of
+payments, trade, money and banking, county government finance, employment,
+agriculture, tourism, health and justice. `knbs_indicators()` lists them
+(`source_id` `"knbs_opendata"`) and `knbs_get_indicator()` fetches one by its
+SDMX id, for example `"DF_NAT_GDPCP"`. Three properties to keep in mind: the
+portal states **no licence**; its geography codes are **SDMX area codes, not
+census territories** (never join them against `knbs_geographies()`); and
+single-category dimensions fold into `knbs_metadata()` notes rather than
+arriving as constant columns.
+
 **Consumer prices**, via the KNBS CPI Explorer (`cpiexplorer.knbs.or.ke`):
 `knbs_get_indicator("CPI_ALL_ITEMS")`, `"CPI_INFLATION_YOY"` and
 `"CPI_INFLATION_MOM"` — monthly from January 2009, nationally and by the CPI
@@ -115,12 +127,12 @@ listing at the archive. Reaching them would mean parsing a web page, which this
 package does not do. The `catalogue_url` column from `knbs_search_surveys()`
 opens the study on the archive's own site, where they are linked.
 
-### GDP, trade and other running series are still documents
+### Gross County Product is still a document
 
-`knbs_get_indicator()` serves census tables and the CPI family. National
-accounts, trade and the other recurring series have no verified
-machine-readable source, so their monthly and quarterly releases remain
-available as documents through `knbs_publications()`.
+GCP has no machine-readable source on any official portal (checked
+exhaustively): its five editions exist only as PDF reports, reachable through
+`knbs_publications("gross county product")`. Sub-national *government
+finance* is data (through the Data Portal); sub-national *product* is not.
 
 ### Geography: one vintage, no boundaries, no classifications
 

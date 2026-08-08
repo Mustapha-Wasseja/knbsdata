@@ -1,5 +1,32 @@
 # knbsdata (development version)
 
+## The KNBS Data Portal: 323 dataflows
+
+The economy arrives as data. `knbs_indicators()` and `knbs_get_indicator()`
+now also serve the KNBS Data Portal (`knbs_opendata` in the registry) — an
+SDMX hub carrying 323 dataflows across five statistical domains: GDP by
+activity and by expenditure, GFCF, GNI, production accounts, CPI by division
+and by region, balance of payments, trade, money and banking, county
+government finance, employment, agriculture, tourism, health and justice
+(audit F-28).
+
+* Dataflow ids are the SDMX ids, e.g.
+  `knbs_get_indicator("DF_NAT_GDPCP")` for GDP by activity at current
+  prices. Annual flows carry integer-year periods; monthly and quarterly
+  flows carry first-of-period `Date`s — the same conventions as everywhere
+  else, and `start`/`end` work unchanged.
+* The payload's own `role` field names the time and geography dimensions, so
+  neither is guessed. Hub geography codes are SDMX area codes, not census
+  territories, and `geo_level` is `NA` rather than invented; do not join
+  them against `knbs_geographies()`.
+* Dimensions with a single category are facts about the whole dataflow —
+  "Prices = Current prices", "Unit = Kenya Shillings" — and fold into
+  `knbs_metadata()` notes instead of arriving as constant columns.
+* Data queries are POSTs with a JSON criteria body (a GET answers 405); the
+  responses are JSON-stat with sparse values, parsed by the same generic
+  parser the census adapter uses. The portal states no licence, and the
+  metadata say so.
+
 # knbsdata 0.4.0
 
 Retail prices join the CPI family: what a kilogram of maize flour, a litre of

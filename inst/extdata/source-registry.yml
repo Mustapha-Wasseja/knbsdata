@@ -142,6 +142,35 @@ sources:
       - CPI regions are collection strata, not census territories; their codes
         must never be joined against knbs_geographies().
 
+  - source_id: knbs_opendata
+    source_name: KNBS Data Portal (SDMX hub)
+    owner: Kenya National Bureau of Statistics
+    source_type: indicator_portal
+    base_url: https://opendata.knbs.or.ke/beta/databrowserhub/api/Core/nodes/1
+    landing_page: https://opendata.knbs.or.ke/
+    adapter: sdmxhub
+    operations:
+      - list_indicators
+      - get_indicator
+      - indicator_metadata
+    authentication: none
+    formats:
+      - json
+    stability: experimental
+    last_verified: 2026-08-08
+    terms_url: null
+    notes:
+      - Istat DataBrowser hub over an SDMX service, traced 2026-08-08 (audit
+        F-28); 323 dataflows across five statistical domains.
+      - Data queries are POST requests with a JSON criteria body; an empty
+        array returns the whole dataflow. Responses are JSON-stat with sparse
+        values, and carry a role field naming the time and geography
+        dimensions.
+      - No licence statement found on the portal; reuse terms must not be
+        assumed.
+      - Geography codes here (REF_AREA) are SDMX area codes, not census
+        territory codes; they must never be joined against knbs_geographies().
+
   # Internal fixture source used by tests (plan section 28, step 4). It never
   # touches the network and is not intended for users.
   - source_id: fake_source
