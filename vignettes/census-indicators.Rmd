@@ -72,6 +72,22 @@ Two more honesty notes, both from the source audit:
   `knbs_metadata()` on any result says both, so the caveat travels with the
   data rather than living only in this vignette.
 
+### Retail prices
+
+The same portal publishes the monthly **national average retail prices** of
+the 22 commodities tracked for the CPI basket, in Kenya Shillings per stated
+unit:
+
+```{r, eval = FALSE}
+knbs_retail_prices(commodity = "petrol", start = 2024)
+knbs_retail_prices(start = "2026-06", end = "2026-06")   # one month, all 22
+```
+
+One row per commodity per month: `commodity_code` (`CPI001`–`CPI022`),
+`commodity`, `unit`, `quantity`, `period`, `price`. National only — the
+source holds no regional retail prices — and the licence caveat above applies
+here too.
+
 ## Census tables
 
 ### What the census source is, and is not

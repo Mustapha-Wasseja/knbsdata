@@ -98,6 +98,79 @@ standardise_cpix_series <- function(payload, def, wanted, bounds, source_id,
   out
 }
 
+#' Standardise retail-price records into the price schema
+#'
+#' @param records DRF result records from `/retail-prices/`.
+#' @param register The commodity register from `cpix_commodities()`.
+#' @noRd
+standardise_cpix_retail <- function(records, register, source_id,
+                                    call = rlang::caller_env()) {
+  if (length(records) == 0L) {
+    return(empty_cpix_prices())
+  }
+  ok <- all(vapply(records, function(r) {
+    is.list(r) && !is.null(r$commodity) && !is.null(r$commodity_name) &&
+      !is.null(r$period) && !is.null(r$price)
+  }, logical(1)))
+  if (!ok) {
+    knbs_abort(
+      c("The retail-price records changed shape; please report it."),
+      class = "knbs_error_schema_changed",
+      call = call
+    )
+  }
+
+  ids <- vapply(records, function(r) as.character(r$commodity), character(1))
+  periods <- as.Date(vapply(records, function(r) as.character(r$period), character(1)))
+  codes <- register$commodity_code[match(ids, register$commodity_id)]
+
+  out <- tibble::tibble(
+    commodity_code = codes,
+    commodity = vapply(records, function(r) as.character(r$commodity_name), character(1)),
+    unit = vapply(records, json_chr, character(1), "unit_of_measure"),
+    quantity = vapply(records, function(r) {
+      q <- r$quantity
+      if (is.null(q)) NA_real_ else as.numeric(q)
+    }, numeric(1)),
+    period = periods,
+    period_label = format(periods, "%Y-%m"),
+    price = vapply(records, function(r) as.numeric(r$price), numeric(1)),
+    source_id = rep(source_id, length(records))
+  )
+  out <- out[order(out$commodity_code, out$period), ]
+
+  keys <- paste(ids, out$period, sep = "\r")
+  if (anyDuplicated(keys) > 0L) {
+    knbs_abort(
+      c("The retail-price history contains duplicate keys.",
+        "i" = "This means the listing changed shape; please report it."),
+      class = "knbs_error_validation_failed",
+      call = call
+    )
+  }
+  if (anyNA(out$period)) {
+    knbs_abort(
+      c("A retail-price record carries an unreadable period."),
+      class = "knbs_error_validation_failed",
+      call = call
+    )
+  }
+  out
+}
+
+empty_cpix_prices <- function() {
+  tibble::tibble(
+    commodity_code = character(0),
+    commodity = character(0),
+    unit = character(0),
+    quantity = numeric(0),
+    period = as.Date(character(0)),
+    period_label = character(0),
+    price = numeric(0),
+    source_id = character(0)
+  )
+}
+
 empty_cpix_observations <- function() {
   tibble::tibble(
     indicator_id = character(0),

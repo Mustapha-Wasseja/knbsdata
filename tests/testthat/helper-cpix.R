@@ -31,6 +31,20 @@ cpix_default_handler <- function(source, path, query = list(), call = NULL) {
     series <- cpix_fixture("data-small.json")
     return(Filter(function(s) s$metadata$region %in% asked, series))
   }
+  if (identical(path, "commodities/")) {
+    return(cpix_fixture("commodities.json"))
+  }
+  if (identical(path, "retail-prices/")) {
+    page <- cpix_fixture("retail-page.json")
+    if (!is.null(query$period)) {
+      page$results <- Filter(
+        function(r) identical(r$period, query$period),
+        page$results
+      )
+      page$count <- length(page$results)
+    }
+    return(page)
+  }
   stop("The test mock was asked for an unexpected path: ", path)
 }
 

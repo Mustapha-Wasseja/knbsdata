@@ -1,5 +1,15 @@
 # knbsdata (development version)
 
+* New `knbs_retail_prices()`: the monthly national average retail prices of
+  the 22 commodities tracked for the CPI basket — maize flour, milk, petrol,
+  house rent and the rest — in Kenya Shillings per stated unit, with the full
+  history the CPI Explorer holds (audit F-27). Filter by commodity code or
+  name and by period; a single month is fetched directly, a range walks the
+  paginated listing once and caches it. National only: the source holds no
+  regional retail prices, so no region argument exists. The portal's
+  unstated licence is carried in the result's metadata, as for the CPI
+  series.
+
 # knbsdata 0.3.0
 
 Consumer prices arrive as data, completing the plan's headline example:

@@ -374,6 +374,21 @@ while building the adapter: every series arrives with `id: "overall"` — only
 parameters when traced (enforced client-side regardless, given this family's
 form).
 
+**F-27 — Retail prices have a full paginated history, national only.**
+Probed 2026-08-08 while building the retail-price interface. Beyond the
+`/retail-prices/latest/` convenience the audit recorded, the bare
+`/retail-prices/` route is a Django-REST paginated listing — 1,958 records at
+the time of probing, roughly 22 commodities by 89 months — with `?page=N` and
+an exact-month `?period=YYYY-MM-01` filter (count 22 for one month). Records
+carry `commodity` (numeric id), `commodity_name`, `period`, `price`,
+`unit_of_measure` and `quantity`; the `/commodities/` route maps the numeric
+ids to the `CPI001`–`CPI022` codes. Region behaviour splits three ways: no
+region parameter exists on the history route; on `/latest/`, a *valid*
+non-national region answers `[]` (regional retail data does not exist), while
+an *unknown* region silently falls back to national (the F-24 family). The
+package therefore exposes retail prices as national only, with no region
+argument to defend.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The

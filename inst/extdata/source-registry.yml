@@ -119,6 +119,7 @@ sources:
       - list_indicators
       - get_indicator
       - indicator_metadata
+      - retail_prices
     authentication: none
     formats:
       - json
@@ -127,6 +128,8 @@ sources:
     terms_url: null
     notes:
       - Monthly CPI and inflation, 2009 to present, traced 2026-08-08 (audit 1c).
+      - Retail prices are a paginated national history (audit F-27); no
+        regional retail data exists, so no region argument is offered.
       - The portal states no licence; reuse terms must not be assumed (unlike
         the census DataBrowser's CC BY 4.0).
       - An unknown region id silently falls back to the national series (F-24);

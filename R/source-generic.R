@@ -118,6 +118,10 @@ source_variable_detail <- function(source, resource_id, variable_id, ...) {
 #' @noRd
 source_geographies <- function(source, ...) UseMethod("source_geographies")
 
+#' Retrieve retail commodity prices from a source
+#' @noRd
+source_retail_prices <- function(source, ...) UseMethod("source_retail_prices")
+
 #' Check whether a source is answering
 #' @noRd
 source_health <- function(source, ...) UseMethod("source_health")
@@ -171,6 +175,11 @@ source_variable_detail.default <- function(source, resource_id, variable_id, ...
 #' @export
 source_geographies.default <- function(source, ...) {
   adapter_not_implemented(source, "source_geographies")
+}
+
+#' @export
+source_retail_prices.default <- function(source, ...) {
+  adapter_not_implemented(source, "source_retail_prices")
 }
 
 #' @export

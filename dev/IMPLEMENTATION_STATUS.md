@@ -11,10 +11,11 @@ place where phase progress, open decisions and blockers are recorded.
   consumer-prices adapter is built on the traced CPI Explorer API (audit 1c),
   with the F-24 region-substitution defence and F-26 empty-province behaviour
   tested, and the unstated licence carried in every result's metadata.
-  Remaining threads: retail prices and COICOP divisional series from the same
-  API (F-25 untested surface), classifications (the COICOP hierarchy endpoint
-  is a candidate source), boundaries (still nothing verified), and
-  `knbs_search()` across sources.
+  Retail prices are delivered too (`knbs_retail_prices()`, audit F-27: the
+  full national history, no regional data exists). Remaining threads: COICOP
+  divisional series (F-25 untested surface), classifications (the COICOP
+  hierarchy endpoint is a candidate source), boundaries (still nothing
+  verified), and `knbs_search()` across sources.
 - **Package version:** 0.1.0.9000
 - **Network access implemented:** three live sources — KeNADA, the website
   media library, and the census data API. Every test still runs offline

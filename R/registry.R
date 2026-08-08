@@ -21,6 +21,7 @@ knbs_known_operations <- function() {
     "list_indicators",
     "get_indicator",
     "indicator_metadata",
+    "retail_prices",
     "geographies",
     "classifications",
     "boundaries"

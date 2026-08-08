@@ -81,7 +81,9 @@ the exception explicitly rather than hiding it.
 `knbs_get_indicator("CPI_ALL_ITEMS")`, `"CPI_INFLATION_YOY"` and
 `"CPI_INFLATION_MOM"` — monthly from January 2009, nationally and by the CPI
 collection strata (the Nairobi income bands, Nairobi Combined, Rest of
-Urban). See `vignette("census-indicators")`.
+Urban) — plus `knbs_retail_prices()`, the monthly national average retail
+prices of the 22 CPI basket commodities. See
+`vignette("census-indicators")`.
 
 Three properties of this source to keep in mind, all carried in
 `knbs_metadata()` on every result:

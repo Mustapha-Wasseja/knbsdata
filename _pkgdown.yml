@@ -33,13 +33,14 @@ reference:
   - knbs_publications
   - knbs_download_publication
 
-- title: Census indicators
+- title: Indicators and prices
   desc: >
-    Tables from the 2019 Population and Housing Census as tidy observations,
-    with geography down to sub-county. CC BY 4.0.
+    Census tables (CC BY 4.0), the monthly consumer price series, and the
+    retail prices of the CPI basket commodities.
   contents:
   - knbs_indicators
   - knbs_get_indicator
+  - knbs_retail_prices
 
 - title: Geography
   desc: >
