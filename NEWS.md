@@ -1,3 +1,5 @@
+# knbsdata (development version)
+
 # knbsdata 0.4.0
 
 Retail prices join the CPI family: what a kilogram of maize flour, a litre of
