@@ -253,7 +253,8 @@ wp_page <- function(ids, mimes, total_pages = NA_integer_) {
 
 test_that("a format filter pages past a first page with no matches", {
   local_cache()
-  served <- new.env(); served$pages <- integer(0)
+  served <- new.env()
+  served$pages <- integer(0)
   # Page 1: 100 PDFs. Page 2: two xlsx among PDFs, and the listing ends.
   local_wp_api(list("^media$" = function(path, query) {
     page <- as.integer(query$page %||% "1")
@@ -297,7 +298,8 @@ test_that("a short page mid-listing does not end the scan", {
 
 test_that("pagination stops as soon as the limit is filled", {
   local_cache()
-  served <- new.env(); served$pages <- integer(0)
+  served <- new.env()
+  served$pages <- integer(0)
   xlsx <- "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   local_wp_api(list("^media$" = function(path, query) {
     page <- as.integer(query$page %||% "1")
@@ -359,7 +361,8 @@ test_that("the scan cap warns rather than trailing off silently", {
 
 test_that("an unfiltered search still makes exactly one request", {
   local_cache()
-  served <- new.env(); served$pages <- integer(0)
+  served <- new.env()
+  served$pages <- integer(0)
   local_wp_api(list("^media$" = function(path, query) {
     served$pages <- c(served$pages, as.integer(query$page %||% "1"))
     wp_page(1:20, rep("application/pdf", 20))
