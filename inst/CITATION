@@ -9,12 +9,12 @@ bibentry(
   title    = "{knbsdata}: Discover, Retrieve and Cite Official Kenyan Statistics",
   author   = person("Mustapha", "Wasseja"),
   year     = "2026",
-  note     = "R package version 0.2.0",
+  note     = "R package version 0.3.0",
   url      = "https://github.com/Mustapha-Wasseja/knbsdata",
   textVersion = paste(
     "Wasseja, M. (2026).",
     "knbsdata: Discover, Retrieve and Cite Official Kenyan Statistics.",
-    "R package version 0.2.0.",
+    "R package version 0.3.0.",
     "https://github.com/Mustapha-Wasseja/knbsdata"
   )
 )

@@ -1,4 +1,7 @@
-# knbsdata (development version)
+# knbsdata 0.3.0
+
+Consumer prices arrive as data, completing the plan's headline example:
+`knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")`.
 
 ## Consumer prices
 
