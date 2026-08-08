@@ -1,5 +1,19 @@
 # knbsdata (development version)
 
+## Geographic reference codes (Phase 6)
+
+* `knbs_geographies()` returns the 2019 census frame: Kenya, its 47 counties
+  and their sub-counties, with names, structural parent codes and an explicit
+  `vintage` column. Codes are character with leading zeros intact, read live
+  from the census service's own Territory dimension (CC BY 4.0) rather than
+  shipped as a snapshot that could drift from the source.
+* A sub-county referencing a county the source did not list, or duplicate
+  codes, are refused as validation failures rather than passed into joins.
+* Asking for any vintage other than 2019 fails with a clear error: no other
+  vintage, no crosswalk and no boundary file has a verified source, and a
+  wrong crosswalk is worse than none. Classifications remain unimplemented for
+  the same reason. New vignette, `county-data`.
+
 ## Census indicators (Phase 5)
 
 The Phase 5 audit found a first-party machine-readable source: the KNBS census

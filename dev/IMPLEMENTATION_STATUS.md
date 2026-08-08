@@ -4,14 +4,47 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-08
-- **Current phase:** post-0.1.0 development. Phases 4 and **5** are complete —
-  publications (media library) and census indicators (KNBS census data API),
-  both audited tier 2 and verified live. Phase 6 (geographies) has an
-  identified source; the consumer-prices family remains open (audit F-21).
+- **Current phase:** post-0.1.0 development. Phases 4, 5 and **6** are
+  complete — publications, census indicators, and geographic reference codes.
+  Every plan phase now has a shipped core. Remaining threads: consumer prices
+  (audit F-21), classifications and boundaries (no verified sources),
+  `knbs_search()` across sources.
 - **Package version:** 0.1.0.9000
 - **Network access implemented:** three live sources — KeNADA, the website
   media library, and the census data API. Every test still runs offline
   against fixtures.
+
+---
+
+## Phase 6: geographies — core complete, extensions honestly absent
+
+| Task | Status |
+|---|---|
+| Build county reference data | done — read live from the census API's Territory dimension (audit F-20), never shipped as a static snapshot |
+| Code-vintage metadata | done — `vintage` column, 2019 throughout; other vintages refused with a clear error |
+| `knbs_geographies()` | done — level, vintage and parent filters |
+| Add aliases carefully | none added — no verified source for alternative names, so none invented |
+| Classification retrieval | **not implemented** — no audited source |
+| Boundaries | **not implemented** — plan requires a licence-reviewed official file first; none verified |
+| County-data vignette | done |
+
+### Exit criteria
+
+- [x] All county codes remain character — enforced by validation and tested
+- [x] Vintage is explicit — a column, not a footnote
+- [x] No unverified geographic crosswalk is presented as official — none is
+      presented at all; requesting another vintage errors
+- [x] Boundary feature-count tests — not applicable, boundaries not included
+
+### Design notes
+
+- Parenthood is structural, not inferred: a sub-county's code embeds its
+  county in its first two digits. A sub-county whose county is absent from
+  the source, or duplicated codes, fail validation rather than corrupting
+  joins downstream.
+- The reference is read from the same table family the observations come
+  from, so `knbs_geographies()` joins `knbs_get_indicator()` output exactly —
+  there is a test that proves the join is lossless.
 
 ---
 

@@ -10,6 +10,7 @@ articles:
   - getting-started
   - survey-catalogue
   - census-indicators
+  - county-data
   - source-status
 
 reference:
@@ -39,6 +40,13 @@ reference:
   contents:
   - knbs_indicators
   - knbs_get_indicator
+
+- title: Geography
+  desc: >
+    The coded territorial hierarchy of the 2019 census frame — the join keys
+    the census tables themselves use.
+  contents:
+  - knbs_geographies
 
 - title: Sources
   desc: >

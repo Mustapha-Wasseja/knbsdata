@@ -86,6 +86,10 @@ sources:
       - list_indicators
       - get_indicator
       - indicator_metadata
+      # The census tables' Territory dimension doubles as the geography
+      # reference: 393 coded, named units at national, county and sub-county
+      # level, vintage 2019 (audit F-20).
+      - geographies
     authentication: none
     formats:
       - json

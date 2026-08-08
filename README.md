@@ -33,6 +33,9 @@ cite it correctly.
 - **Census tables**, against the KNBS census data service: the 2019
   Population and Housing Census as tidy observations, with geography
   down to sub-county and an explicit CC BY 4.0 licence.
+- **Geographic reference codes**: Kenya, its 47 counties and their
+  sub-counties in the 2019 census frame, with names, parent codes and an
+  explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
@@ -40,8 +43,8 @@ Not implemented:
   source for them has been verified (the CPI Explorer’s backend resisted
   identification); monthly and quarterly releases are available as
   documents through `knbs_publications()`.
-- **Geographic reference data** as a dataset of its own — though the
-  census tables carry full county and sub-county codes and names.
+- **Boundary geometries, other geographic vintages, crosswalks and
+  classifications** — nothing verified, so nothing served.
 - **Microdata downloads.** The survey archive requires an account for
   every download. `knbs_download_microdata()` explains the official
   process and stops; the package does not automate sign-in or licence
@@ -71,7 +74,7 @@ knbs_sources()
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 3 knbs_indicators   KNBS Census… indicator_… <chr [3]>  experime… none          
+#> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
 #> 4 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
@@ -124,6 +127,9 @@ knbs_indicators(topic = "Population")
 # County populations, tidy, with leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 knbs_cite(pop)
+
+# The matching reference codes, for joins
+knbs_geographies(level = "county")
 ```
 
 ## What it will look like

@@ -198,9 +198,11 @@ test_that("public functions never reach the offline fixture source", {
 })
 
 test_that("an operation with no verified source fails clearly", {
-  # get_indicator is verified now; geographies and boundaries still are not.
+  # get_indicator and geographies are verified now; classifications and
+  # boundaries still have no source.
   expect_identical(resolve_source("get_indicator")$source_id, "knbs_indicators")
-  expect_error(resolve_source("geographies"), class = "knbs_error_source_unavailable")
+  expect_identical(resolve_source("geographies")$source_id, "knbs_indicators")
+  expect_error(resolve_source("classifications"), class = "knbs_error_source_unavailable")
   expect_error(resolve_source("boundaries"), class = "knbs_error_source_unavailable")
 })
 

@@ -106,12 +106,14 @@ F-21); until it — or another indicator endpoint — is verified, monthly and
 quarterly releases remain available as documents through
 `knbs_publications()`.
 
-### Geography is absent as a dataset
+### Geography: one vintage, no boundaries, no classifications
 
-`knbs_geographies()` and `knbs_search()` do not exist yet. The census tables
-carry a full territory dimension — 393 coded, named units across national,
-county and sub-county levels — which is the natural Phase 6 source, with the
-caveat that its vintage is the 2019 census frame.
+`knbs_geographies()` serves the 2019 census frame — Kenya, 47 counties,
+sub-counties, with names and parent codes, read from the census service's own
+Territory dimension. What it does not serve, because nothing has been
+verified: other vintages, crosswalks between coding systems, boundary
+geometries (`knbs_boundaries()` does not exist) and statistical
+classifications. `knbs_search()` across sources also does not exist yet.
 
 ### Variable documentation is uneven
 

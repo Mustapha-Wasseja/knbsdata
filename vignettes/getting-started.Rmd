@@ -129,6 +129,9 @@ sub-county:
 ```{r, eval = FALSE}
 knbs_indicators(topic = "Population")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+
+# The matching reference codes, for joins
+knbs_geographies(level = "county")
 ```
 
 ## Configuration
@@ -162,5 +165,6 @@ refetched rather than returned.
 
 - `vignette("survey-catalogue")` — the survey workflow in depth
 - `vignette("census-indicators")` — census tables as tidy data
+- `vignette("county-data")` — county codes, vintages and safe joins
 - `vignette("source-status")` — what each source supports, and the limitations
   of this release
