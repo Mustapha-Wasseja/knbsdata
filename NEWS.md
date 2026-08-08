@@ -7,9 +7,6 @@ Consumer prices arrive as data, completing the plan's headline example:
 
 ## Consumer prices
 
-The plan's headline example works: `knbs_get_indicator("CPI_ALL_ITEMS",
-start = "2020-01")`.
-
 * Three new indicators from the KNBS CPI Explorer (`knbs_cpi` in the
   registry): `CPI_ALL_ITEMS` (index points), `CPI_INFLATION_YOY` and
   `CPI_INFLATION_MOM` (percent) — monthly from January 2009, nationally and
