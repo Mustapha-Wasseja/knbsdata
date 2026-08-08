@@ -253,11 +253,11 @@ wp_page <- function(ids, mimes, total_pages = NA_integer_) {
 
 test_that("a format filter pages past a first page with no matches", {
   local_cache()
-  pages_served <- integer(0)
+  served <- new.env(); served$pages <- integer(0)
   # Page 1: 100 PDFs. Page 2: two xlsx among PDFs, and the listing ends.
   local_wp_api(list("^media$" = function(path, query) {
     page <- as.integer(query$page %||% "1")
-    pages_served <<- c(pages_served, page)
+    served$pages <- c(served$pages, page)
     if (page == 1L) {
       wp_page(1:100, rep("application/pdf", 100), total_pages = 2L)
     } else {
@@ -273,7 +273,7 @@ test_that("a format filter pages past a first page with no matches", {
 
   expect_identical(nrow(hits), 2L)
   expect_true(all(hits$format == "xlsx"))
-  expect_identical(pages_served, c(1L, 2L))
+  expect_identical(served$pages, c(1L, 2L))
 })
 
 test_that("a short page mid-listing does not end the scan", {
@@ -297,18 +297,18 @@ test_that("a short page mid-listing does not end the scan", {
 
 test_that("pagination stops as soon as the limit is filled", {
   local_cache()
-  pages_served <- integer(0)
+  served <- new.env(); served$pages <- integer(0)
   xlsx <- "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   local_wp_api(list("^media$" = function(path, query) {
     page <- as.integer(query$page %||% "1")
-    pages_served <<- c(pages_served, page)
+    served$pages <- c(served$pages, page)
     wp_page((page - 1) * 100 + 1:100, rep(xlsx, 100), total_pages = 10L)
   }))
 
   hits <- knbs_publications(format = "xlsx", limit = 5)
 
   expect_identical(nrow(hits), 5L)
-  expect_identical(pages_served, 1L)
+  expect_identical(served$pages, 1L)
 })
 
 test_that("running one page past the end is the end, not an error", {
@@ -359,13 +359,13 @@ test_that("the scan cap warns rather than trailing off silently", {
 
 test_that("an unfiltered search still makes exactly one request", {
   local_cache()
-  pages_served <- integer(0)
+  served <- new.env(); served$pages <- integer(0)
   local_wp_api(list("^media$" = function(path, query) {
-    pages_served <<- c(pages_served, as.integer(query$page %||% "1"))
+    served$pages <- c(served$pages, as.integer(query$page %||% "1"))
     wp_page(1:20, rep("application/pdf", 20))
   }))
 
   hits <- knbs_publications("anything", limit = 20)
   expect_identical(nrow(hits), 20L)
-  expect_identical(pages_served, 1L)
+  expect_identical(served$pages, 1L)
 })
