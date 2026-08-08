@@ -2,7 +2,7 @@
 % Please edit documentation in R/indicators.R
 \name{knbs_indicators}
 \alias{knbs_indicators}
-\title{List available aggregate datasets}
+\title{List available aggregate indicators}
 \usage{
 knbs_indicators(
   topic = NULL,
@@ -13,12 +13,13 @@ knbs_indicators(
 )
 }
 \arguments{
-\item{topic}{Keep only these themes, for example \code{"Population"}.}
+\item{topic}{Keep only these topics, for example \code{"Population"} or
+\code{"prices"}.}
 
-\item{search}{Free text matched against dataset names.}
+\item{search}{Free text matched against indicator names.}
 
-\item{source}{Source id. Defaults to the first verified source that supports
-indicator listing.}
+\item{source}{Source id. Defaults to every verified source that lists
+indicators.}
 
 \item{cache}{Whether to use the local cache.}
 
@@ -31,19 +32,24 @@ A \code{knbs_catalogue} tibble with columns \code{indicator_id},
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Lists the datasets published by the KNBS census data service, grouped by
-theme. These are 2019 Population and Housing Census tables — population,
-health, ICT and household characteristics — released under CC BY 4.0.
+Lists the indicators served by every verified indicator source: the 2019
+Population and Housing Census tables (CC BY 4.0), and the monthly consumer
+price series from the KNBS CPI Explorer. The \code{source_id} column says which
+source serves each row.
 }
 \details{
-\code{frequency} and \code{unit} are \code{NA} throughout: a census table is not a
-recurring series, and the source does not state units, so the package does
-not invent them.
+\code{frequency} and \code{unit} are filled only where the source states them: the
+CPI series are monthly, in index points or percent; a census table is not a
+recurring series, so its \code{frequency} and \code{unit} are \code{NA} rather than
+invented.
+
+If one source cannot be reached, its rows are missing and a warning says
+so; the error comes only when no source answers.
 }
 \examples{
 \dontrun{
 knbs_indicators()
-knbs_indicators(topic = "Population")
+knbs_indicators(topic = "prices")
 knbs_indicators(search = "marital")
 }
 }

@@ -77,6 +77,23 @@ no TLS listener exists — so traffic to it is unencrypted in transit. It
 carries public census aggregates and no credentials, and the registry records
 the exception explicitly rather than hiding it.
 
+**Consumer prices**, via the KNBS CPI Explorer (`cpiexplorer.knbs.or.ke`):
+`knbs_get_indicator("CPI_ALL_ITEMS")`, `"CPI_INFLATION_YOY"` and
+`"CPI_INFLATION_MOM"` — monthly from January 2009, nationally and by the CPI
+collection strata (the Nairobi income bands, Nairobi Combined, Rest of
+Urban). See `vignette("census-indicators")`.
+
+Three properties of this source to keep in mind, all carried in
+`knbs_metadata()` on every result:
+
+- **The portal states no licence**, unlike the census service's CC BY 4.0
+  footer, and does not state the index base period.
+- **Its regions are collection strata, not census territories.** Their codes
+  must never be joined against `knbs_geographies()`.
+- **Six listed regions — the former provinces — carry no data in any
+  period.** Asking for them returns zero rows, because that is the source's
+  answer.
+
 ## What does not, and why
 
 ### Microdata cannot be downloaded
@@ -96,15 +113,12 @@ listing at the archive. Reaching them would mean parsing a web page, which this
 package does not do. The `catalogue_url` column from `knbs_search_surveys()`
 opens the study on the archive's own site, where they are linked.
 
-### Running indicators — CPI, GDP and the like — are not implemented
+### GDP, trade and other running series are still documents
 
-`knbs_get_indicator()` serves **census tables**. It does not serve consumer
-prices, national accounts, trade or any other recurring series, because no
-machine-readable source for them has been verified. KNBS operates a CPI
-Explorer whose backend could not be identified by static inspection (audit
-F-21); until it — or another indicator endpoint — is verified, monthly and
-quarterly releases remain available as documents through
-`knbs_publications()`.
+`knbs_get_indicator()` serves census tables and the CPI family. National
+accounts, trade and the other recurring series have no verified
+machine-readable source, so their monthly and quarterly releases remain
+available as documents through `knbs_publications()`.
 
 ### Geography: one vintage, no boundaries, no classifications
 

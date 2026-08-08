@@ -50,4 +50,11 @@ local_knbsapi <- function(overrides = list(), env = parent.frame()) {
     .package = "knbsdata",
     .env = env
   )
+  # knbs_indicators() aggregates every verified indicator source, so census
+  # tests need the CPI entry point mocked too or they would reach the network.
+  testthat::local_mocked_bindings(
+    cpix_get = cpix_default_handler, # nolint: object_usage_linter. Defined in helper-cpix.R.
+    .package = "knbsdata",
+    .env = env
+  )
 }

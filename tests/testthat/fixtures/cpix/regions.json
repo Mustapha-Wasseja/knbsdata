@@ -1,0 +1,80 @@
+[
+  {
+    "id": "national",
+    "code": "national",
+    "name": "National",
+    "level": "country"
+  },
+  {
+    "id": "6",
+    "code": "CENTRAL",
+    "name": "Central",
+    "level": "urban"
+  },
+  {
+    "id": "5",
+    "code": "COAST",
+    "name": "Coast",
+    "level": "urban"
+  },
+  {
+    "id": "7",
+    "code": "EASTERN",
+    "name": "Eastern",
+    "level": "urban"
+  },
+  {
+    "id": "4",
+    "code": "NBO_COMBINED",
+    "name": "Nairobi Combined",
+    "level": "nairobi"
+  },
+  {
+    "id": "3",
+    "code": "NBO_LOWER",
+    "name": "Nairobi Lower Income",
+    "level": "nairobi"
+  },
+  {
+    "id": "2",
+    "code": "NBO_MIDDLE",
+    "name": "Nairobi Middle Income",
+    "level": "nairobi"
+  },
+  {
+    "id": "1",
+    "code": "NBO_UPPER",
+    "name": "Nairobi Upper Income",
+    "level": "nairobi"
+  },
+  {
+    "id": "9",
+    "code": "NORTH_EASTERN",
+    "name": "North Eastern",
+    "level": "urban"
+  },
+  {
+    "id": "8",
+    "code": "NYANZA",
+    "name": "Nyanza",
+    "level": "urban"
+  },
+  {
+    "id": "12",
+    "code": "REST_URBAN",
+    "name": "Rest of Urban",
+    "level": "urban"
+  },
+  {
+    "id": "10",
+    "code": "RIFT_VALLEY",
+    "name": "Rift Valley",
+    "level": "urban"
+  },
+  {
+    "id": "11",
+    "code": "WESTERN",
+    "name": "Western",
+    "level": "urban"
+  }
+]

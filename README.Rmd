@@ -41,16 +41,17 @@ shape, keep the provenance attached to the data, and cite it correctly.
 - **Census tables**, against the KNBS census data service: the 2019 Population
   and Housing Census as tidy observations, with geography down to sub-county
   and an explicit CC BY 4.0 licence.
+- **Consumer prices**, against the KNBS CPI Explorer: the monthly index and
+  inflation from January 2009, nationally and by the CPI collection strata.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Running indicator series — CPI, GDP, trade.** No machine-readable source
-  for them has been verified (the CPI Explorer's backend resisted
-  identification); monthly and quarterly releases are available as documents
-  through `knbs_publications()`.
+- **Other running series — GDP, trade.** No machine-readable source for them
+  has been verified; their monthly and quarterly releases are available as
+  documents through `knbs_publications()`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
 - **Microdata downloads.** The survey archive requires an account for every
@@ -110,13 +111,14 @@ pubs <- knbs_publications("economic survey", year = 2026)
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
 ```
 
-Census tables (live requests, not run here):
+Indicators (live requests, not run here):
 
 ```{r, eval = FALSE}
-# What does the census service publish?
-knbs_indicators(topic = "Population")
+# Monthly CPI and inflation, from 2009
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 
-# County populations, tidy, with leading-zero codes intact
+# County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 knbs_cite(pop)
 
@@ -126,11 +128,10 @@ knbs_geographies(level = "county")
 
 ## What it will look like
 
-Specified but not yet implemented, pending an audit of the indicator source:
+Specified but not yet implemented:
 
 ```{r, eval = FALSE}
 knbs_search("consumer price index")
-cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 ```
 
 ## Access conditions

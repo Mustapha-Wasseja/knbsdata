@@ -1,0 +1,70 @@
+[
+  {
+    "id": "overall",
+    "name": "Overall CPI (National)",
+    "data": [
+      {
+        "period": "2026-04-01",
+        "value": 152.15,
+        "change_monthly": 1.4333,
+        "change_annual": 5.5937
+      },
+      {
+        "period": "2026-05-01",
+        "value": 154.56,
+        "change_monthly": 1.584,
+        "change_annual": 6.6814
+      },
+      {
+        "period": "2026-06-01",
+        "value": 154.91,
+        "change_monthly": 0.2264,
+        "change_annual": 6.4088
+      }
+    ],
+    "metadata": {
+      "region": "National",
+      "item": "Overall CPI",
+      "data_type": "Consumer Price Index"
+    }
+  },
+  {
+    "id": "overall",
+    "name": "Overall CPI (Nairobi Upper Income)",
+    "data": [
+      {
+        "period": "2026-04-01",
+        "value": 138.67,
+        "change_monthly": 1.2781,
+        "change_annual": 6.0817
+      },
+      {
+        "period": "2026-05-01",
+        "value": 140.54,
+        "change_monthly": 1.3485,
+        "change_annual": 7.1271
+      },
+      {
+        "period": "2026-06-01",
+        "value": 141,
+        "change_monthly": 0.3273,
+        "change_annual": 7.0534
+      }
+    ],
+    "metadata": {
+      "region": "Nairobi Upper Income",
+      "item": "Overall CPI",
+      "data_type": "Consumer Price Index"
+    }
+  },
+  {
+    "id": "overall",
+    "name": "Overall CPI (Central)",
+    "data": [],
+    "metadata": {
+      "region": "Central",
+      "item": "Overall CPI",
+      "data_type": "Consumer Price Index"
+    }
+  }
+]

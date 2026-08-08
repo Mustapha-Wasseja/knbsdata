@@ -363,6 +363,17 @@ silently-substituted-parameter family (F-10, F-19, F-22).
 division filters was not probed; divisional figures are confirmed available
 via the dashboard endpoint. To be settled when an adapter is designed.
 
+**F-26 — Six listed regions carry no data in any period.** The former
+provinces (Central, Coast, Eastern, North Eastern, Nyanza, Rift Valley,
+Western) are named by `/explorer/regions/` but their series are empty for
+every date range probed, including 2015. The regions with data are National,
+the four Nairobi income bands, Nairobi Combined and Rest of Urban. An empty
+answer for a listed region is the source's answer, not an error. Also pinned
+while building the adapter: every series arrives with `id: "overall"` — only
+`metadata.region` distinguishes regions — and the server honoured date-range
+parameters when traced (enforced client-side regardless, given this family's
+form).
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -529,4 +540,5 @@ Copy this block for each new candidate source.
 | 2026-08-04 | knbs.or.ke | Re-checked at the start of Phase 4: still `504 Gateway Time-out` from the origin, and still timing out from the command line. Outage confirmed at roughly five hours. | Publications adapter not written; only the source-independent download layer was built |
 | 2026-08-08 | knbs_publications | F-22 `mime_type` parameter silently ignored by the media endpoint | Format filter now pages back until satisfied; boundary duplicates deduped; past-the-end 400 treated as end-of-listing |
 | 2026-08-08 | cpiexplorer | F-21 resolved by runtime trace: full `/api/v1` surface mapped — monthly CPI/inflation 2009–2026 by 13 regions, COICOP hierarchy with weights, 22 retail-price commodities | Recorded as audit section 1c; adapter not yet built; licence unstated on the portal |
-| 2026-08-08 | cpiexplorer | F-24 unknown region falls back to national silently | Mitigation specified for the future adapter: validate against `/explorer/regions/` and check the returned series name |
+| 2026-08-08 | cpiexplorer | F-24 unknown region falls back to national silently | Adapter built: regions validated pre-flight against `/explorer/regions/`, returned series matched by `metadata.region`, substitution refused |
+| 2026-08-08 | cpiexplorer | F-26 the six former provinces are listed but empty in every period | Adapter returns zero rows for them; documented in the indicators vignette and metadata notes |

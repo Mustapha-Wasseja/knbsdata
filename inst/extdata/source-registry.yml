@@ -108,6 +108,37 @@ sources:
       - Territory codes keep leading zeros and cover national, county and
         sub-county levels (F-20).
 
+  - source_id: knbs_cpi
+    source_name: KNBS CPI Explorer
+    owner: Kenya National Bureau of Statistics
+    source_type: indicator_portal
+    base_url: https://cpiexplorer.knbs.or.ke/api/v1
+    landing_page: https://cpiexplorer.knbs.or.ke/
+    adapter: cpiexplorer
+    operations:
+      - list_indicators
+      - get_indicator
+      - indicator_metadata
+    authentication: none
+    formats:
+      - json
+    stability: experimental
+    last_verified: 2026-08-08
+    terms_url: null
+    notes:
+      - Monthly CPI and inflation, 2009 to present, traced 2026-08-08 (audit 1c).
+      - The portal states no licence; reuse terms must not be assumed (unlike
+        the census DataBrowser's CC BY 4.0).
+      - An unknown region id silently falls back to the national series (F-24);
+        requested regions are validated against /explorer/regions/ and returned
+        series are matched by their metadata.region field.
+      - Six listed regions (the former provinces) carry no data in any period
+        (F-26); an empty answer for them is the source's answer.
+      - Every series arrives with id "overall"; only metadata.region
+        distinguishes regions.
+      - CPI regions are collection strata, not census territories; their codes
+        must never be joined against knbs_geographies().
+
   # Internal fixture source used by tests (plan section 28, step 4). It never
   # touches the network and is not intended for users.
   - source_id: fake_source

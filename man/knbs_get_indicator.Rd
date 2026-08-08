@@ -2,10 +2,12 @@
 % Please edit documentation in R/indicators.R
 \name{knbs_get_indicator}
 \alias{knbs_get_indicator}
-\title{Retrieve an aggregate dataset as tidy observations}
+\title{Retrieve an indicator as tidy observations}
 \usage{
 knbs_get_indicator(
   indicator,
+  start = NULL,
+  end = NULL,
   geo_level = NULL,
   geo_code = NULL,
   source = NULL,
@@ -14,47 +16,63 @@ knbs_get_indicator(
 )
 }
 \arguments{
-\item{indicator}{A dataset id (see \code{\link[=knbs_indicators]{knbs_indicators()}}), or enough of a
-dataset name to identify one unambiguously.}
+\item{indicator}{An indicator id (see \code{\link[=knbs_indicators]{knbs_indicators()}}), or enough of an
+indicator name to identify one unambiguously.}
 
-\item{geo_level}{Keep only these levels: \code{"national"}, \code{"county"},
-\code{"subcounty"}.}
+\item{start, end}{Keep only observations in this period range. A year, a
+\code{"YYYY-MM"} month, or a date.}
 
-\item{geo_code}{Keep only these territory codes, as character.}
+\item{geo_level}{Keep only these levels. Census tables: \code{"national"},
+\code{"county"}, \code{"subcounty"}. CPI series: \code{"national"}, \code{"region"}.}
 
-\item{source}{Source id.}
+\item{geo_code}{Keep only these codes, as character, in the indicator's own
+geography.}
+
+\item{source}{Source id, to disambiguate an indicator served by more than
+one source.}
 
 \item{cache}{Whether to use the local cache.}
 
 \item{refresh}{Whether to bypass any cached response.}
 }
 \value{
-A \code{knbs_indicator} tibble. \code{\link[=knbs_metadata]{knbs_metadata()}} returns its provenance,
-including the CC BY 4.0 licence statement; \code{\link[=knbs_cite]{knbs_cite()}} cites it.
+A \code{knbs_indicator} tibble. \code{\link[=knbs_metadata]{knbs_metadata()}} returns its
+provenance; \code{\link[=knbs_cite]{knbs_cite()}} cites it.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Downloads one census dataset and returns it as one row per cell: geography
-and sex where the table has them, the table's other dimensions as columns
-named by their source ids, and the census reference year as \code{period}.
+Returns one row per observation for a census table or a consumer price
+series, depending on the indicator asked for.
 }
 \details{
-The stable core columns are \code{indicator_id}, \code{indicator_name}, \code{period} and
-\code{value}. Geographic columns (\code{geo_code}, \code{geo_name}, \code{geo_level}) appear
-when the table has a Territory dimension; codes keep their leading zeros,
-and \code{geo_level} is \code{"national"}, \code{"county"} or \code{"subcounty"}. A dimension
-labelled Sex becomes \code{sex}, using the source's own categories. Every other
-dimension contributes a \verb{<dim_id>} code column and a \verb{<dim_id>_label}
-column, exactly as the source names them.
+The period convention follows the source's own frequency. Monthly series
+(the CPI family) carry \code{period} as a \code{Date} at the first of the month plus
+a \code{period_label} like \code{"2026-06"}; census tables carry the census year as
+an integer \code{period}. \code{start} and \code{end} accept a year (\code{2020}), a month
+(\code{"2020-01"}), or a full date, and apply to both conventions.
+
+Geography differs by family and the two systems must not be mixed. Census
+tables use territory codes (\code{geo_level} of \code{"national"}, \code{"county"},
+\code{"subcounty"}) that join \code{\link[=knbs_geographies]{knbs_geographies()}}. The CPI series use the CPI
+collection strata (\code{geo_level} of \code{"national"} or \code{"region"}: the Nairobi
+income bands, Rest of Urban, and the former provinces) — their codes are
+the source's own and must never be joined against census territories. Six
+listed CPI regions, the former provinces, carry no data in any period;
+asking for them returns zero rows because that is the source's answer.
+
+For the CPI family the default is the national series; ask for
+\code{geo_level = "region"} or name \code{geo_code}s for more. The CPI portal states
+no licence and no index base period; \code{\link[=knbs_metadata]{knbs_metadata()}} on the result says
+so.
 }
 \examples{
 \dontrun{
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-knbs_metadata(pop)
-knbs_cite(pop)
 }
 }
 \seealso{
-\code{\link[=knbs_indicators]{knbs_indicators()}}
+\code{\link[=knbs_indicators]{knbs_indicators()}}, \code{\link[=knbs_geographies]{knbs_geographies()}}
 }

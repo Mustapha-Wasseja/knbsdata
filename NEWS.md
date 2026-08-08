@@ -1,5 +1,34 @@
 # knbsdata (development version)
 
+## Consumer prices
+
+The plan's headline example works: `knbs_get_indicator("CPI_ALL_ITEMS",
+start = "2020-01")`.
+
+* Three new indicators from the KNBS CPI Explorer (`knbs_cpi` in the
+  registry): `CPI_ALL_ITEMS` (index points), `CPI_INFLATION_YOY` and
+  `CPI_INFLATION_MOM` (percent) — monthly from January 2009, nationally and
+  by the CPI collection strata (the Nairobi income bands, Nairobi Combined,
+  Rest of Urban). Monthly observations carry `period` as a first-of-month
+  `Date` plus a `period_label`; `start` and `end` accept a year, a month or a
+  date, and now also bound census tables by their year.
+* `knbs_indicators()` aggregates every verified indicator source, with a
+  `source_id` column; one unreachable source degrades the catalogue with a
+  warning, and a single requested source that fails keeps its own error class
+  instead of a generic "unreachable".
+* Honesty, carried in `knbs_metadata()` on every CPI result: the portal
+  states no licence and no index base period, and its regions are collection
+  strata that must never be joined against `knbs_geographies()`. Six listed
+  regions — the former provinces — carry no data in any period (audit F-26);
+  asking for them returns zero rows because that is the source's answer.
+* Defences from the audit: a requested region is validated against the
+  source's own region list before any data request, and a returned series
+  that was not asked for is refused — the endpoint otherwise substitutes the
+  national series for unknown regions silently (F-24). Date bounds are
+  enforced client-side even though the server honoured them when traced.
+
+## Other
+
 * `knbs_publications()` with a `format` filter now pages back through older
   uploads until it has `limit` matches, instead of filtering only the most
   recent page. The live server ignores its file-type parameter (audit F-22),

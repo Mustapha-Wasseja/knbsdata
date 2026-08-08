@@ -13,7 +13,7 @@ test_that("the indicators adapter implements what the registry declares", {
 test_that("knbs_indicators() returns the themed catalogue", {
   local_cache()
   local_knbsapi()
-  catalogue <- knbs_indicators()
+  catalogue <- knbs_indicators(source = "knbs_indicators")
 
   expect_s3_class(catalogue, "knbs_catalogue")
   expect_named(catalogue, knbs_indicator_list_columns())
@@ -25,7 +25,11 @@ test_that("knbs_indicators() returns the themed catalogue", {
   # Not invented: a census table has no frequency or unit.
   expect_true(all(is.na(catalogue$frequency)))
   expect_true(all(is.na(catalogue$unit)))
-  expect_match(knbs_metadata(catalogue)$licence, "CC BY 4.0", fixed = TRUE)
+
+  # The default aggregates every verified indicator source.
+  combined <- knbs_indicators()
+  expect_identical(nrow(combined), 35L)
+  expect_setequal(unique(combined$source_id), c("knbs_indicators", "knbs_cpi"))
 })
 
 test_that("catalogue filters narrow by topic and text", {
@@ -43,7 +47,14 @@ test_that("catalogue filters narrow by topic and text", {
 test_that("a broken dataset list is a schema change, not a result", {
   local_cache()
   local_knbsapi(list("getDatasetList" = list(list(no_datasets_here = 1))))
-  expect_error(knbs_indicators(), class = "knbs_error_schema_changed")
+
+  # Asked for that source alone, its own condition survives.
+  expect_error(knbs_indicators(source = "knbs_indicators"),
+               class = "knbs_error_schema_changed")
+  # In the aggregate, the broken source degrades with a warning instead.
+  expect_warning(combined <- knbs_indicators(),
+                 class = "knbs_warning_partial_failure")
+  expect_identical(unique(combined$source_id), "knbs_cpi")
 })
 
 test_that("knbs_get_indicator() returns tidy observations", {

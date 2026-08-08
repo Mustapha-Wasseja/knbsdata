@@ -16,10 +16,11 @@ library(knbsdata)
 ```
 
 `knbsdata` is a client for official statistics published by the Kenya National
-Bureau of Statistics. It covers four source families: **survey and census
+Bureau of Statistics. It covers five source families: **survey and census
 study discovery**, **publications** (statistical releases, reports and
 workbooks, downloadable with verification), **census tables** as tidy
-observations, and **geographic reference codes** for county-level joins.
+observations, **monthly consumer prices** from 2009 onwards, and **geographic
+reference codes** for county-level joins.
 
 Code that contacts the archive is shown but not run here, so building this
 vignette never depends on a live service.
@@ -30,13 +31,14 @@ vignette never depends on a live service.
 knbs_sources()
 ```
 
-Three sources are verified and usable: `kenada`, the Kenya National Data
-Archive (surveys); `knbs_publications`, the KNBS website's media library
-(publications); and `knbs_indicators`, the KNBS census data service (2019
-census tables, CC BY 4.0). A source the audit has not verified stays at
-stability `discovery` and is never contacted — there is nothing there to call.
-Running series such as CPI and GDP are not yet available as data; the
-`source-status` vignette says exactly what is and is not covered, and why.
+Four sources are verified and usable: `kenada`, the Kenya National Data
+Archive (surveys); `knbs_publications`, the KNBS website's media library;
+`knbs_indicators`, the KNBS census data service (2019 census tables,
+CC BY 4.0); and `knbs_cpi`, the CPI Explorer (monthly consumer prices from
+2009). A source the audit has not verified stays at stability `discovery` and
+is never contacted — there is nothing there to call. GDP and other running
+series are not yet available as data; the `source-status` vignette says
+exactly what is and is not covered, and why.
 
 ## Four ideas worth knowing
 
@@ -125,14 +127,17 @@ The download is verified (a web page arriving where a document was expected is
 refused), checksummed with SHA-256, and given a `<file>.metadata.json`
 provenance sidecar.
 
-Census tables come back as tidy observations, with geography down to
-sub-county:
+Indicators come back as tidy observations — monthly consumer prices, and
+census tables with geography down to sub-county:
 
 ```{r, eval = FALSE}
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+knbs_get_indicator("CPI_INFLATION_YOY", start = 2023)
+
 knbs_indicators(topic = "Population")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 
-# The matching reference codes, for joins
+# The matching reference codes, for census joins
 knbs_geographies(level = "county")
 ```
 
@@ -166,7 +171,7 @@ refetched rather than returned.
 ## Where to next
 
 - `vignette("survey-catalogue")` — the survey workflow in depth
-- `vignette("census-indicators")` — census tables as tidy data
+- `vignette("census-indicators")` — indicators: census tables and consumer prices
 - `vignette("county-data")` — county codes, vintages and safe joins
 - `vignette("source-status")` — what each source supports, and the limitations
   of this release

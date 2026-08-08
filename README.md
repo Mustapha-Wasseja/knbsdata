@@ -33,16 +33,18 @@ cite it correctly.
 - **Census tables**, against the KNBS census data service: the 2019
   Population and Housing Census as tidy observations, with geography
   down to sub-county and an explicit CC BY 4.0 licence.
+- **Consumer prices**, against the KNBS CPI Explorer: the monthly index
+  and inflation from January 2009, nationally and by the CPI collection
+  strata.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Running indicator series — CPI, GDP, trade.** No machine-readable
-  source for them has been verified (the CPI Explorer’s backend resisted
-  identification); monthly and quarterly releases are available as
-  documents through `knbs_publications()`.
+- **Other running series — GDP, trade.** No machine-readable source for
+  them has been verified; their monthly and quarterly releases are
+  available as documents through `knbs_publications()`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
 - **Microdata downloads.** The survey archive requires an account for
@@ -69,26 +71,28 @@ library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
 knbs_sources()
-#> # A tibble: 4 × 8
+#> # A tibble: 5 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 4 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [3]>  experime… none          
+#> 5 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
-#> # A tibble: 4 × 3
+#> # A tibble: 5 × 3
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
 #> 2 knbs_publications not_checked Set live = TRUE to contact the source.    
 #> 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    
-#> 4 fake_source       unverified  Endpoint not verified; nothing to contact.
+#> 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    
+#> 5 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
 Surveys (these contact the archive, so they are not run here):
@@ -118,13 +122,14 @@ pubs <- knbs_publications("economic survey", year = 2026)
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
 ```
 
-Census tables (live requests, not run here):
+Indicators (live requests, not run here):
 
 ``` r
-# What does the census service publish?
-knbs_indicators(topic = "Population")
+# Monthly CPI and inflation, from 2009
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 
-# County populations, tidy, with leading-zero codes intact
+# County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 knbs_cite(pop)
 
@@ -134,12 +139,10 @@ knbs_geographies(level = "county")
 
 ## What it will look like
 
-Specified but not yet implemented, pending an audit of the indicator
-source:
+Specified but not yet implemented:
 
 ``` r
 knbs_search("consumer price index")
-cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 ```
 
 ## Access conditions

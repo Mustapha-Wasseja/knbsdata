@@ -1,8 +1,8 @@
 ---
-title: "Census tables as tidy data"
+title: "Indicators: census tables and consumer prices"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Census tables as tidy data}
+  %\VignetteIndexEntry{Indicators: census tables and consumer prices}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,16 +15,66 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(knbsdata)
 ```
 
-The KNBS census data service publishes tables from the 2019 Kenya Population
-and Housing Census — population, health, ICT and household characteristics —
-through a machine-readable API, under an explicit **CC BY 4.0** licence
-statement. `knbs_indicators()` lists those tables and `knbs_get_indicator()`
-returns one as tidy observations.
+`knbs_indicators()` lists what every verified indicator source serves, and
+`knbs_get_indicator()` returns one indicator as tidy observations. Two
+families exist today: tables from the **2019 Population and Housing Census**
+(CC BY 4.0), and the **monthly consumer price series** from the KNBS CPI
+Explorer — index level and inflation from January 2009 onwards.
 
-Chunks that contact the service are shown but not run, so building this
-vignette never depends on it.
+```{r, eval = FALSE}
+knbs_indicators()                  # both families, source_id says which
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+```
 
-## What this source is, and is not
+Chunks that contact the services are shown but not run, so building this
+vignette never depends on them.
+
+## Consumer prices
+
+Three indicators, all monthly, all from one underlying series:
+
+| id | measure | unit |
+|---|---|---|
+| `CPI_ALL_ITEMS` | the index level | index points |
+| `CPI_INFLATION_YOY` | year-on-year change | percent |
+| `CPI_INFLATION_MOM` | month-on-month change | percent |
+
+`period` is a `Date` at the first of the month, with a `period_label` like
+`"2026-06"`. `start` and `end` take a year, a `"YYYY-MM"` month, or a date.
+
+```{r, eval = FALSE}
+knbs_get_indicator("CPI_INFLATION_YOY", start = 2015, end = 2020)
+```
+
+### CPI geography is not census geography
+
+The default is the national series. The other level is `"region"` — the CPI
+collection strata: the Nairobi income bands, Nairobi Combined, and Rest of
+Urban.
+
+```{r, eval = FALSE}
+knbs_get_indicator("CPI_ALL_ITEMS", geo_level = "region")
+knbs_get_indicator("CPI_ALL_ITEMS", geo_code = c("national", "1"))
+```
+
+These region codes are the source's own and mean nothing outside it. **Do not
+join them against `knbs_geographies()`** — different coding system, different
+concept, and the package keeps them apart deliberately.
+
+Two more honesty notes, both from the source audit:
+
+- The region list also names the former provinces (Central, Coast, Eastern,
+  North Eastern, Nyanza, Rift Valley, Western), but **they carry no data in
+  any period**. Asking for one returns zero rows, because that is the
+  source's answer.
+- The portal states **no licence** and does not state the index base period.
+  `knbs_metadata()` on any result says both, so the caveat travels with the
+  data rather than living only in this vignette.
+
+## Census tables
+
+### What the census source is, and is not
 
 Three properties worth knowing before you use it:
 
@@ -41,7 +91,7 @@ Three properties worth knowing before you use it:
   Italy's national statistical institute) and linked from KNBS's own portals
   page.
 
-## Finding a table
+### Finding a table
 
 ```{r, eval = FALSE}
 knbs_indicators()
@@ -51,7 +101,7 @@ knbs_indicators(search = "marital")
 
 Thirty-two tables across four populated themes at the time of writing.
 
-## Getting observations
+### Getting observations
 
 ```{r, eval = FALSE}
 pop <- knbs_get_indicator("POPCEN0001")
@@ -75,7 +125,7 @@ The result has one row per cell:
   ("Marital Status"). The dimension names are in
   `knbs_metadata(pop)$notes`.
 
-## Filtering geography
+### Filtering geography
 
 ```{r, eval = FALSE}
 counties <- knbs_get_indicator("POPCEN0001", geo_level = "county")
@@ -86,7 +136,7 @@ Filters are applied after retrieval — the API serves whole tables — so the
 first call and the second cost the same request. Tables are cached for seven
 days by default.
 
-## A worked example
+### A worked example
 
 County population aged 12+, both sexes, all marital statuses:
 
@@ -100,7 +150,7 @@ totals[order(-totals$value), ]
 Because `geo_code` is character with leading zeros intact, these codes join
 cleanly against any other dataset keyed the same way.
 
-## Provenance and citation
+### Provenance and citation
 
 ```{r, eval = FALSE}
 knbs_metadata(pop)
@@ -111,7 +161,7 @@ The metadata carry the licence statement, the release date (`2019-12-31`), the
 source statement ("KNBS Population Census 2019") and the dimension list; the
 citation is built from them.
 
-## Honesty notes
+### Honesty notes
 
 - `unit` is `NA` in the catalogue: the source does not state units, and
   counts-versus-proportions is knowable only from each table's name. The
