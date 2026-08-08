@@ -46,6 +46,8 @@ documentation returns zero rows, which is a normal answer rather than an
 error.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Returns variable metadata only. No microdata are downloaded, and none can be:
 the package does not fetch gated files.
 }

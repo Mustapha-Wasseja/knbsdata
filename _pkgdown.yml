@@ -3,6 +3,14 @@ url: https://Mustapha-Wasseja.github.io/knbsdata/
 template:
   bootstrap: 5
 
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - getting-started
+  - survey-catalogue
+  - source-status
+
 reference:
 - title: Surveys
   desc: >

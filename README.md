@@ -19,24 +19,31 @@ understand its metadata and access conditions, retrieve it in a
 consistent tidy shape, keep the provenance attached to the data, and
 cite it correctly.
 
-## Status
+## Scope of version 0.1.0
 
-**Early development. The survey catalogue works; publications and
-indicators do not exist yet.**
+**This release covers survey and census study discovery, and nothing
+else.**
 
-The package is at Phase 3 of its [implementation
-plan](knbsdata_implementation_plan.md). Survey discovery is implemented
-against the Kenya National Data Archive: search studies, read their
-metadata, search their variables and list their data files.
+Implemented, against the Kenya National Data Archive: search studies,
+read their full documentation, search their variables, and list their
+data files — with provenance and citations attached throughout.
 
-Microdata downloads are gated behind an account at the archive, so the
-package will not fetch them — `knbs_download_microdata()` explains the
-official process and stops. Publications and aggregate indicators are
-not implemented, because `knbs.or.ke` was unavailable throughout the
-source audit. Findings are in
-[`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md)
-and progress in
-[`dev/IMPLEMENTATION_STATUS.md`](dev/IMPLEMENTATION_STATUS.md).
+Not implemented:
+
+- **Publications, aggregate indicators and geographic reference data.**
+  All three live on `knbs.or.ke`, which returned `504 Gateway Time-out`
+  throughout the source audit and every re-check over roughly six hours.
+  Its endpoints were never verified, so no adapter was written rather
+  than one being guessed at.
+- **Microdata downloads.** The archive requires an account for every
+  download. `knbs_download_microdata()` explains the official process
+  and stops; the package does not automate sign-in or licence
+  acceptance.
+- **Documentation files.** The archive publishes no machine-readable
+  listing of questionnaires or reports.
+
+`vignette("source-status")` states all of this in full. Findings are in
+[`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md).
 
 ## Installation
 

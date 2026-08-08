@@ -1,0 +1,149 @@
+---
+title: "Getting started with knbsdata"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with knbsdata}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(knbsdata)
+```
+
+`knbsdata` is a client for official statistics published by the Kenya National
+Bureau of Statistics. Version 0.1.0 covers **survey and census study discovery**:
+finding studies, reading their documentation, searching their variables and
+listing their data files.
+
+Code that contacts the archive is shown but not run here, so building this
+vignette never depends on a live service.
+
+## What is and is not in this version
+
+```{r}
+knbs_sources()
+```
+
+Only `kenada`, the Kenya National Data Archive, is verified and usable.
+Publications and aggregate indicators are registered but sit at stability
+`discovery`, meaning their endpoints have never been confirmed — the site
+hosting them was unavailable throughout the source audit. Calling a function
+that would need them fails with a clear error rather than guessing:
+
+```{r, error = TRUE}
+knbs_status(source = "knbs_publications")$message
+```
+
+The `source-status` vignette covers this in full.
+
+## Four ideas worth knowing
+
+### 1. Everything carries its provenance
+
+Objects returned by the package know where they came from.
+
+```{r, eval = FALSE}
+meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
+knbs_metadata(meta)
+```
+
+That record holds the source, the retrieval timestamp, the release date, the
+access conditions and the package version — everything needed to say later what
+exactly was used.
+
+### 2. Citations come from the data, not from you
+
+```{r, eval = FALSE}
+knbs_cite(meta)
+knbs_cite(meta, style = "bibtex")
+```
+
+Where the archive states a required citation, that text is used verbatim and the
+package adds only the retrieval information. It cannot cite a release the object
+does not have.
+
+### 3. Access conditions are data, not decoration
+
+Two different questions, two different columns:
+
+- `access_type` is what the **archive** permits. `public_use` means public-use
+  files exist.
+- `downloadable` is what **this package** will do. It is `FALSE` everywhere in
+  0.1.0.
+
+Those differ because the archive requires an account for every download. The
+package does not automate sign-in, licence acceptance or approval workflows, so
+`knbs_download_microdata()` explains the official route and stops. That is a
+deliberate boundary, not a missing feature.
+
+### 4. Failure is explicit
+
+Every failure carries a condition class, and none of them return partial data
+dressed up as a result:
+
+```{r, eval = FALSE}
+tryCatch(
+  knbs_survey_metadata("Kenya"),
+  knbs_error_ambiguous_resource = function(cnd) cnd$matches
+)
+```
+
+Catch `error`, or a specific `knbs_error_*` class — not `condition`, because
+httr2 signals a benign condition on every request.
+
+## A first session
+
+```{r, eval = FALSE}
+# 1. Find something
+studies <- knbs_search_surveys("household budget")
+
+# 2. Read its record
+meta <- knbs_survey_metadata(studies$survey_id[[1]])
+
+# 3. See what variables it documents
+knbs_variables(meta$resource_id, search = "expenditure")
+
+# 4. See what files exist, and on what terms
+knbs_survey_files(meta$resource_id)
+
+# 5. Record what you used
+knbs_cite(meta)
+```
+
+## Configuration
+
+Options are ordinary R options under the `knbsdata.` prefix:
+
+```{r}
+knbs_options()
+```
+
+```{r, eval = FALSE}
+knbs_options(timeout = 60, retries = 5)
+```
+
+## Caching
+
+Catalogue responses are cached for 24 hours, keyed on the source, the operation,
+the normalised query and the package's parser version — so upgrading the package
+invalidates anything a new parser would read differently.
+
+```{r, eval = FALSE}
+knbs_cache_info()
+knbs_search_surveys("household budget", refresh = TRUE)  # ignore the cache
+knbs_cache_clear()
+```
+
+Cached values are checksummed. An entry that fails its checksum is discarded and
+refetched rather than returned.
+
+## Where to next
+
+- `vignette("survey-catalogue")` — the survey workflow in depth
+- `vignette("source-status")` — what each source supports, and the limitations
+  of this release

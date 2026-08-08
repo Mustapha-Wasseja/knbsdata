@@ -32,7 +32,9 @@ A \code{knbs_survey} metadata object. Use \code{\link[=knbs_metadata]{knbs_metad
 and \code{\link[=knbs_cite]{knbs_cite()}} to cite it.
 }
 \description{
-Retrieve the full metadata record for a study
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Retrieves the archive's full descriptive record for one study.
 }
 \examples{
 \dontrun{

@@ -41,6 +41,8 @@ A \code{knbs_catalogue} tibble with columns \code{survey_id}, \code{title},
 \code{metadata_updated} and \code{source_id}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Searches the study catalogue of a supported survey archive and returns one
 row per study.
 }

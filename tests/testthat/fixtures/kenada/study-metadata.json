@@ -1,4 +1,4 @@
-{
+﻿{
   "status": "success",
   "dataset": {
     "id": "13",
@@ -73,7 +73,7 @@
             {
               "name": "Director General",
               "affiliation": "KNBS",
-              "email": "directorgeneral@knbs.or.ke",
+              "email": "redacted@example.invalid",
               "uri": "www.knbs.or.ke"
             }
           ]
@@ -128,7 +128,7 @@
               {
                 "name": "Kenya National Bureau of Statistics",
                 "affiliation": "Ministry Of Devolution & National Planning",
-                "email": "directorgeneral@knbs.or.ke",
+                "email": "redacted@example.invalid",
                 "uri": "www.knbs.or.ke"
               }
             ],

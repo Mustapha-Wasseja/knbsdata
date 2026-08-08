@@ -1,6 +1,6 @@
 Package: knbsdata
 Title: Discover, Retrieve and Cite Official Kenyan Statistics
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     person("Mustapha", "Wasseja", , "muswaseja@gmail.com", role = c("aut", "cre"))
 Description: An R client and standardisation layer for official data and
@@ -22,6 +22,7 @@ Imports:
     digest,
     httr2 (>= 1.0.0),
     jsonlite,
+    lifecycle,
     rlang (>= 1.1.0),
     tibble,
     tools,

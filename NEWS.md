@@ -1,94 +1,79 @@
-# knbsdata 0.0.0.9000
+# knbsdata 0.1.0
 
-Early development. No KNBS data retrieval is exposed yet: the package has
-infrastructure and one audited source contract, but no public retrieval
-functions.
+First release. It covers **survey and census study discovery** through the Kenya
+National Data Archive, and nothing else — see `vignette("source-status")` for
+what that excludes and why.
 
-## Download layer (internal)
+## Survey catalogue
 
-* Added the machinery a download needs to be trustworthy: streaming to a
-  temporary file, refusing a web page served where a document was requested,
-  SHA-256 over the file as written, a `<file>.metadata.json` provenance sidecar,
-  a CSV manifest, overwrite protection, and rejection of archive entries that
-  would write outside the destination.
-* Nothing exposes it yet. It is the half of the publications work that did not
-  depend on `knbs.or.ke`, which was unavailable throughout.
-
-## Source health
-
-* `knbs_status()` reports on each source. With `live = FALSE` — the default in
-  any non-interactive session — it contacts nothing and reports what the
-  registry knows. With `live = TRUE` it asks each verified source to answer a
-  small request. Sources whose endpoints are unverified are never contacted,
-  even when a live check is requested.
-* The weekly `test-sources` workflow now runs it, and fails only when a source
-  that ought to answer does not.
-
-## Phase 3: survey catalogue
-
-* `knbs_search_surveys()`, `knbs_survey_metadata()`, `knbs_variables()` and
-  `knbs_survey_files()` work against the Kenya National Data Archive.
+* `knbs_search_surveys()` searches the study catalogue, with filters for free
+  text, reference year, producer and access type.
+* `knbs_survey_metadata()` retrieves a study's full descriptive record. An
+  identifier it does not recognise falls back to searching the catalogue: one
+  match is used, several are reported so you can choose, none is a plain
+  not-found.
+* `knbs_variables()` searches variable metadata without downloading microdata,
+  optionally retrieving each variable's full record.
+* `knbs_survey_files()` lists a study's data files with their access conditions.
 * `knbs_download_microdata()` refuses, explains that the archive requires an
-  account, and points at the official access process. It exists so that the
-  refusal is explicit rather than looking like an oversight.
+  account, and points at the official access process. It exists so the refusal
+  is explicit rather than looking like an oversight.
+
+## Provenance
+
+* `knbs_metadata()` returns the provenance record attached to every object: the
+  source, the retrieval time, the release date, the access conditions and the
+  package version.
+* `knbs_cite()` builds a citation in plain, BibTeX or RIS form. Where the
+  archive states a required citation, that text wins and the package adds only
+  the retrieval information.
+* Provenance survives row subsetting.
+
+## Sources and health
+
+* `knbs_sources()` reports what the package knows about each source and how far
+  it has been verified.
+* `knbs_status()` reports source health. Offline by default in any
+  non-interactive session, so checks and CI never depend on a live service.
+  Sources with unverified endpoints are never contacted, even when a live check
+  is requested.
+
+## Configuration and caching
+
+* `knbs_options()` and `knbs_option()`, backed by ordinary R options under the
+  `knbsdata.` prefix.
+* `knbs_cache_dir()`, `knbs_cache_info()`, `knbs_cache_clear()` and
+  `knbs_cache_prune()`. Entries are keyed on the source, operation, normalised
+  query and parser version, checksummed, and written atomically. An entry that
+  fails its checksum is discarded and refetched rather than returned.
+
+## Behaviour worth knowing
+
+* Every failure carries a `knbs_error_*` class. Nothing returns partial data
+  dressed up as a result.
+* A login gate signalled by an HTTP `Refresh` header — which is how the archive
+  gates downloads — is raised as `knbs_error_authentication_required`, not
+  mistaken for an empty but successful response.
+* Responses are checked for the fields their operation requires, because the
+  archive answers unknown paths with `200` and a study record rather than a 404.
+  A payload arriving from the wrong place raises `knbs_error_schema_changed`.
 * Access types are translated into a canonical vocabulary. `public_use` means
-  public-use files exist, not that they can be downloaded; the print method says
-  so rather than leaving it to be inferred.
-* Unknown identifiers fall back to a catalogue search: one match is used,
-  several are reported so you can choose, none is a plain not-found.
-* The adapter checks the shape of every response, not just its status. This API
-  answers unknown subpaths with `200` and the *study* record rather than a 404,
-  so a renamed endpoint would otherwise deliver plausible nonsense.
-* New vignette, `survey-catalogue`.
+  public-use files exist; it does not mean they can be downloaded.
+* No test touches the network.
 
-Not implemented, and out of scope for 0.1.0: documentation download. The archive
-exposes no endpoint for questionnaires, reports or technical documents; the only
-route would be parsing an HTML page. Use the `catalogue_url` column to reach
-them on the archive's own site.
+## Known limitations
 
-## Phase 2: core infrastructure
+* **Publications, aggregate indicators and geographic reference data are not
+  implemented.** All three live on a host that was unavailable throughout the
+  source audit and every re-check, so its endpoints were never verified and no
+  adapter was written.
+* **Microdata cannot be downloaded**, by design.
+* **Documentation files are not listed**: the archive publishes no
+  machine-readable listing of questionnaires, reports or technical documents.
+* Variable documentation is missing for some studies, which returns zero rows.
 
-* HTTP layer (`knbs_request()`, `knbs_perform()`) on httr2, with a transparent
-  user agent, configurable timeout, retries limited to genuinely transient
-  failures, and every HTTP status mapped onto a specific `knbs_error_*` class.
-* Login gates that arrive as a `Refresh` header rather than a 3xx redirect are
-  detected and raised as `knbs_error_authentication_required`. KeNADA answers
-  gated requests that way, and without this check an unwary client reads the
-  gate as a successful empty response.
-* Cache (`knbs_cache_dir()`, `knbs_cache_info()`, `knbs_cache_clear()`,
-  `knbs_cache_prune()`) keyed on source, operation, normalised query, release
-  and parser/schema version, with checksum verification and atomic writes.
-  Damaged entries are discarded and refetched rather than returned.
-* Query objects, normalised so that equivalent queries share a cache key, and
-  rejecting unsupported filters rather than ignoring them.
-* Metadata (`knbs_metadata()`) and citation (`knbs_cite()`, in plain, BibTeX and
-  RIS) built from provenance, with a source-supplied citation taking precedence.
-* `knbs_data` tibble subclass carrying provenance through row subsetting, with
-  print and summary methods.
-* Adapter contract (`source_search()`, `source_metadata()`, `source_fetch()`,
-  `source_files()`, `source_health()`) dispatching on the adapter named in the
-  registry, and enforcing that a source is only asked to do what it declares.
-* An offline `fake` adapter serving package fixtures, proving the whole path
-  from search to citation without a network.
+## Internal
 
-## Phase 1: source discovery
-
-* Audited the Kenya National Data Archive: its NADA JSON API is enabled and
-  needs no credentials for study search, study metadata, variables and
-  data-file listings. Registered as `experimental` with verified endpoints.
-* Established that KeNADA microdata downloads are gated behind a login, so the
-  registry entry does not declare a download operation and the package will not
-  fetch them.
-* Publications, indicators and geography could not be audited: `knbs.or.ke` was
-  unavailable throughout, and separately serves an incomplete TLS chain.
-
-## Phase 0: repository bootstrap
-
-* Package skeleton, MIT licence, `testthat` edition 3, `roxygen2`, GitHub
-  Actions (R CMD check, lint, pkgdown, weekly source monitor) and pkgdown
-  configuration.
-* Package options (`knbs_options()`, `knbs_option()`) backed by ordinary R
-  options under the `knbsdata.` prefix.
-* The structured condition system (`knbs_error_*` and `knbs_warning_*` classes)
-  used for all package errors and warnings.
-* The YAML source registry, its validator, and `knbs_sources()`.
+* A download layer — streaming, type verification, SHA-256, provenance sidecars,
+  manifests and archive path-traversal protection — is built and tested but not
+  yet reachable, since no supported source permits a download.

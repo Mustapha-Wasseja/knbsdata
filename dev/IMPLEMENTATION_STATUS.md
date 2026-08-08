@@ -4,11 +4,10 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-04
-- **Current phase:** Phase 3 complete. Phase 4 half delivered — its
-  source-independent download layer is built and tested, but its adapter is
-  blocked by a site outage now in its fifth hour. Phases 5 and 6 blocked on the
-  same host.
-- **Package version:** 0.0.0.9000
+- **Current phase:** Phase 7 — **0.1.0 released** as a survey-catalogue package.
+  Phases 4, 5 and 6 were deliberately excluded: their sources could not be
+  verified.
+- **Package version:** 0.1.0
 - **Network access implemented:** yes, for the KeNADA survey catalogue. Every
   test still runs offline against fixtures.
 
@@ -257,6 +256,67 @@ offline: 40 assertions covering checksums, filename preservation through query
 strings, the HTML-instead-of-document refusal, overwrite protection, directory
 creation, sidecar contents, manifest schema and five kinds of unsafe archive
 entry.
+
+---
+
+## Phase 7: release — 0.1.0
+
+Scope decision: ship what is verified rather than wait indefinitely for a host
+that has been down for hours. 0.1.0 is a survey-catalogue package.
+
+### Definition of done (plan section 31)
+
+- [x] Package passes `R CMD check`
+- [x] CI passes on major operating systems
+- [x] At least one survey catalogue is supported — KeNADA
+- [ ] At least one publication catalogue — **explicitly accepted as absent.**
+      The source could not be verified; see audit F-05
+- [ ] At least three aggregate indicator families — **explicitly accepted as
+      absent**, which the plan permits provided the limitation is stated. It is
+      stated in the README, `NEWS.md` and `vignette("source-status")`
+- [ ] County reference data — **explicitly accepted as absent.** Same host
+- [x] Citations work — plain, BibTeX, RIS, honouring a source-supplied citation
+- [x] Metadata are attached
+- [x] Caching works
+- [x] Restricted access is handled safely — the download refusal is a tested,
+      documented behaviour rather than an omission
+- [x] Documentation is complete — three vignettes, every export documented
+- [x] All live-source tests separated from ordinary tests — no test touches the
+      network
+- [x] Source-status and limitations published — `vignette("source-status")`
+- [x] Licences and terms reviewed — MIT, copyright holder Mustapha Wasseja;
+      the licence covers the software only, not retrieved data
+- [x] Clear maintainer and contact route — DESCRIPTION, SECURITY.md, issue
+      templates
+
+### Release tasks
+
+| Task | Status |
+|---|---|
+| Reverse dependency check | not applicable — nothing depends on it |
+| Improve errors | done across phases 2 and 3 |
+| Complete documentation | done — `getting-started`, `survey-catalogue`, `source-status` |
+| Complete source-status table | done — published as a vignette |
+| Add lifecycle badges | done — the five survey functions are marked experimental |
+| Add citation file | done — `inst/CITATION` |
+| Review licences | done — MIT, real copyright holder |
+| Review terms | done — recorded per source in the audit |
+| Run security scan | done — no credentials tracked; a contact email was redacted from stored fixtures |
+| Run full `R CMD check` | done — 0/0/0 |
+| Test fresh installation | done — built, installed to a clean library, exercised live |
+| Tag release | done — `v0.1.0` |
+| Publish pkgdown | builds in CI; the site stays dark while the repo is private |
+| rOpenSci review | not pursued for 0.1.0 |
+
+### Why three phases were skipped rather than deferred quietly
+
+Phases 4, 5 and 6 all depend on `knbs.or.ke`, which returned `504 Gateway
+Time-out` on every check across roughly six hours: at the start of the Phase 1
+audit, twice during Phase 2, at the start of Phase 4, throughout a 50-minute
+monitor, and at a final check before release. Writing adapters against a source
+whose endpoints, response shapes and file-URL patterns are all unknown would
+have meant inventing them. The resulting code would have looked complete and
+failed silently, which is worse for a user than a stated gap.
 
 ---
 

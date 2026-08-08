@@ -32,6 +32,8 @@ A tibble with columns \code{survey_id}, \code{file_id}, \code{file_name},
 \code{downloadable}, \code{download_url}, \code{checksum} and \code{source_id}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Reports what the archive holds and whether the package may retrieve it. At
 present no supported source permits programmatic download of microdata, so
 \code{downloadable} is \code{FALSE} throughout; use \code{catalogue_url} from

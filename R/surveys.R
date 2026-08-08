@@ -2,9 +2,13 @@
 
 #' Search official survey and census studies
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' Searches the study catalogue of a supported survey archive and returns one
 #' row per study.
 #'
+#' @details
 #' Some catalogue fields — `acronym`, `geographic_coverage` and
 #' `unit_of_analysis` — are not carried in search results and come back as `NA`.
 #' They are held in the study record, which [knbs_survey_metadata()] retrieves.
@@ -88,6 +92,11 @@ knbs_search_surveys <- function(query = NULL,
 
 #' Retrieve the full metadata record for a study
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' Retrieves the archive's full descriptive record for one study.
+#'
 #' @param survey A study identifier, or enough of its title to identify it
 #'   unambiguously.
 #' @param include Which descriptive sections to keep. The underlying records are
@@ -128,9 +137,13 @@ knbs_survey_metadata <- function(survey,
 
 #' Search the variables described by a study
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' Returns variable metadata only. No microdata are downloaded, and none can be:
 #' the package does not fetch gated files.
 #'
+#' @details
 #' Question text, universe, concept and value labels each require one request
 #' per variable, so they are `NA` unless `details = TRUE`.
 #'
@@ -229,11 +242,15 @@ knbs_variables <- function(survey,
 
 #' List the data files belonging to a study
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' Reports what the archive holds and whether the package may retrieve it. At
 #' present no supported source permits programmatic download of microdata, so
 #' `downloadable` is `FALSE` throughout; use `catalogue_url` from
 #' [knbs_search_surveys()] to reach the official access process.
 #'
+#' @details
 #' This lists data files only. Questionnaires, reports and technical documents
 #' are out of scope: the archive publishes no machine-readable listing of them,
 #' and retrieving them would mean parsing a web page. They are linked from the
@@ -287,11 +304,15 @@ knbs_survey_files <- function(survey,
 
 #' Download public-use microdata
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' No supported source currently permits this. The Kenya National Data Archive
 #' gates every download behind an account, and this package does not automate
 #' sign-in, licence acceptance or approval workflows, so the function reports
 #' what is required and stops.
 #'
+#' @details
 #' It exists so that the refusal is explicit and points at the official process,
 #' rather than the operation appearing to be unsupported by oversight.
 #'

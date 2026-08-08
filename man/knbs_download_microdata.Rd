@@ -33,6 +33,8 @@ knbs_download_microdata(
 Never returns; raises \code{knbs_error_authentication_required}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 No supported source currently permits this. The Kenya National Data Archive
 gates every download behind an account, and this package does not automate
 sign-in, licence acceptance or approval workflows, so the function reports

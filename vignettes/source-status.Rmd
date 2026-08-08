@@ -1,0 +1,117 @@
+---
+title: "Source status and limitations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Source status and limitations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(knbsdata)
+```
+
+This page states plainly what version 0.1.0 can and cannot do, and why. It is
+worth reading before relying on the package for anything that matters.
+
+## Registered sources
+
+```{r}
+knbs_sources()
+```
+
+```{r}
+knbs_status()
+```
+
+`knbs_status(live = TRUE)` contacts the verified sources. It never contacts a
+source at stability `discovery`, because those have placeholder endpoints and
+there is nothing to call.
+
+## What each stability level means
+
+| Level | Meaning |
+|---|---|
+| `discovery` | The endpoint has not been verified. Unusable, and never contacted. |
+| `experimental` | Verified and tested, but not documented by its publisher, so it could change without notice. |
+| `beta` | Verified, documented and monitored over time. |
+| `stable` | A schema contract the package expects to keep. |
+| `deprecated` | Scheduled for removal. |
+
+Nothing in 0.1.0 is above `experimental`.
+
+## What works
+
+**The survey catalogue**, via the Kenya National Data Archive:
+`knbs_search_surveys()`, `knbs_survey_metadata()`, `knbs_variables()` and
+`knbs_survey_files()`. The archive exposes a JSON API that needs no credentials
+for metadata. 129 studies covering 1969–2022 were catalogued at the time of the
+audit.
+
+## What does not, and why
+
+### Microdata cannot be downloaded
+
+The archive requires an account for every download. `knbs_download_microdata()`
+explains the official access process and stops. The package does not automate
+sign-in, licence acceptance or approval workflows.
+
+This is worth understanding rather than working around: `access_type` of
+`public_use` describes the archive's *terms* — public-use files exist — not
+whether a program may fetch them.
+
+### Documentation files are not listed
+
+Questionnaires, reports and technical documents have no machine-readable
+listing at the archive. Reaching them would mean parsing a web page, which this
+package does not do. The `catalogue_url` column from `knbs_search_surveys()`
+opens the study on the archive's own site, where they are linked.
+
+### Publications, indicators and geography are absent
+
+`knbs_publications()`, `knbs_get_indicator()`, `knbs_geographies()` and
+`knbs_search()` do not exist in this release.
+
+All three sources live on one host, which returned `504 Gateway Time-out`
+throughout the source audit and every re-check afterwards, over about six hours.
+Its endpoints were never verified, so no adapter was written. Guessing an
+endpoint and a response shape would have produced code that looks finished and
+fails silently, which is worse than an honest gap.
+
+That host also serves an incomplete TLS certificate chain. Browsers compensate;
+`curl` and `httr2` do not. Even once it returns, that has to be resolved — and
+not by disabling certificate verification.
+
+### Variable documentation is uneven
+
+Some studies are catalogued with no variable metadata at all, including the most
+recent one at the time of the audit. `knbs_variables()` returns zero rows for
+those. That is the archive's answer, not a failure.
+
+## How you will know if something changes
+
+The package checks the *shape* of every response, not just its status code.
+The archive answers unknown paths with `200` and a study record rather than a
+404, so a renamed endpoint would otherwise deliver the wrong object convincingly.
+When a payload lacks the fields its operation requires, you get
+`knbs_error_schema_changed` and a note that the endpoint has probably moved.
+
+A scheduled job runs `knbs_status(live = TRUE)` weekly against the verified
+sources.
+
+## Reporting a change
+
+If a source has moved, changed shape or changed its access rules, please open a
+[data source change issue](https://github.com/Mustapha-Wasseja/knbsdata/issues/new/choose).
+Public URLs only — never session-bound URLs, tokens or cookies.
+
+## Disclaimer
+
+`knbsdata` is an independent open-source project. It is not an official KNBS
+product unless and until KNBS formally adopts or endorses it. Consult the
+original KNBS source for authoritative definitions, revisions, access conditions
+and official releases.
