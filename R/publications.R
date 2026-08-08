@@ -15,16 +15,23 @@
 #' Second, the media library also holds speeches, launch remarks and forms —
 #' narrowing to what you mean is the job of `query` and `format`.
 #'
+#' The source ignores its own file-type parameter (audit F-22), so the
+#' `format` filter is applied by the package — and because a page of recent
+#' uploads may contain no matches at all, supplying `format` makes the search
+#' page back through older uploads until it has `limit` matches or the
+#' matches are exhausted. Expect a format-filtered search to take a few
+#' seconds longer than a plain one.
+#'
 #' The reference-year filter is applied to the title-derived `year`, after
 #' retrieval. With a narrow `query` this is exact; with a broad one it filters
-#' only within the `limit` most recent matches.
+#' only within the records retrieved.
 #'
 #' @param query Free-text search over titles and descriptions.
 #' @param year Keep only publications whose title names this year, or a range
 #'   `c(from, to)`.
 #' @param format Keep only these file formats: any of `"pdf"`, `"xlsx"`,
 #'   `"xls"`, `"docx"`, `"csv"`, `"zip"`.
-#' @param limit Maximum number of records to return (at most 100 per request).
+#' @param limit Maximum number of records to return (at most 100).
 #' @param source Source id. Defaults to the first verified publications source.
 #' @param cache Whether to use the local cache.
 #' @param refresh Whether to bypass any cached response.
@@ -68,48 +75,104 @@ knbs_publications <- function(query = NULL,
 
   src <- resolve_source("search_publications", source)
 
-  # A single format can be filtered by the source; several are filtered here.
+  # The mime filter is still sent to the source, but the source ignores it
+  # (audit F-22), so filtering is the package's job. Because a whole page of
+  # recent uploads can contain no matching format at all, a format-filtered
+  # search pages back through older uploads until it has enough matches.
   mime <- if (!is.null(format) && length(format) == 1L) {
     unname(knbs_publication_formats()[format])
   } else {
     NULL
   }
 
-  knbs_query <- new_knbs_query(
-    "publication",
-    filters = compact_list(list(
-      search = query,
-      mime_type = mime,
-      limit = as.integer(limit)
-    )),
-    source = src$source_id
-  )
-
-  results <- cache_fetch(
-    cache_key(src$source_id, "search_publications", knbs_query),
-    fetch = function() source_search(src, knbs_query),
-    cache = cache,
-    refresh = refresh,
-    ttl = knbs_cache_ttl("catalogue"),
-    info = list(source_id = src$source_id, operation = "search_publications")
-  )
-
-  # The format filter is applied here even when it was also sent to the source:
-  # the survey audit (F-10) showed this family of APIs can silently ignore a
-  # query parameter, and a filter that silently widens is worse than none.
-  keep <- rep(TRUE, nrow(results))
-  if (!is.null(format)) {
-    keep <- keep & results$format %in% format
+  fetch_page <- function(page, per_page) {
+    page_query <- new_knbs_query(
+      "publication",
+      filters = compact_list(list(
+        search = query,
+        mime_type = mime,
+        limit = as.integer(per_page),
+        page = if (page > 1L) as.integer(page) else NULL
+      )),
+      source = src$source_id
+    )
+    cache_fetch(
+      cache_key(src$source_id, "search_publications", page_query),
+      fetch = function() source_search(src, page_query),
+      cache = cache,
+      refresh = refresh,
+      ttl = knbs_cache_ttl("catalogue"),
+      info = list(source_id = src$source_id, operation = "search_publications")
+    )
   }
+
+  matches_format <- function(batch) {
+    if (is.null(format)) rep(TRUE, nrow(batch)) else batch$format %in% format
+  }
+
+  if (is.null(format)) {
+    first <- fetch_page(1L, limit)
+    meta <- knbs_metadata(first)
+    collected <- tibble::as_tibble(first)
+  } else {
+    page_size <- 100L
+    page_cap <- 50L
+    page <- 1L
+    first <- fetch_page(page, page_size)
+    meta <- knbs_metadata(first)
+    batch <- tibble::as_tibble(first)
+    collected <- batch[matches_format(batch), ]
+
+    # How far the listing goes comes from the source's own page count. Row
+    # counts cannot be used: this server returns short pages mid-listing, so
+    # "fewer rows than asked for" does not mean "last page".
+    total_pages <- meta$raw$wp_total_pages %||% NA_integer_
+
+    repeat {
+      if (nrow(collected) >= limit) {
+        break
+      }
+      more <- if (is.na(total_pages)) nrow(batch) > 0L else page < total_pages
+      if (!more) {
+        break
+      }
+      if (page >= page_cap) {
+        knbs_warn(
+          c(
+            "Stopped after scanning {page_cap} pages of the listing.",
+            "i" = "Only the matches found so far are returned; narrow with {.arg query}."
+          ),
+          class = "knbs_warning_partial_failure"
+        )
+        break
+      }
+      page <- page + 1L
+      # Running one page past the end answers 400 rather than an empty page;
+      # for any page after the first, that means "no more", not "bad query".
+      batch <- tryCatch(
+        tibble::as_tibble(fetch_page(page, page_size)),
+        knbs_error_invalid_query = function(cnd) NULL
+      )
+      if (is.null(batch)) {
+        break
+      }
+      collected <- rbind(collected, batch[matches_format(batch), ])
+    }
+    # An upload landing mid-scan shifts every later page by one, which can
+    # repeat a boundary record; keep the first sighting.
+    collected <- collected[!duplicated(collected$publication_id), ]
+  }
+
+  keep <- rep(TRUE, nrow(collected))
   if (!is.null(years$from)) {
-    keep <- keep & !is.na(results$year) &
-      results$year >= years$from & results$year <= years$to
+    keep <- keep & !is.na(collected$year) &
+      collected$year >= years$from & collected$year <= years$to
   }
-  results <- results[keep, ]
-  if (nrow(results) > limit) {
-    results <- results[seq_len(limit), ]
+  collected <- collected[keep, ]
+  if (nrow(collected) > limit) {
+    collected <- collected[seq_len(limit), ]
   }
-  results
+  new_knbs_catalogue(collected, meta)
 }
 
 #' Download a publication and verify what arrived

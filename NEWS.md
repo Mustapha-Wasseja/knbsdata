@@ -1,5 +1,14 @@
 # knbsdata (development version)
 
+* `knbs_publications()` with a `format` filter now pages back through older
+  uploads until it has `limit` matches, instead of filtering only the most
+  recent page. The live server ignores its file-type parameter (audit F-22),
+  so a run of recent PDFs used to hide every workbook behind them —
+  `knbs_publications(format = "xlsx")` could return nothing while dozens of
+  Excel files existed. A record repeated across a page boundary by a mid-scan
+  upload is kept once, running one page past the end is treated as the end,
+  and a 5,000-document scan cap warns rather than trailing off silently.
+
 # knbsdata 0.2.0
 
 Three new source families join the survey catalogue: publications, census

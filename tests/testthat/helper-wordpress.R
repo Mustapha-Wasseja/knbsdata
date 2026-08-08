@@ -8,6 +8,7 @@ wp_fixture <- function(name) {
     simplifyVector = FALSE
   )
   attr(payload, "wp_total") <- length(payload)
+  attr(payload, "wp_total_pages") <- 1L
   payload
 }
 
@@ -20,7 +21,7 @@ local_wp_api <- function(overrides = list(), env = parent.frame()) {
     for (pattern in names(overrides)) {
       if (grepl(pattern, path)) {
         value <- overrides[[pattern]]
-        return(if (is.function(value)) value(path) else value)
+        return(if (is.function(value)) value(path, query) else value)
       }
     }
     if (grepl("^media/[0-9]+$", path)) {

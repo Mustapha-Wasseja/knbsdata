@@ -42,6 +42,13 @@ wp_get <- function(source, path, query = list(), call = rlang::caller_env()) {
   attr(payload, "wp_total") <- as.integer(
     httr2::resp_header(resp, "X-WP-Total") %||% NA_integer_
   )
+  # Pagination must trust this header, not row counts: the live server returns
+  # short pages even in the middle of the listing (99, 89, 100 rows observed
+  # with per_page=100), so "fewer rows than asked for" does not mean "last
+  # page" here.
+  attr(payload, "wp_total_pages") <- as.integer(
+    httr2::resp_header(resp, "X-WP-TotalPages") %||% NA_integer_
+  )
   attr(payload, "knbs_http_status") <- httr2::resp_status(resp)
   payload
 }
@@ -152,6 +159,12 @@ source_search.knbs_source_wordpress <- function(source, query, ...) {
       notes = paste0(
         "Matched ", attr(payload, "wp_total") %||% length(payload),
         " documents in the site's media library."
+      ),
+      # Structured pagination facts for the public layer, which needs them to
+      # page a format-filtered search honestly.
+      raw = list(
+        wp_total = attr(payload, "wp_total"),
+        wp_total_pages = attr(payload, "wp_total_pages")
       )
     )
   )

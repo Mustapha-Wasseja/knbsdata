@@ -23,7 +23,7 @@ knbs_publications(
 \item{format}{Keep only these file formats: any of \code{"pdf"}, \code{"xlsx"},
 \code{"xls"}, \code{"docx"}, \code{"csv"}, \code{"zip"}.}
 
-\item{limit}{Maximum number of records to return (at most 100 per request).}
+\item{limit}{Maximum number of records to return (at most 100).}
 
 \item{source}{Source id. Defaults to the first verified publications source.}
 
@@ -50,9 +50,16 @@ file was uploaded to the site, not the publication's reference period; the
 Second, the media library also holds speeches, launch remarks and forms —
 narrowing to what you mean is the job of \code{query} and \code{format}.
 
+The source ignores its own file-type parameter (audit F-22), so the
+\code{format} filter is applied by the package — and because a page of recent
+uploads may contain no matches at all, supplying \code{format} makes the search
+page back through older uploads until it has \code{limit} matches or the
+matches are exhausted. Expect a format-filtered search to take a few
+seconds longer than a plain one.
+
 The reference-year filter is applied to the title-derived \code{year}, after
 retrieval. With a narrow \code{query} this is exact; with a broad one it filters
-only within the \code{limit} most recent matches.
+only within the records retrieved.
 }
 \examples{
 \dontrun{

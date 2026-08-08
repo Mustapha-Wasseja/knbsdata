@@ -103,7 +103,7 @@ test_that("health checks report without erroring", {
   health <- source_health(wp_source())
   expect_identical(health$status, "ok")
 
-  local_wp_api(list("^media$" = function(path) {
+  local_wp_api(list("^media$" = function(path, query) {
     knbs_abort("Down.", class = "knbs_error_source_unavailable")
   }))
   expect_identical(source_health(wp_source())$status, "unavailable")
@@ -144,7 +144,7 @@ test_that("arguments are validated", {
 test_that("publication searches are cached", {
   local_cache()
   calls <- 0L
-  local_wp_api(list("^media$" = function(path) {
+  local_wp_api(list("^media$" = function(path, query) {
     calls <<- calls + 1L
     wp_fixture("media-listing.json")
   }))
@@ -223,4 +223,149 @@ test_that("a record without a download URL fails clearly", {
     knbs_download_publication("16624", destination = withr::local_tempdir(), quiet = TRUE),
     class = "knbs_error_schema_changed"
   )
+})
+
+# Format-filtered pagination (audit F-22) ------------------------------------
+#
+# The live server ignores its mime_type parameter, so the format filter is
+# client-side — and must page back through older uploads rather than filter
+# only the most recent page, where a run of PDFs would hide every workbook.
+
+wp_record <- function(id, mime = "application/pdf") {
+  base <- knbsdata:::parse_json_file(
+    testthat::test_path("fixtures", "knbs-wp", "media-listing.json")
+  )[[1]]
+  base$id <- id
+  base$mime_type <- mime
+  base$title$rendered <- paste0("Document ", id)
+  base$filename <- paste0("document-", id, if (mime == "application/pdf") ".pdf" else ".xlsx")
+  base$source_url <- paste0("https://www.knbs.or.ke/wp-content/uploads/2026/01/document-", id)
+  base
+}
+
+wp_page <- function(ids, mimes, total_pages = NA_integer_) {
+  page <- Map(wp_record, ids, mimes)
+  names(page) <- NULL
+  attr(page, "wp_total") <- length(page)
+  attr(page, "wp_total_pages") <- as.integer(total_pages)
+  page
+}
+
+test_that("a format filter pages past a first page with no matches", {
+  local_cache()
+  pages_served <- integer(0)
+  # Page 1: 100 PDFs. Page 2: two xlsx among PDFs, and the listing ends.
+  local_wp_api(list("^media$" = function(path, query) {
+    page <- as.integer(query$page %||% "1")
+    pages_served <<- c(pages_served, page)
+    if (page == 1L) {
+      wp_page(1:100, rep("application/pdf", 100), total_pages = 2L)
+    } else {
+      wp_page(101:150, c(
+        rep("application/pdf", 20),
+        rep("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 2),
+        rep("application/pdf", 28)
+      ), total_pages = 2L)
+    }
+  }))
+
+  hits <- knbs_publications(format = "xlsx", limit = 10)
+
+  expect_identical(nrow(hits), 2L)
+  expect_true(all(hits$format == "xlsx"))
+  expect_identical(pages_served, c(1L, 2L))
+})
+
+test_that("a short page mid-listing does not end the scan", {
+  # The exact shape the live server produced: page 1 came back with 99 rows
+  # for per_page=100 while fifteen more pages existed, and the first fix
+  # wrongly read the short page as the end. The page count is authoritative.
+  local_cache()
+  xlsx <- "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  local_wp_api(list("^media$" = function(path, query) {
+    page <- as.integer(query$page %||% "1")
+    if (page == 1L) {
+      wp_page(1:99, rep("application/pdf", 99), total_pages = 2L)
+    } else {
+      wp_page(100:120, c(xlsx, rep("application/pdf", 20)), total_pages = 2L)
+    }
+  }))
+
+  hits <- knbs_publications(format = "xlsx", limit = 10)
+  expect_identical(nrow(hits), 1L)
+})
+
+test_that("pagination stops as soon as the limit is filled", {
+  local_cache()
+  pages_served <- integer(0)
+  xlsx <- "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  local_wp_api(list("^media$" = function(path, query) {
+    page <- as.integer(query$page %||% "1")
+    pages_served <<- c(pages_served, page)
+    wp_page((page - 1) * 100 + 1:100, rep(xlsx, 100), total_pages = 10L)
+  }))
+
+  hits <- knbs_publications(format = "xlsx", limit = 5)
+
+  expect_identical(nrow(hits), 5L)
+  expect_identical(pages_served, 1L)
+})
+
+test_that("running one page past the end is the end, not an error", {
+  local_cache()
+  # Exactly one full page exists; page 2 answers the live API's 400.
+  local_wp_api(list("^media$" = function(path, query) {
+    page <- as.integer(query$page %||% "1")
+    if (page > 1L) {
+      knbs_abort("Invalid page.", class = "knbs_error_invalid_query")
+    }
+    wp_page(1:100, rep("application/pdf", 100))
+  }))
+
+  expect_no_error(hits <- knbs_publications(format = "xlsx", limit = 10))
+  expect_identical(nrow(hits), 0L)
+})
+
+test_that("a boundary record repeated across pages is kept once", {
+  local_cache()
+  xlsx <- "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  local_wp_api(list("^media$" = function(path, query) {
+    page <- as.integer(query$page %||% "1")
+    if (page == 1L) {
+      # Record 100 is xlsx and reappears at the top of page 2 after a shift.
+      wp_page(1:100, c(rep("application/pdf", 99), xlsx), total_pages = 2L)
+    } else {
+      wp_page(c(100, 101:120), c(xlsx, rep("application/pdf", 20)), total_pages = 2L)
+    }
+  }))
+
+  hits <- knbs_publications(format = "xlsx", limit = 10)
+  expect_identical(nrow(hits), 1L)
+})
+
+test_that("the scan cap warns rather than trailing off silently", {
+  local_cache()
+  local_wp_api(list("^media$" = function(path, query) {
+    # Endless listing, no matches: 100 declared pages, none carrying xlsx.
+    wp_page(1:100, rep("application/pdf", 100), total_pages = 100L)
+  }))
+
+  expect_warning(
+    hits <- knbs_publications(format = "xlsx", limit = 10),
+    class = "knbs_warning_partial_failure"
+  )
+  expect_identical(nrow(hits), 0L)
+})
+
+test_that("an unfiltered search still makes exactly one request", {
+  local_cache()
+  pages_served <- integer(0)
+  local_wp_api(list("^media$" = function(path, query) {
+    pages_served <<- c(pages_served, as.integer(query$page %||% "1"))
+    wp_page(1:20, rep("application/pdf", 20))
+  }))
+
+  hits <- knbs_publications("anything", limit = 20)
+  expect_identical(nrow(hits), 20L)
+  expect_identical(pages_served, 1L)
 })

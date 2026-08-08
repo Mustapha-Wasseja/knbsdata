@@ -302,6 +302,17 @@ that still looks like a theme, and the standardiser treats an absent
 a strong Phase 6 candidate for `knbs_geographies()`, with the caveat that the
 vintage is the 2019 census frame.
 
+**F-22 — The media endpoint ignores its `mime_type` parameter.**
+Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
+demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
+package already filtered formats client-side, but only within the fetched
+page, so a format filter could return nothing while matches existed deeper in
+the library — recent uploads are often runs of PDFs. Fixed by paging back
+through older uploads until the requested number of matches is found, the
+library is exhausted, or a 5,000-document scan cap warns. Also observed:
+requesting one page past the end answers `400`, which for any page after the
+first means "no more", not "bad query".
+
 **F-21 — CPI Explorer backend not identified in this pass.** The React bundle
 at `cpiexplorer.knbs.or.ke` exposes routes (`/explorer`, `/prices`,
 `/calculator`) but no API base found by static inspection; deeper runtime
@@ -456,3 +467,4 @@ Copy this block for each new candidate source.
 | 2026-08-03 | kenada | F-09 no API endpoint for documentation or external resources | Documentation download not implemented; recorded as an unmet Phase 3 task |
 | 2026-08-03 | kenada | F-10 `variables?file_id=` is ignored server-side | Filtering by file is done client-side |
 | 2026-08-04 | knbs.or.ke | Re-checked at the start of Phase 4: still `504 Gateway Time-out` from the origin, and still timing out from the command line. Outage confirmed at roughly five hours. | Publications adapter not written; only the source-independent download layer was built |
+| 2026-08-08 | knbs_publications | F-22 `mime_type` parameter silently ignored by the media endpoint | Format filter now pages back until satisfied; boundary duplicates deduped; past-the-end 400 treated as end-of-listing |
