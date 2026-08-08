@@ -6,9 +6,12 @@ place where phase progress, open decisions and blockers are recorded.
 - **Last updated:** 2026-08-08
 - **Current phase:** post-0.1.0 development. Phases 4, 5 and **6** are
   complete — publications, census indicators, and geographic reference codes.
-  Every plan phase now has a shipped core. Remaining threads: consumer prices
-  (audit F-21), classifications and boundaries (no verified sources),
-  `knbs_search()` across sources.
+  Every plan phase now has a shipped core. Remaining threads: a consumer-prices
+  adapter (source fully traced 2026-08-08, audit section 1c — monthly
+  CPI/inflation 2009–2026 by 13 regions, COICOP hierarchy with weights, retail
+  prices; licence unstated on the portal, region fallback F-24 to mitigate),
+  classifications (the COICOP hierarchy endpoint is a candidate source),
+  boundaries (still nothing verified), and `knbs_search()` across sources.
 - **Package version:** 0.1.0.9000
 - **Network access implemented:** three live sources — KeNADA, the website
   media library, and the census data API. Every test still runs offline

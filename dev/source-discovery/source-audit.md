@@ -302,6 +302,67 @@ that still looks like a theme, and the standardiser treats an absent
 a strong Phase 6 candidate for `knbs_geographies()`, with the caveat that the
 vintage is the 2019 census frame.
 
+## 1c. Consumer prices — CPI Explorer API (traced 2026-08-08, no registry id yet)
+
+Resolves F-21. Static inspection had failed because the app lazy-loads its
+API client as a separate chunk; a runtime trace (loading each route in a
+browser and reading the page's own resource timeline) surfaced the full
+surface in minutes.
+
+### Audited
+
+| Field | Finding |
+|---|---|
+| Source name | CPI Explorer, `cpiexplorer.knbs.or.ke` — "Official CPI and inflation statistics for Kenya" |
+| Official owner | Kenya National Bureau of Statistics (listed on KNBS's own portals page; KNBS branding and contact) |
+| Catalogue type | Django REST Framework-style JSON API under `/api/v1/`, consumed by a React SPA |
+| Authentication | None |
+| TLS | Valid HTTPS |
+| Content types | Correct `application/json` — the first KNBS API audited that declares its JSON honestly |
+| Coverage | Monthly CPI and inflation, **2009-01 to 2026-06 (210 periods)**, by 13 regions (national, provinces, Nairobi income bands); COICOP divisional changes; retail prices of 22 tracked commodities |
+| Licence | **Unstated.** No licence text anywhere on the explorer, unlike the DataBrowser's CC-BY footer. The data are official statistics from a KNBS portal, but reuse terms must not be assumed |
+| Robots | No robots.txt (the SPA shell answers any non-API path with 200) |
+| Rate limits | None observed |
+| **Recommendation** | **Tier 2 candidate.** First-party, structured, stable-looking; undocumented, so an adapter needs fixtures, shape checks and monitoring, plus the region-fallback mitigation below |
+
+### Verified endpoints
+
+Base: `https://cpiexplorer.knbs.or.ke/api/v1`
+
+| Endpoint | Returns |
+|---|---|
+| `/periods/` | 210 monthly periods, `2009-01-01` … `2026-06-01` |
+| `/explorer/regions/` | 13 regions: `national`, provinces, Nairobi Upper/Middle/Lower Income and Combined |
+| `/explorer/data/?region_id[]=&start_date=&end_date=&data_type={cpi,inflation}&frequency=monthly` | Series: `{id, name, data: [{period, value, change_monthly, change_annual}]}` — index level and both inflation rates per point |
+| `/coicop/hierarchy/` | 13 COICOP divisions: `{code, name, weight, level, children}` — a genuine classification with weights |
+| `/commodities/` | The 22 tracked commodities (`CPI001`–`CPI022`) with unit and quantity |
+| `/retail-prices/latest/?region=` | Current, previous-month and previous-year price per commodity, with changes |
+| `/dashboard/homepage/?period=` | Headline CPI/inflation, core and non-core series, divisional contributions |
+| `/calculator/available_periods/` | Periods for the inflation calculator |
+
+Chatbot routes also exist (`/chatbot/health/`); out of scope.
+
+Live values at trace time: CPI 154.91 (June 2026), YoY inflation 6.41%,
+maize flour 83.43 KES/kg — matching the published headline figures.
+
+### Findings
+
+**F-23 — An unknown API route answers with a true 404.** The only KNBS API
+audited so far that fails honestly instead of answering 200 with the wrong
+thing. Non-API paths still return the SPA shell with 200, so only `/api/`
+responses may be trusted by status.
+
+**F-24 — An unknown region falls back to national silently.**
+`region_id[]=mars` returns 200 with the national series. The response *names*
+what it returned ("Overall CPI (National)"), so an adapter must validate the
+requested region against `/explorer/regions/` before calling, and check the
+returned series name against what was asked — the fourth member of the
+silently-substituted-parameter family (F-10, F-19, F-22).
+
+**F-25 — Untested surface.** Whether `/explorer/data/` accepts COICOP
+division filters was not probed; divisional figures are confirmed available
+via the dashboard endpoint. To be settled when an adapter is designed.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -313,11 +374,10 @@ library is exhausted, or a 5,000-document scan cap warns. Also observed:
 requesting one page past the end answers `400`, which for any page after the
 first means "no more", not "bad query".
 
-**F-21 — CPI Explorer backend not identified in this pass.** The React bundle
-at `cpiexplorer.knbs.or.ke` exposes routes (`/explorer`, `/prices`,
-`/calculator`) but no API base found by static inspection; deeper runtime
-tracing is a follow-up. The consumer-prices family therefore stays unbuilt
-rather than guessed — the plan's first-choice family remains open.
+**F-21 — resolved by section 1c.** Static inspection failed because the API
+client is a lazy-loaded chunk; the runtime trace of 2026-08-08 mapped the full
+API. The consumer-prices family now has a traced, first-party,
+machine-readable source awaiting an adapter.
 
 ## 2. Publications catalogue — registry id `knbs_publications`
 
@@ -468,3 +528,5 @@ Copy this block for each new candidate source.
 | 2026-08-03 | kenada | F-10 `variables?file_id=` is ignored server-side | Filtering by file is done client-side |
 | 2026-08-04 | knbs.or.ke | Re-checked at the start of Phase 4: still `504 Gateway Time-out` from the origin, and still timing out from the command line. Outage confirmed at roughly five hours. | Publications adapter not written; only the source-independent download layer was built |
 | 2026-08-08 | knbs_publications | F-22 `mime_type` parameter silently ignored by the media endpoint | Format filter now pages back until satisfied; boundary duplicates deduped; past-the-end 400 treated as end-of-listing |
+| 2026-08-08 | cpiexplorer | F-21 resolved by runtime trace: full `/api/v1` surface mapped — monthly CPI/inflation 2009–2026 by 13 regions, COICOP hierarchy with weights, 22 retail-price commodities | Recorded as audit section 1c; adapter not yet built; licence unstated on the portal |
+| 2026-08-08 | cpiexplorer | F-24 unknown region falls back to national silently | Mitigation specified for the future adapter: validate against `/explorer/regions/` and check the returned series name |
