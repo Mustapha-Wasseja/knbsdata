@@ -3,11 +3,12 @@
 Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
-- **Last updated:** 2026-08-04
-- **Current phase:** Phase 7 — **0.1.0 released** as a survey-catalogue package.
-  Phases 4, 5 and 6 were deliberately excluded: their sources could not be
-  verified.
-- **Package version:** 0.1.0
+- **Last updated:** 2026-08-08
+- **Current phase:** post-0.1.0 development. **Phase 4 is now complete**: the
+  blocked host recovered on 2026-08-08, its media library was audited (tier 2)
+  and the publications adapter is built and verified live, including a real
+  download. Phases 5 and 6 await their own audits.
+- **Package version:** 0.1.0.9000
 - **Network access implemented:** yes, for the KeNADA survey catalogue. Every
   test still runs offline against fixtures.
 
@@ -208,7 +209,34 @@ A user can:
 
 ---
 
-## Phase 4: publications — blocked, half delivered
+## Phase 4: publications — complete (2026-08-08)
+
+The host recovered and the TLS chain was fixed server-side (F-11), so the
+missing half was audited and built.
+
+| Task | Status |
+|---|---|
+| Implement publication adapter | done — `R/adapter-wordpress.R` over `wp/v2/media` |
+| `knbs_publications()` | done — free-text, format and title-year filters |
+| `knbs_download_publication()` | done — through the Phase 4 download layer |
+| Metadata sidecar | done (was already built) |
+| Checksums | done (was already built) |
+| Citation support | done |
+| Publication examples | done — README, `getting-started`, `source-status` |
+
+Exit criterion — "a user can search for a publication by topic and year,
+download it, verify it, and generate a citation" — verified **live**: searched
+"economic survey" (100 hits), filtered xlsx and year, downloaded a 13,955-byte
+workbook whose checksum matched, whose magic bytes were correct, whose sidecar
+was written, and cited it. Overwrite protection and the unknown-id path were
+exercised live too.
+
+Key audit findings: F-12 (the Download Monitor catalogue is gated and is not
+touched; the media library carries the same files openly), F-13 (upload date is
+not the reference period — the year comes from the title or is NA), F-14 (the
+library also holds speeches and forms; no hand-curated allowlist).
+
+### The original blocked attempt (2026-08-04), kept for the record
 
 `knbs.or.ke` was still returning `504 Gateway Time-out` when Phase 4 was
 attempted, roughly four hours after the outage was first recorded. The

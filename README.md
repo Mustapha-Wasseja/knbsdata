@@ -19,28 +19,30 @@ understand its metadata and access conditions, retrieve it in a
 consistent tidy shape, keep the provenance attached to the data, and
 cite it correctly.
 
-## Scope of version 0.1.0
+## Scope
 
-**This release covers survey and census study discovery, and nothing
-else.**
+**Implemented: survey discovery and publications.**
 
-Implemented, against the Kenya National Data Archive: search studies,
-read their full documentation, search their variables, and list their
-data files — with provenance and citations attached throughout.
+- **Surveys**, against the Kenya National Data Archive: search studies,
+  read their full documentation, search their variables, and list their
+  data files — with provenance and citations attached throughout.
+- **Publications**, against the KNBS website’s media library: search
+  roughly 1,600 statistical releases, reports and workbooks, and
+  download them with verification, SHA-256 checksums and a provenance
+  sidecar.
 
 Not implemented:
 
-- **Publications, aggregate indicators and geographic reference data.**
-  All three live on `knbs.or.ke`, which returned `504 Gateway Time-out`
-  throughout the source audit and every re-check over roughly six hours.
-  Its endpoints were never verified, so no adapter was written rather
-  than one being guessed at.
-- **Microdata downloads.** The archive requires an account for every
-  download. `knbs_download_microdata()` explains the official process
-  and stops; the package does not automate sign-in or licence
+- **Aggregate indicators and geographic reference data.** Their source
+  was unreachable during the original audit and has not yet been audited
+  since recovering; no adapter is written before its endpoints are
+  verified.
+- **Microdata downloads.** The survey archive requires an account for
+  every download. `knbs_download_microdata()` explains the official
+  process and stops; the package does not automate sign-in or licence
   acceptance.
-- **Documentation files.** The archive publishes no machine-readable
-  listing of questionnaires or reports.
+- **Survey documentation files.** The archive publishes no
+  machine-readable listing of questionnaires or reports.
 
 `vignette("source-status")` states all of this in full. Findings are in
 [`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md).
@@ -63,7 +65,7 @@ knbs_sources()
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
-#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  discovery none          
+#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 3 knbs_indicators   KNBS Aggreg… indicator_… <chr [3]>  discovery none          
 #> 4 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
@@ -76,7 +78,7 @@ knbs_status()[, c("source_id", "status", "message")]
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
-#> 2 knbs_publications unverified  Endpoint not verified; nothing to contact.
+#> 2 knbs_publications not_checked Set live = TRUE to contact the source.    
 #> 3 knbs_indicators   unverified  Endpoint not verified; nothing to contact.
 #> 4 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
@@ -98,15 +100,24 @@ knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
 ```
 
+Publications (also live requests, not run here):
+
+``` r
+# Find publications
+pubs <- knbs_publications("economic survey", year = 2026)
+
+# Download one: verified, checksummed, with a provenance sidecar
+knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+```
+
 ## What it will look like
 
-These are specified but not yet implemented, and depend on sources that
-could not be audited:
+Specified but not yet implemented, pending an audit of the indicator
+source:
 
 ``` r
 knbs_search("consumer price index")
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
-knbs_publications(topic = "economic survey", year = 2026)
 ```
 
 ## Access conditions

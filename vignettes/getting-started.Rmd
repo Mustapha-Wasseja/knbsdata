@@ -29,14 +29,14 @@ vignette never depends on a live service.
 knbs_sources()
 ```
 
-Only `kenada`, the Kenya National Data Archive, is verified and usable.
-Publications and aggregate indicators are registered but sit at stability
-`discovery`, meaning their endpoints have never been confirmed — the site
-hosting them was unavailable throughout the source audit. Calling a function
-that would need them fails with a clear error rather than guessing:
+Two sources are verified and usable: `kenada`, the Kenya National Data Archive
+(surveys), and `knbs_publications`, the KNBS website's media library
+(publications). Aggregate indicators remain at stability `discovery`, meaning
+their endpoint has never been confirmed. Calling a function that would need
+them fails with a clear error rather than guessing:
 
 ```{r, error = TRUE}
-knbs_status(source = "knbs_publications")$message
+knbs_status(source = "knbs_indicators")$message
 ```
 
 The `source-status` vignette covers this in full.
@@ -114,6 +114,18 @@ knbs_survey_files(meta$resource_id)
 # 5. Record what you used
 knbs_cite(meta)
 ```
+
+Publications work the same way, and these files *can* be downloaded — they are
+served openly by the KNBS website:
+
+```{r, eval = FALSE}
+pubs <- knbs_publications("economic survey", year = 2026)
+knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+```
+
+The download is verified (a web page arriving where a document was expected is
+refused), checksummed with SHA-256, and given a `<file>.metadata.json`
+provenance sidecar.
 
 ## Configuration
 

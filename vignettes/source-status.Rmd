@@ -52,6 +52,20 @@ Nothing in 0.1.0 is above `experimental`.
 for metadata. 129 studies covering 1969–2022 were catalogued at the time of the
 audit.
 
+**Publications**, via the KNBS website's media library:
+`knbs_publications()` and `knbs_download_publication()`. The site's WordPress
+REST API lists roughly 1,600 documents — statistical releases, survey reports,
+Economic Survey chapters and workbooks — with direct, ungated file URLs.
+Downloads are verified, checksummed and given a provenance sidecar.
+
+Two properties of this source to keep in mind:
+
+- `release_date` is the date a file reached the website, not the publication's
+  reference period. The `year` column is read from the title, and is `NA` when
+  the title names none.
+- The media library also holds speeches, launch remarks and forms. What counts
+  as a publication is your `query`, not a curated list.
+
 ## What does not, and why
 
 ### Microdata cannot be downloaded
@@ -71,20 +85,18 @@ listing at the archive. Reaching them would mean parsing a web page, which this
 package does not do. The `catalogue_url` column from `knbs_search_surveys()`
 opens the study on the archive's own site, where they are linked.
 
-### Publications, indicators and geography are absent
+### Indicators and geography are absent
 
-`knbs_publications()`, `knbs_get_indicator()`, `knbs_geographies()` and
-`knbs_search()` do not exist in this release.
+`knbs_get_indicator()`, `knbs_geographies()` and `knbs_search()` do not exist
+yet.
 
-All three sources live on one host, which returned `504 Gateway Time-out`
-throughout the source audit and every re-check afterwards, over about six hours.
-Its endpoints were never verified, so no adapter was written. Guessing an
-endpoint and a response shape would have produced code that looks finished and
-fails silently, which is worse than an honest gap.
-
-That host also serves an incomplete TLS certificate chain. Browsers compensate;
-`curl` and `httr2` do not. Even once it returns, that has to be resolved — and
-not by disabling certificate verification.
+Both remaining sources live on `knbs.or.ke`, which was unreachable throughout
+the original source audit; the 0.1.0 release therefore shipped without them.
+The site has since recovered — which is what made the publications adapter
+possible — but an indicator source has to be audited on its own terms before
+anything is built: if indicators turn out to be published only inside Excel
+workbooks and PDFs, the honest feature is a registered parser for specific
+tables, not a general indicator client.
 
 ### Variable documentation is uneven
 

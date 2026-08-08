@@ -48,10 +48,11 @@ test_that("the registry decides what a source may be asked to do", {
 
 test_that("an unverified source cannot be called", {
   expect_error(
-    check_source_verified(knbs_source("knbs_publications")),
+    check_source_verified(knbs_source("knbs_indicators")),
     class = "knbs_error_source_unavailable"
   )
   expect_silent(check_source_verified(knbs_source("kenada")))
+  expect_silent(check_source_verified(knbs_source("knbs_publications")))
 })
 
 test_that("search returns the standard catalogue schema", {

@@ -23,6 +23,14 @@ reference:
   - knbs_survey_files
   - knbs_download_microdata
 
+- title: Publications
+  desc: >
+    Statistical releases, reports and workbooks from the KNBS website, with
+    verified, checksummed downloads.
+  contents:
+  - knbs_publications
+  - knbs_download_publication
+
 - title: Sources
   desc: >
     What the package knows about each KNBS source, and how far that source has

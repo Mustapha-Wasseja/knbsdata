@@ -43,27 +43,34 @@ sources:
       - Access type must be recorded per study, not per catalogue.
 
   - source_id: knbs_publications
-    source_name: KNBS Publications
+    source_name: KNBS Publications (website media library)
     owner: Kenya National Bureau of Statistics
     source_type: publication_catalogue
-    base_url: PLACEHOLDER_TO_VERIFY
-    adapter: publications
+    base_url: https://www.knbs.or.ke/wp-json/wp/v2
+    landing_page: https://www.knbs.or.ke/
+    adapter: wordpress
     operations:
       - search_publications
       - publication_metadata
       - download_publication
     authentication: none
     formats:
-      - html
+      - json
       - pdf
       - xlsx
-      - csv
-    stability: discovery
-    last_verified: null
+    stability: experimental
+    last_verified: 2026-08-08
     terms_url: null
     notes:
-      - Prefer a machine-readable listing over HTML scraping.
-      - Record the official filename and checksum for every download.
+      - WordPress core REST API over the media library, verified 2026-08-08; tier 2.
+      - The Download Monitor catalogue also exists but its REST routes are gated
+        (403); the media library carries the same files ungated (audit F-12).
+      - The date field is the upload date, not the publication's reference
+        period (audit F-13). The reference year must come from the title.
+      - The library also holds speeches and forms; media_type=application
+        excludes images, and further narrowing is the caller's query (F-14).
+      - Files are direct wp-content/uploads URLs; download through the
+        verify-and-checksum layer, preserving the official filename.
 
   - source_id: knbs_indicators
     source_name: KNBS Aggregate Indicators

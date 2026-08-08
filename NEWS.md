@@ -1,3 +1,25 @@
+# knbsdata (development version)
+
+## Publications (Phase 4 completed)
+
+The host that blocked Phase 4 recovered, its TLS chain fixed. The audit found
+the WordPress core REST API open over the site's media library — roughly 1,600
+documents with direct, ungated file URLs — while the Download Monitor catalogue
+remains gated and untouched.
+
+* `knbs_publications()` searches statistical releases, reports and workbooks,
+  with free-text, format and reference-year filters.
+* `knbs_download_publication()` downloads one publication through the verifying
+  download layer: official filename preserved, a web page arriving in place of
+  a document refused, SHA-256 recorded, provenance sidecar written.
+* Honesty notes, both from the audit: `release_date` is the site's upload date,
+  not the publication's reference period — the `year` column is read from the
+  title and is `NA` when the title names none. And the media library also holds
+  speeches and forms; narrowing to what you mean is the caller's query.
+* The `format` filter is applied client-side even when the source also filtered,
+  after the survey audit showed this family of APIs can silently ignore query
+  parameters.
+
 # knbsdata 0.1.0
 
 First release. It covers **survey and census study discovery** through the Kenya

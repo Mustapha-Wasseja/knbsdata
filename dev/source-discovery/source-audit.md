@@ -228,21 +228,71 @@ thing to check when the site returns.**
 
 ## 2. Publications catalogue — registry id `knbs_publications`
 
-**Not audited — source unavailable (F-05).** Remains at `discovery`.
+**Audited 2026-08-08, after the site recovered.** Tier 2; registry stability
+`discovery` → `experimental`.
 
-Known page paths (from search engine results, unverified against the live site):
-`/statistical-releases/`, `/economic-surveys/`, `/reports/{slug}/`,
-`/cpi-and-inflation-rates/`, `/knbs-downloads/`, `/data-portals/`, `/new/`.
+### Audited
 
-When the site returns, check in this order:
+| Field | Finding |
+|---|---|
+| Source name | KNBS website media library (WordPress) |
+| Official owner | Kenya National Bureau of Statistics |
+| Landing page | `https://www.knbs.or.ke/` |
+| Catalogue type | WordPress core REST API, `wp/v2` |
+| Search capability | Yes — `search`, `media_type`, `mime_type`, `after`/`before`, `orderby`/`order` |
+| Machine-readable endpoints | `GET /wp-json/wp/v2/media` (collection), `GET /wp-json/wp/v2/media/{id}` (record) |
+| API documentation | The `wp/v2` API is documented upstream by WordPress; the instance itself is not documented by KNBS |
+| Response formats | `application/json; charset=UTF-8` |
+| Pagination | Standard WP: `page`/`per_page` (max 100), totals in `X-WP-Total` / `X-WP-TotalPages` response headers |
+| Filters | `media_type=application` → 1,590 documents; `mime_type=application/pdf` → 1,466; xlsx → 117; date range verified (109 PDFs in 2026 H1) |
+| Authentication | **None** for the media listing, the records, or the files themselves |
+| Download workflow | Direct, stable `/wp-content/uploads/YYYY/MM/<name>` URLs from `source_url`. Verified ungated: `%PDF-1.7` bytes over plain HTTPS, correct `Content-Type` and `Content-Length` |
+| Terms of use (URL) | No terms page found via the API; none recorded |
+| Rate limits | No rate-limit headers observed |
+| Robots policy | `robots.txt` now present: disallows `/wp-admin/` only |
+| Persistent identifiers | Numeric media `id`; `slug`; filename |
+| Version fields | `date` and `modified` timestamps; editions are distinct records |
+| Release date fields | `date` (upload date — see F-13) |
+| Geography fields | None |
+| Metadata quality | Good for files: title, dates, mime type, byte size, direct URL, landing page. Thin for bibliography: no abstract, series or ISBN fields |
+| Expected stability | Good. `wp/v2` is a stable upstream API; the risk is a site rebuild |
+| Risks | F-12 (two catalogues), F-13 (upload date ≠ publication date), mixed non-publication content (speeches, forms) in the same library |
+| **Recommendation** | **Tier 2.** Adapter over `wp/v2/media`; downloads through the package's verify-and-checksum layer |
+| Fixtures captured | `dev/fixtures/knbs-wp/` (4 files: listing, single, empty, not-found) |
+| Date verified | 2026-08-08 |
 
-1. `GET /wp-json/wp/v2/types` and `/wp-json/wp/v2/posts?per_page=5` — is the
-   core REST API enabled, and are publications a custom post type?
-2. Whether publication files are direct `/wp-content/uploads/...` URLs or are
-   brokered through Download Monitor (which may count, redirect or gate).
-3. Whether release date and edition are exposed as metadata or only in prose.
-4. Whether stable identifiers exist beyond the filename.
-5. `robots.txt` — it could not be retrieved during this audit.
+### Findings
+
+**F-11 — The site recovered, and the TLS chain is fixed.**
+First successful contact 2026-08-08: `/` answers 301 → 200, and
+`curl` verifies the certificate cleanly (`ssl_verify_result=0`). F-05 and F-06
+are both resolved; F-06 needs no client-side handling after all.
+
+**F-12 — Two catalogues exist; only one is open.**
+The Download Monitor plugin manages a `dlm_download` post type, but its REST
+routes are gated: `/wp-json/download-monitor/v1/downloads` → `403
+rest_forbidden`, and `/wp-json/wp/v2/dlm_download` returns an empty collection
+to anonymous callers. The **media library** (`wp/v2/media`) is fully open and
+carries the same underlying files with direct URLs. The adapter uses the media
+library and does not touch the gated routes.
+
+**F-13 — `date` is the upload date, not the publication's reference date.**
+The 2026 Economic Survey was uploaded 2026-04-29; a scan of a re-uploaded older
+report would carry a recent `date`. The schema therefore calls this field
+`release_date` in the sense of "made available on the site", and the reference
+year, where wanted, must come from the title. The adapter does not guess it.
+
+**F-14 — The media library is not only publications.**
+Speeches, launch remarks, forms and images share the library. `media_type=application`
+excludes images; beyond that, what counts as a publication is the user's
+judgement, applied through `query` and `format` filters. The package does not
+maintain a hand-curated allowlist.
+
+Reproducible example (public endpoint, no credentials):
+
+```bash
+curl -sS "https://www.knbs.or.ke/wp-json/wp/v2/media?media_type=application&search=economic+survey&per_page=5"
+```
 
 ## 3. Aggregate indicators — registry id `knbs_indicators`
 

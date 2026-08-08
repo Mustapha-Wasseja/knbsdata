@@ -23,7 +23,7 @@ test_that("knbs_status(live = FALSE) does not access the network", {
 })
 
 test_that("unverified sources are reported as such and never contacted", {
-  status <- knbs_status(live = TRUE, source = c("knbs_publications", "knbs_indicators"))
+  status <- knbs_status(live = TRUE, source = c("knbs_indicators", "fake_source"))
 
   # Their endpoints are placeholders, so there is nothing to contact even when
   # a live check is explicitly requested.

@@ -1,0 +1,71 @@
+[
+  {
+    "id": 16624,
+    "date": "2026-04-29T08:54:50",
+    "modified": "2026-04-29T08:54:50",
+    "slug": "2026-economic-survey-2",
+    "status": "inherit",
+    "type": "attachment",
+    "link": "https://www.knbs.or.ke/2026-economic-survey-2/",
+    "title": {
+      "rendered": "2026 Economic Survey"
+    },
+    "description": {
+      "rendered": "<p class=\"attachment\"><a href='https://www.knbs.or.ke/wp-content/uploads/2026/04/2026-Economic-Survey.pdf'>2026 Economic Survey<\/a><\/p>\n"
+    },
+    "caption": {
+      "rendered": "<p>2026 Economic Survey<\/p>\n"
+    },
+    "media_type": "file",
+    "mime_type": "application/pdf",
+    "source_url": "https://www.knbs.or.ke/wp-content/uploads/2026/04/2026-Economic-Survey.pdf",
+    "filename": "2026-Economic-Survey.pdf",
+    "filesize": 34865123
+  },
+  {
+    "id": 16622,
+    "date": "2026-04-29T08:53:33",
+    "modified": "2026-04-29T08:53:33",
+    "slug": "2026-economic-survey-popular-version-2",
+    "status": "inherit",
+    "type": "attachment",
+    "link": "https://www.knbs.or.ke/2026-economic-survey-popular-version-2/",
+    "title": {
+      "rendered": "2026 Economic Survey &#8211; Popular version"
+    },
+    "description": {
+      "rendered": "<p class=\"attachment\"><a href='https://www.knbs.or.ke/wp-content/uploads/2026/04/2026-Economic-Survey-Popular-version.pdf'>2026 Economic Survey - Popular version<\/a><\/p>\n"
+    },
+    "caption": {
+      "rendered": "<p>2026 Economic Survey &#8211; Popular version<\/p>\n"
+    },
+    "media_type": "file",
+    "mime_type": "application/pdf",
+    "source_url": "https://www.knbs.or.ke/wp-content/uploads/2026/04/2026-Economic-Survey-Popular-version.pdf",
+    "filename": "2026-Economic-Survey-Popular-version.pdf",
+    "filesize": 10767665
+  },
+  {
+    "id": 15760,
+    "date": "2025-05-11T16:04:02",
+    "modified": "2025-05-11T16:04:02",
+    "slug": "speech-ps-sdep-2025-economic-survey-report-launch",
+    "status": "inherit",
+    "type": "attachment",
+    "link": "https://www.knbs.or.ke/speech-ps-sdep-2025-economic-survey-report-launch/",
+    "title": {
+      "rendered": "Speech PS SDEP- 2025 Economic Survey Report Launch"
+    },
+    "description": {
+      "rendered": "<p class=\"attachment\"><a href='https://www.knbs.or.ke/wp-content/uploads/2025/05/Speech-PS-SDEP-2025-Economic-Survey-Report-Launch.pdf'>Speech PS SDEP- 2025 Economic Survey Report Launch<\/a><\/p>\n"
+    },
+    "caption": {
+      "rendered": "<p>Speech PS SDEP- 2025 Economic Survey Report Launch<\/p>\n"
+    },
+    "media_type": "file",
+    "mime_type": "application/pdf",
+    "source_url": "https://www.knbs.or.ke/wp-content/uploads/2025/05/Speech-PS-SDEP-2025-Economic-Survey-Report-Launch.pdf",
+    "filename": "Speech-PS-SDEP-2025-Economic-Survey-Report-Launch.pdf",
+    "filesize": 97810
+  }
+]

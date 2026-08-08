@@ -194,9 +194,13 @@ empty_tibble <- function(columns) {
       size = integer(0),
       case_count = integer(0),
       var_count = integer(0),
+      year = integer(0),
+      file_size = numeric(0),
       downloadable = logical(0),
       value_labels = list(),
       metadata_updated = as.Date(character(0)),
+      release_date = as.Date(character(0)),
+      modified = as.Date(character(0)),
       character(0)
     )
   })
