@@ -389,6 +389,38 @@ an *unknown* region silently falls back to national (the F-24 family). The
 package therefore exposes retail prices as national only, with no region
 argument to defend.
 
+**F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
+Traced 2026-08-08 after a direct question exposed that this portal — probed
+only superficially during the Phase 5 audit — had never been enumerated. The
+"Data Browser" at `/beta/databrowser/` is the Istat DataBrowser hub; its API
+under `/beta/databrowserhub/api/` serves a catalogue
+(`Core/nodes/1/catalog`) of **323 SDMX dataflows** (agency `KE1`), organised
+under five category groups (Demographic and Social, Economic, Environment,
+Governance, Cross-cutting). Coverage reads like the Economic Survey as data:
+GDP by activity (constant 2016 and current prices, growth, contribution),
+expenditure on GDP, GFCF, GNI, annual production accounts, CPI by division
+and by region (base Feb 2019 = 100), balance of payments, trade, money and
+banking, county government finance (COFOG, revenue, expenditure), employment
+and earnings, agriculture, tourism, health, justice. This is the richest
+machine-readable KNBS source found in the entire audit, and the plan's
+"optional SDMX support" (roadmap 0.3.0) has a first-party target. Not yet
+adapted; dataflow data-query shape, licence statement and dimension
+structures still to be characterised before an adapter is designed.
+
+**Gross County Product remains PDF-only everywhere.** The county-level
+dataflows here are census density, county government finance, health
+expenditure and assembly composition — no GCP. With this, every portal on
+KNBS's own portals page has now been checked for GCP: census API (32 tables,
+no), CPI Explorer (prices only), NADA (surveys), media library (PDF reports
+only), this hub (no), and the topical portals (KDHS, FinAccess, NIPFN —
+out-of-domain).
+
+**F-29 — `kenya.opendataforafrica.org` is bot-gated.** The third-party
+mirror listed on the portals page answers API requests with a Cloudflare
+challenge ("Just a moment..."), a human-verification mechanism the plan
+forbids bypassing — tier 4 on access mechanism alone, before the
+third-party-mirror policy is even reached.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The

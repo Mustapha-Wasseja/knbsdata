@@ -12,10 +12,18 @@ place where phase progress, open decisions and blockers are recorded.
   with the F-24 region-substitution defence and F-26 empty-province behaviour
   tested, and the unstated licence carried in every result's metadata.
   Retail prices are delivered too (`knbs_retail_prices()`, audit F-27: the
-  full national history, no regional data exists). Remaining threads: COICOP
-  divisional series (F-25 untested surface), classifications (the COICOP
-  hierarchy endpoint is a candidate source), boundaries (still nothing
-  verified), and `knbs_search()` across sources.
+  full national history, no regional data exists). **The biggest open
+  opportunity is now audit F-28**: `opendata.knbs.or.ke` is a first-party
+  Istat DataBrowser hub carrying 323 SDMX dataflows — GDP, CPI by division
+  and region, BoP, trade, county government finance, employment and more —
+  found when a direct question exposed that the Phase 5 audit had probed it
+  only superficially. An adapter there would convert dozens of
+  document-only families into data; its data-query shape and licence remain
+  to be characterised first. Gross County Product, however, is PDF-only on
+  every official portal (checked exhaustively 2026-08-08); the only data
+  route for it would be a registered experimental PDF-table parser per plan
+  section 11.12. Other threads: COICOP divisional series (F-25),
+  classifications, boundaries, `knbs_search()`.
 - **Package version:** 0.1.0.9000
 - **Network access implemented:** three live sources — KeNADA, the website
   media library, and the census data API. Every test still runs offline
