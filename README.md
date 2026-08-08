@@ -77,7 +77,7 @@ knbs_sources()
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [3]>  experime… none          
+#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
 #> 5 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```

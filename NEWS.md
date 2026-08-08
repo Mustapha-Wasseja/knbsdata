@@ -1,4 +1,7 @@
-# knbsdata (development version)
+# knbsdata 0.4.0
+
+Retail prices join the CPI family: what a kilogram of maize flour, a litre of
+petrol or a month's single-room rent actually costs, monthly back to 2019.
 
 * New `knbs_retail_prices()`: the monthly national average retail prices of
   the 22 commodities tracked for the CPI basket — maize flour, milk, petrol,
