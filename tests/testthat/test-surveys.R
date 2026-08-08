@@ -198,8 +198,10 @@ test_that("public functions never reach the offline fixture source", {
 })
 
 test_that("an operation with no verified source fails clearly", {
-  expect_error(resolve_source("get_indicator"), class = "knbs_error_source_unavailable")
+  # get_indicator is verified now; geographies and boundaries still are not.
+  expect_identical(resolve_source("get_indicator")$source_id, "knbs_indicators")
   expect_error(resolve_source("geographies"), class = "knbs_error_source_unavailable")
+  expect_error(resolve_source("boundaries"), class = "knbs_error_source_unavailable")
 })
 
 test_that("catalogue responses are cached and refresh bypasses the cache", {

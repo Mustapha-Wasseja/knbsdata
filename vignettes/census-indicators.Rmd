@@ -1,0 +1,123 @@
+---
+title: "Census tables as tidy data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Census tables as tidy data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(knbsdata)
+```
+
+The KNBS census data service publishes tables from the 2019 Kenya Population
+and Housing Census — population, health, ICT and household characteristics —
+through a machine-readable API, under an explicit **CC BY 4.0** licence
+statement. `knbs_indicators()` lists those tables and `knbs_get_indicator()`
+returns one as tidy observations.
+
+Chunks that contact the service are shown but not run, so building this
+vignette never depends on it.
+
+## What this source is, and is not
+
+Three properties worth knowing before you use it:
+
+- **It is census data.** Every table describes 2019. There are no time series
+  here: `period` is 2019 throughout, and `frequency` is `NA` because a census
+  table is not a recurring release. Consumer prices, GDP and other running
+  indicators are *not* in this source (see the source-status vignette for
+  where that work stands).
+- **It is served over plain HTTP.** The API host has no TLS listener, so
+  traffic to it is unencrypted in transit. It carries only public census
+  aggregates and no credentials; the registry records the exception
+  explicitly.
+- **It is first-party.** The service is operated by KNBS (built with Istat,
+  Italy's national statistical institute) and linked from KNBS's own portals
+  page.
+
+## Finding a table
+
+```{r, eval = FALSE}
+knbs_indicators()
+knbs_indicators(topic = "Population")
+knbs_indicators(search = "marital")
+```
+
+Thirty-two tables across four populated themes at the time of writing.
+
+## Getting observations
+
+```{r, eval = FALSE}
+pop <- knbs_get_indicator("POPCEN0001")
+pop
+```
+
+You can pass a name instead of an id; if several tables match you get an error
+listing the candidates rather than a silently chosen one.
+
+The result has one row per cell:
+
+- **Core columns:** `indicator_id`, `indicator_name`, `period`, `value`.
+- **Geography**, where the table has it: `geo_code`, `geo_name`, `geo_level`.
+  Codes keep their leading zeros — `"00"` is Kenya, two digits are counties,
+  four digits are sub-counties — and `geo_level` says which
+  (`"national"`, `"county"`, `"subcounty"`).
+- **Sex**, where the table has it, using the source's own categories
+  (the 2019 census enumerated intersex as well as female and male).
+- **Every other dimension** keeps its source id: a code column named for the
+  dimension (for example `p18_vs1`) and a matching `<id>_label` column
+  ("Marital Status"). The dimension names are in
+  `knbs_metadata(pop)$notes`.
+
+## Filtering geography
+
+```{r, eval = FALSE}
+counties <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+nairobi  <- knbs_get_indicator("POPCEN0001", geo_code = "47")
+```
+
+Filters are applied after retrieval — the API serves whole tables — so the
+first call and the second cost the same request. Tables are cached for seven
+days by default.
+
+## A worked example
+
+County population aged 12+, both sexes, all marital statuses:
+
+```{r, eval = FALSE}
+pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
+              c("geo_code", "geo_name", "value")]
+totals[order(-totals$value), ]
+```
+
+Because `geo_code` is character with leading zeros intact, these codes join
+cleanly against any other dataset keyed the same way.
+
+## Provenance and citation
+
+```{r, eval = FALSE}
+knbs_metadata(pop)
+knbs_cite(pop)
+```
+
+The metadata carry the licence statement, the release date (`2019-12-31`), the
+source statement ("KNBS Population Census 2019") and the dimension list; the
+citation is built from them.
+
+## Honesty notes
+
+- `unit` is `NA` in the catalogue: the source does not state units, and
+  counts-versus-proportions is knowable only from each table's name. The
+  package does not guess.
+- An unknown table id is reported as *not found*. (The API itself answers
+  those requests with HTTP 200 and a body reading `errore`; the package
+  translates.)
+- The service checks the *shape* of everything it parses. If the API changes,
+  you get `knbs_error_schema_changed`, not a plausible-looking wrong table.

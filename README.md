@@ -21,7 +21,7 @@ cite it correctly.
 
 ## Scope
 
-**Implemented: survey discovery and publications.**
+**Implemented: survey discovery, publications, and census tables.**
 
 - **Surveys**, against the Kenya National Data Archive: search studies,
   read their full documentation, search their variables, and list their
@@ -30,13 +30,18 @@ cite it correctly.
   roughly 1,600 statistical releases, reports and workbooks, and
   download them with verification, SHA-256 checksums and a provenance
   sidecar.
+- **Census tables**, against the KNBS census data service: the 2019
+  Population and Housing Census as tidy observations, with geography
+  down to sub-county and an explicit CC BY 4.0 licence.
 
 Not implemented:
 
-- **Aggregate indicators and geographic reference data.** Their source
-  was unreachable during the original audit and has not yet been audited
-  since recovering; no adapter is written before its endpoints are
-  verified.
+- **Running indicator series — CPI, GDP, trade.** No machine-readable
+  source for them has been verified (the CPI Explorer’s backend resisted
+  identification); monthly and quarterly releases are available as
+  documents through `knbs_publications()`.
+- **Geographic reference data** as a dataset of its own — though the
+  census tables carry full county and sub-county codes and names.
 - **Microdata downloads.** The survey archive requires an account for
   every download. `knbs_download_microdata()` explains the official
   process and stops; the package does not automate sign-in or licence
@@ -66,7 +71,7 @@ knbs_sources()
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
 #> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 3 knbs_indicators   KNBS Aggreg… indicator_… <chr [3]>  discovery none          
+#> 3 knbs_indicators   KNBS Census… indicator_… <chr [3]>  experime… none          
 #> 4 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
@@ -79,7 +84,7 @@ knbs_status()[, c("source_id", "status", "message")]
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
 #> 2 knbs_publications not_checked Set live = TRUE to contact the source.    
-#> 3 knbs_indicators   unverified  Endpoint not verified; nothing to contact.
+#> 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    
 #> 4 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
@@ -108,6 +113,17 @@ pubs <- knbs_publications("economic survey", year = 2026)
 
 # Download one: verified, checksummed, with a provenance sidecar
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+```
+
+Census tables (live requests, not run here):
+
+``` r
+# What does the census service publish?
+knbs_indicators(topic = "Population")
+
+# County populations, tidy, with leading-zero codes intact
+pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+knbs_cite(pop)
 ```
 
 ## What it will look like

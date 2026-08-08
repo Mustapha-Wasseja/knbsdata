@@ -66,6 +66,17 @@ Two properties of this source to keep in mind:
 - The media library also holds speeches, launch remarks and forms. What counts
   as a publication is your `query`, not a curated list.
 
+**Census tables**, via the KNBS census data service (`data.knbs.or.ke`):
+`knbs_indicators()` and `knbs_get_indicator()`. Thirty-two tables from the
+2019 Population and Housing Census as JSON-stat, under an explicit CC BY 4.0
+statement, with geography down to sub-county and leading zeros intact. See
+`vignette("census-indicators")`.
+
+One property of this source to keep in mind: **its API host is HTTP-only** —
+no TLS listener exists — so traffic to it is unencrypted in transit. It
+carries public census aggregates and no credentials, and the registry records
+the exception explicitly rather than hiding it.
+
 ## What does not, and why
 
 ### Microdata cannot be downloaded
@@ -85,18 +96,22 @@ listing at the archive. Reaching them would mean parsing a web page, which this
 package does not do. The `catalogue_url` column from `knbs_search_surveys()`
 opens the study on the archive's own site, where they are linked.
 
-### Indicators and geography are absent
+### Running indicators — CPI, GDP and the like — are not implemented
 
-`knbs_get_indicator()`, `knbs_geographies()` and `knbs_search()` do not exist
-yet.
+`knbs_get_indicator()` serves **census tables**. It does not serve consumer
+prices, national accounts, trade or any other recurring series, because no
+machine-readable source for them has been verified. KNBS operates a CPI
+Explorer whose backend could not be identified by static inspection (audit
+F-21); until it — or another indicator endpoint — is verified, monthly and
+quarterly releases remain available as documents through
+`knbs_publications()`.
 
-Both remaining sources live on `knbs.or.ke`, which was unreachable throughout
-the original source audit; the 0.1.0 release therefore shipped without them.
-The site has since recovered — which is what made the publications adapter
-possible — but an indicator source has to be audited on its own terms before
-anything is built: if indicators turn out to be published only inside Excel
-workbooks and PDFs, the honest feature is a registered parser for specific
-tables, not a general indicator client.
+### Geography is absent as a dataset
+
+`knbs_geographies()` and `knbs_search()` do not exist yet. The census tables
+carry a full territory dimension — 393 coded, named units across national,
+county and sub-county levels — which is the natural Phase 6 source, with the
+caveat that its vintage is the 2019 census frame.
 
 ### Variable documentation is uneven
 

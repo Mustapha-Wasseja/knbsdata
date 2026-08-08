@@ -9,6 +9,7 @@ articles:
   contents:
   - getting-started
   - survey-catalogue
+  - census-indicators
   - source-status
 
 reference:
@@ -30,6 +31,14 @@ reference:
   contents:
   - knbs_publications
   - knbs_download_publication
+
+- title: Census indicators
+  desc: >
+    Tables from the 2019 Population and Housing Census as tidy observations,
+    with geography down to sub-county. CC BY 4.0.
+  contents:
+  - knbs_indicators
+  - knbs_get_indicator
 
 - title: Sources
   desc: >

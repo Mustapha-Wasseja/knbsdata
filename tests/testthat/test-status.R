@@ -23,9 +23,9 @@ test_that("knbs_status(live = FALSE) does not access the network", {
 })
 
 test_that("unverified sources are reported as such and never contacted", {
-  status <- knbs_status(live = TRUE, source = c("knbs_indicators", "fake_source"))
+  status <- knbs_status(live = TRUE, source = "fake_source")
 
-  # Their endpoints are placeholders, so there is nothing to contact even when
+  # Its endpoint is a placeholder, so there is nothing to contact even when
   # a live check is explicitly requested.
   expect_true(all(status$status == "unverified"))
   expect_true(all(is.na(status$http_status)))

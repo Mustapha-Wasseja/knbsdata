@@ -196,11 +196,22 @@ validate_source_registry <- function(registry, path = "<registry>") {
     }
 
     is_placeholder <- identical(src$base_url, knbs_url_placeholder())
-    if (!is_placeholder && !grepl("^https://", src$base_url)) {
+    if (!is.null(src$http_only) && !isTRUE(src$http_only)) {
+      bad(label, "x" = "{.field http_only}, when present, must be {.code true}.")
+    }
+    # HTTPS is the rule. A plain-HTTP source must say so explicitly with
+    # http_only: true, which exists for hosts with no TLS listener at all
+    # (audit F-16) - the exception is then visible in the registry rather than
+    # slipped past the validator.
+    allow_http <- isTRUE(src$http_only)
+    if (!is_placeholder &&
+        !grepl("^https://", src$base_url) &&
+        !(allow_http && grepl("^http://", src$base_url))) {
       bad(
         label,
         "x" = "{.field base_url} must use HTTPS.",
-        "i" = "Got {.val {src$base_url}}."
+        "i" = "Got {.val {src$base_url}}.",
+        "i" = "A host with no TLS listener may declare {.code http_only: true}."
       )
     }
     if (is_placeholder && !identical(src$stability, "discovery")) {

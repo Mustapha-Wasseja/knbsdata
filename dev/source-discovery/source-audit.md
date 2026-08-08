@@ -226,6 +226,88 @@ thing to check when the site returns.**
 
 ---
 
+## 1b. Aggregate indicators — registry id `knbs_indicators` (audited 2026-08-08)
+
+### Audited
+
+| Field | Finding |
+|---|---|
+| Source name | KNBS Census Data API, feeding the "KNBS DataBrowser" |
+| Official owner | Kenya National Bureau of Statistics. Built with Istat (Italy's NSI) under an AICS-funded census-dissemination project; the portal names both and links Istat's open-source cooperation repositories |
+| Landing page | `http://data.knbs.or.ke/` (listed on KNBS's own portals page and on `statistics.knbs.or.ke`) |
+| Catalogue type | Bespoke Flask API + Angular data browser consuming JSON-stat |
+| Machine-readable endpoints | Yes — `GET /getDatasetList?lang=en` (themed catalogue) and `GET /getDataset?id={ID}&type={csv\|json}` on `api1.knbs.or.ke` |
+| API documentation | None published. Endpoints observed in the portal's own markup |
+| Response formats | JSON-stat 2.0 (any non-`csv` `type`), CSV. **Content-Type is misdeclared** as `text/html` for JSON |
+| Pagination | None — 32 datasets across 5 themes; full list is 4 KB |
+| Filters | `lang` is required (bare request → Flask 400) but its value is not honoured (`sw` returns English) |
+| Authentication | None |
+| Download workflow | Direct GET; CSV export links published in the browser UI |
+| Terms of use (URL) | **"All data are released under CC-BY 4.0 license"** stated in the portal footer |
+| Rate limits | None observed |
+| Robots policy | `api1`: no robots.txt (404). `data.knbs.or.ke`: robots.txt present, no relevant disallow |
+| Persistent identifiers | Dataset ids: `POPCEN0001`…, `HOUCEN001`… |
+| Version fields | `updated: 2019-12-31` in every payload; census data are final |
+| Release date fields | `updated`, plus `source: "KNBS Population Census 2019"` |
+| Geography fields | Dimension `system_total` ("Territory"): 393 codes — `00` Kenya, `01`–`47` counties, 4-digit sub-counties — **leading zeros intact**, with names |
+| Metadata quality | Good: JSON-stat carries dimension labels (Sex, Marital Status, Territory), category labels, source, updated, contact |
+| Expected stability | Census tables are final; the API is a small stable surface. Risks: HTTP-only host, undocumented |
+| Risks | See F-16–F-18 |
+| **Recommendation** | **Tier 2.** Build the indicator adapter on the JSON-stat endpoint; registry `experimental` |
+| Fixtures captured | `tests/testthat/fixtures/knbsapi/` |
+| Date verified | 2026-08-08 |
+
+### Catalogue as at 2026-08-08
+
+32 datasets: Population (10), Health (8), ICT (3), Household Farming (11),
+Household Assets/Amenities (0 — empty theme). All are 2019 census tables.
+
+### Findings
+
+**F-15 — KNBS operates a first-party machine-readable indicator API.**
+The KNBS portals page lists `data.knbs.or.ke` (and `cpiexplorer.knbs.or.ke`,
+`opendata.knbs.or.ke/beta/databrowser/`, `kdhsportal.knbs.or.ke`,
+`finaccess.knbs.or.ke`, `nipfn.knbs.or.ke`, plus third-party
+`kenya.opendataforafrica.org`). The DataBrowser's backend at
+`api1.knbs.or.ke` serves the census tables as JSON-stat 2.0 under an explicit
+CC-BY 4.0 statement. This resolves open decision 3 for the census family.
+
+**F-16 — The API host is HTTP-only.** Port 443 does not answer on
+`api1.knbs.or.ke`. The registry's HTTPS rule is therefore relaxed for this one
+source via an explicit `http_only: true` flag rather than silently. The
+consequence is worth stating: traffic to this API is unencrypted in transit.
+It carries only public census aggregates and no credentials.
+
+**F-17 — An unknown dataset id answers `200` with the body `errore`.**
+Six bytes, Italian, status 200. The same "success that isn't" family as F-03
+and F-08. The adapter treats an `errore` body as resource-not-found and any
+other non-JSON-stat shape as a schema change.
+
+**F-18 — The JSON Content-Type is misdeclared.** JSON-stat arrives as
+`text/html; charset=utf-8`, so the adapter cannot use content-type
+verification and relies on shape checks instead.
+
+**F-19 — `getDatasetList` requires `lang` but ignores its value.** A bare
+request is a Flask 400; `lang=sw` returns English. The adapter always sends
+`lang=en`.
+
+**F-19b — A theme with no datasets omits the key.** The Household
+Assets/Amenities theme arrives as `{desc, id}` with no `datasets` member at
+all, rather than an empty array. The list-shape check accepts a keyless theme
+that still looks like a theme, and the standardiser treats an absent
+`datasets` as empty.
+
+**F-20 — The Territory dimension is a geography reference in its own right.**
+393 coded, named territories (national/county/sub-county) under CC-BY 4.0 —
+a strong Phase 6 candidate for `knbs_geographies()`, with the caveat that the
+vintage is the 2019 census frame.
+
+**F-21 — CPI Explorer backend not identified in this pass.** The React bundle
+at `cpiexplorer.knbs.or.ke` exposes routes (`/explorer`, `/prices`,
+`/calculator`) but no API base found by static inspection; deeper runtime
+tracing is a follow-up. The consumer-prices family therefore stays unbuilt
+rather than guessed — the plan's first-choice family remains open.
+
 ## 2. Publications catalogue — registry id `knbs_publications`
 
 **Audited 2026-08-08, after the site recovered.** Tier 2; registry stability

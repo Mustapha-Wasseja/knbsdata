@@ -4,13 +4,46 @@ Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
 - **Last updated:** 2026-08-08
-- **Current phase:** post-0.1.0 development. **Phase 4 is now complete**: the
-  blocked host recovered on 2026-08-08, its media library was audited (tier 2)
-  and the publications adapter is built and verified live, including a real
-  download. Phases 5 and 6 await their own audits.
+- **Current phase:** post-0.1.0 development. Phases 4 and **5** are complete —
+  publications (media library) and census indicators (KNBS census data API),
+  both audited tier 2 and verified live. Phase 6 (geographies) has an
+  identified source; the consumer-prices family remains open (audit F-21).
 - **Package version:** 0.1.0.9000
-- **Network access implemented:** yes, for the KeNADA survey catalogue. Every
-  test still runs offline against fixtures.
+- **Network access implemented:** three live sources — KeNADA, the website
+  media library, and the census data API. Every test still runs offline
+  against fixtures.
+
+---
+
+## Phase 5: census indicators — complete
+
+The audit found what the original plan hoped for: a first-party,
+machine-readable indicator source. KNBS's own portals page lists the
+DataBrowser at `data.knbs.or.ke`; its backend (`api1.knbs.or.ke`) serves 2019
+census tables as JSON-stat 2.0 under an explicit CC BY 4.0 statement (audit
+section 1b, findings F-15 to F-21).
+
+| Task | Status |
+|---|---|
+| Select one stable indicator source | done — census data API, tier 2 |
+| Build indicator registry | not needed — the source's own ids are stable (`POPCEN0001`…); a package-level alias layer would add churn, not shelter |
+| `knbs_indicators()` | done |
+| `knbs_get_indicator()` | done |
+| Period filtering | not applicable — census tables carry one reference year; `period` = 2019 read from the source statement |
+| Dimension filtering | done for geography (`geo_level`, `geo_code`); other dimensions come back as columns to filter in R |
+| Release metadata | done — `updated` and source statement in provenance |
+| Validation | done — JSON-stat shape, value/size agreement, duplicate keys, character geo codes |
+| Indicator vignette | done — `census-indicators` |
+| At least three indicator families | **partially met, stated plainly:** Population, Health, ICT and Household themes of one census. Running families (consumer prices, national accounts, labour, trade) remain unavailable — the CPI Explorer's backend resisted static identification (F-21) |
+
+Infrastructure added: a generic JSON-stat 2.0 parser (`R/parse-jsonstat.R`)
+with no KNBS specifics, and an explicit, validated `http_only` registry flag
+for the API host's missing TLS listener (F-16).
+
+Verified live: 32 datasets listed; county extraction returns all 47 counties;
+the national age-12+ total (32,508,769) matches the source's own CSV; the
+`errore` body maps to not-found; all three verified sources answer `ok` in one
+`knbs_status(live = TRUE)` call.
 
 ---
 

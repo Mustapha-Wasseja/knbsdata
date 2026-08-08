@@ -73,10 +73,14 @@ sources:
         verify-and-checksum layer, preserving the official filename.
 
   - source_id: knbs_indicators
-    source_name: KNBS Aggregate Indicators
+    source_name: KNBS Census Data API (DataBrowser)
     owner: Kenya National Bureau of Statistics
     source_type: indicator_portal
-    base_url: PLACEHOLDER_TO_VERIFY
+    base_url: http://api1.knbs.or.ke
+    landing_page: http://data.knbs.or.ke/
+    # The API host has no TLS listener (audit F-16). http_only acknowledges the
+    # exception explicitly; traffic carries public census aggregates only.
+    http_only: true
     adapter: indicators
     operations:
       - list_indicators
@@ -86,14 +90,19 @@ sources:
     formats:
       - json
       - csv
-      - xlsx
-      - sdmx
-    stability: discovery
-    last_verified: null
+    stability: experimental
+    last_verified: 2026-08-08
     terms_url: null
     notes:
-      - Base years and units must be read from source metadata, never hard-coded.
-      - Confirm whether explicit release or vintage identifiers are exposed.
+      - 2019 census tables as JSON-stat 2.0, verified 2026-08-08; tier 2.
+      - Portal states "All data are released under CC-BY 4.0 license".
+      - An unknown dataset id answers 200 with the body "errore" (audit F-17);
+        that is a missing resource, not a document.
+      - The JSON Content-Type is misdeclared as text/html (F-18); verify shape,
+        not type.
+      - getDatasetList requires lang but ignores its value (F-19); always en.
+      - Territory codes keep leading zeros and cover national, county and
+        sub-county levels (F-20).
 
   # Internal fixture source used by tests (plan section 28, step 4). It never
   # touches the network and is not intended for users.

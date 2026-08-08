@@ -1,5 +1,33 @@
 # knbsdata (development version)
 
+## Census indicators (Phase 5)
+
+The Phase 5 audit found a first-party machine-readable source: the KNBS census
+data service behind `data.knbs.or.ke`, built with Istat and serving 2019
+Population and Housing Census tables as JSON-stat 2.0 under an explicit
+CC BY 4.0 statement.
+
+* `knbs_indicators()` lists the 32 tables across their themes (Population,
+  Health, ICT, Household Farming).
+* `knbs_get_indicator()` returns a table as tidy observations: geography down
+  to sub-county with leading zeros intact and a documented `geo_level`, `sex`
+  in the source's own categories, and every other dimension as a
+  `<dim_id>`/`<dim_id>_label` column pair. Provenance carries the licence and
+  the release date; citations work as everywhere else.
+* A generic JSON-stat 2.0 parser (dense and sparse values, status arrays,
+  shape validation) with no KNBS specifics, ready for any future JSON-stat
+  source.
+* The registry gains an explicit `http_only` flag: the census API host has no
+  TLS listener, and the exception is declared and validated rather than
+  slipped past the HTTPS rule. Traffic to it is unencrypted in transit; it
+  carries public aggregates and no credentials.
+* Honesty notes: `frequency` and `unit` are `NA` — a census table is not a
+  recurring series and the source states no units. Running indicators (CPI,
+  GDP) are still not available as data: the CPI Explorer's backend could not
+  be identified (audit F-21), so monthly releases remain available as
+  documents via `knbs_publications()`. The API answers unknown ids with
+  HTTP 200 and the body `errore`; the package reports not-found.
+
 ## Publications (Phase 4 completed)
 
 The host that blocked Phase 4 recovered, its TLS chain fixed. The audit found

@@ -12,8 +12,17 @@ test_that("verified and unverified sources are marked consistently", {
   expect_true(all(sources$stability[!verified] == "discovery"))
   expect_true(all(is.na(sources$last_verified[!verified])))
 
-  # Verified: HTTPS endpoint and a recorded verification date.
-  expect_true(all(startsWith(sources$base_url[verified], "https://")))
+  # Verified: HTTPS endpoint - or plain HTTP only where the registry entry
+  # declares http_only (a host with no TLS listener, audit F-16) - and a
+  # recorded verification date.
+  raw <- read_source_registry()$sources
+  http_only_ids <- vapply(
+    raw[vapply(raw, function(s) isTRUE(s$http_only), logical(1))],
+    function(s) s$source_id, character(1)
+  )
+  https_ok <- startsWith(sources$base_url, "https://") |
+    (startsWith(sources$base_url, "http://") & sources$source_id %in% http_only_ids)
+  expect_true(all(https_ok[verified]))
   expect_true(all(!is.na(sources$last_verified[verified])))
 
   # Nothing has earned "stable" yet: that needs fixtures, monitoring and a
@@ -146,6 +155,35 @@ test_that("base URLs must be HTTPS or an explicit placeholder", {
       stability = "beta",
       last_verified = "2026-08-03"
     )))
+  )
+})
+
+test_that("http_only is an explicit, validated exception to the HTTPS rule", {
+  # A host with no TLS listener (audit F-16) may declare itself http_only.
+  expect_no_error(
+    validate_source_registry(test_registry(test_source(
+      base_url = "http://example.org",
+      http_only = TRUE,
+      stability = "experimental",
+      last_verified = "2026-08-08"
+    )))
+  )
+  # The flag must be literally true, not any truthy junk.
+  expect_error(
+    validate_source_registry(test_registry(test_source(
+      base_url = "http://example.org",
+      http_only = "yes",
+      stability = "experimental"
+    ))),
+    class = "knbs_error_validation_failed"
+  )
+  # The flag does not excuse a placeholder from the discovery rule.
+  expect_error(
+    validate_source_registry(test_registry(test_source(
+      http_only = TRUE,
+      stability = "beta"
+    ))),
+    class = "knbs_error_validation_failed"
   )
 })
 
