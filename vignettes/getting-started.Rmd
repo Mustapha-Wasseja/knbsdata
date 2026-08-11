@@ -44,7 +44,7 @@ stability `discovery` and is never contacted — there is nothing there to
 call. The `source-status` vignette says exactly what is and is not covered,
 and why.
 
-## Four ideas worth knowing
+## Five ideas worth knowing
 
 ### 1. Everything carries its provenance
 
@@ -99,6 +99,28 @@ tryCatch(
 
 Catch `error`, or a specific `knbs_error_*` class — not `condition`, because
 httr2 signals a benign condition on every request.
+
+### 5. Everything is a tibble that speaks tidyverse
+
+Every data-carrying result is a tidy tibble — one row per observation, built
+on vctrs — so dplyr verbs work directly and keep the provenance attached:
+filter, mutate, arrange, join, and `knbs_metadata()` still answers on the
+result. Aggregations (`summarise`) and reshapes (`pivot_wider`) return plain
+tibbles, because a derived table is your data, not the source's;
+`tibble::as_tibble()` drops the wrapper whenever you want out.
+
+```{r, eval = FALSE}
+library(dplyr)
+library(tidyr)
+
+knbs_get_indicator("jhbzkjc") |>                    # Gross County Product
+  filter(table == "T3", period == 2020) |>
+  slice_max(value, n = 5)
+
+knbs_abstract_table("2.2") |>                       # years across, like print
+  select(industry, period, value) |>
+  pivot_wider(names_from = period, values_from = value)
+```
 
 ## A first session
 

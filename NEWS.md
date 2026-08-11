@@ -1,5 +1,19 @@
 # knbsdata (development version)
 
+## The tidyverse contract, locked in tests
+
+Every data-carrying result has always been a vctrs-backed tidy tibble; the
+behaviour is now guaranteed rather than incidental. Tests pin that dplyr
+verbs — `filter()`, `mutate()`, `arrange()`, `select()`, `slice_max()`,
+joins, `bind_rows()` — keep both the class and the provenance metadata
+(`knbs_metadata()` still answers on the result); that `group_by()` +
+`summarise()` and the tidyr pivots return plain tibbles, since a derived
+table is the caller's data rather than the source's; and that
+`tibble::as_tibble()` strips the wrapper cleanly. dplyr and tidyr join
+Suggests for these tests, and the getting-started and statistical-abstract
+vignettes now show the piped workflows, including `pivot_wider()`
+recreating the printed-table look.
+
 ## The Statistical Abstract as tidy tables
 
 The 2025 Statistical Abstract ships its chapter tables as Excel workbooks

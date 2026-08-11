@@ -86,6 +86,47 @@ saving <- knbs_abstract_table("disposable income")   # resolves to 2.9
   mixed-unit table (2.8 carries KSh million aggregates *and* per-capita
   KSh) says so there.
 
+## Into the tidyverse
+
+Every result is a tibble, so dplyr verbs work directly — and they keep the
+provenance: filter it, rank it, transform it, and `knbs_metadata()` still
+answers on the result. Aggregations and reshapes return plain tibbles,
+because a derived table is your data, not the source's.
+
+```{r, eval = FALSE}
+library(dplyr)
+library(tidyr)
+
+# The largest industries in 2024, straight off the table
+knbs_abstract_table("2.2") |>
+  filter(period == 2024, industry != "GDP at market prices") |>
+  slice_max(value, n = 5) |>
+  select(industry, value, status)
+
+# Recreate the printed-table look: industries by year, wide
+knbs_abstract_table("2.4") |>
+  filter(industry %in% c("Agriculture, forestry and fishing",
+                         "Manufacturing", "GDP at market prices")) |>
+  select(industry, period, value) |>
+  pivot_wider(names_from = period, values_from = value)
+
+# Sectioned tables group naturally
+knbs_abstract_table("2.1") |>
+  filter(measure == "Gross value added at basic prices", period == 2024) |>
+  arrange(desc(value))
+
+# And straight into ggplot2
+library(ggplot2)
+knbs_abstract_table("2.5") |>
+  filter(industry == "GDP at market prices") |>
+  ggplot(aes(period, value)) +
+  geom_col() +
+  labs(title = "Real GDP growth", y = "per cent")
+```
+
+To hand the data to something that dislikes subclasses, drop the wrapper
+with `tibble::as_tibble()`.
+
 ## Provenance travels
 
 ```{r, eval = FALSE}
