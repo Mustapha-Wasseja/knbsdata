@@ -413,13 +413,53 @@ expenditure and assembly composition — no GCP. With this, every portal on
 KNBS's own portals page has now been checked for GCP: census API (32 tables,
 no), CPI Explorer (prices only), NADA (surveys), media library (PDF reports
 only), this hub (no), and the topical portals (KDHS, FinAccess, NIPFN —
-out-of-domain).
+out-of-domain). *Update 2026-08-11: still true of every first-party portal,
+but no longer of the third-party mirror — see F-30.*
 
 **F-29 — `kenya.opendataforafrica.org` is bot-gated.** The third-party
 mirror listed on the portals page answers API requests with a Cloudflare
 challenge ("Just a moment..."), a human-verification mechanism the plan
 forbids bypassing — tier 4 on access mechanism alone, before the
-third-party-mirror policy is even reached.
+third-party-mirror policy is even reached. *Superseded 2026-08-11 by F-30:
+the gate has lifted.*
+
+**F-30 — The africa-portal gate has lifted, and GCP is data there.**
+Re-probed 2026-08-11 after the user pointed at the portal's GCP page.
+`kenya.opendataforafrica.org` — the Knoema-platform portal that KNBS lists
+on its own portals page — now answers its JSON API without any challenge,
+using the package's transparent audit UA. Its `robots.txt` permits the API
+with one exception: `/api/1.0/sdmx` is disallowed, so the package must
+never use the SDMX export route there. Verified endpoints:
+
+- `GET /api/1.0/meta/dataset` — the catalogue: **202 public datasets**,
+  169 sourced "Kenya National Bureau of Statistics" (source records carry
+  `licenseTypeName: "Public Domain"` and `isVerified: true`), 5 Central
+  Bank of Kenya, the rest ministries and agencies.
+- `GET /api/1.0/meta/dataset/{id}` — dimensions, publication and
+  next-release dates, and an original-data link back to `knbs.or.ke`.
+- `GET /api/1.0/meta/dataset/{id}/dimension/{dim}` — members with stable
+  ids and, for geographic dimensions, ISO-style `RegionId` codes
+  (`KE`, `KE-700-BA`, …).
+- `GET /api/2.0/data?datasetId={id}` — every time series as JSON
+  (`startDate`, `frequency`, `values` array), `continuationToken` paging.
+
+The GCP dataset `jhbzkjc` ("Gross County Product (GCP) 2021") holds three
+tables — county contribution to GVA (%), GCP in constant prices and in
+current prices (KSh million) — for the 47 counties plus a national total,
+annual 2013–2020: 143 series in one 55 KB response. Cautions for any
+adapter: (a) this is a **republisher** — provenance must name the mirror
+and point at the original, and first-party portals stay preferred wherever
+they carry the same data; (b) **vintage lag** — the GCP dataset is still
+the 2021 edition (published 2022-11-18; its stated next release of
+2023-11-18 passed without update), while KNBS's newer GCP reports extend
+past 2020 as PDF only; (c) the portal overall is actively maintained —
+48 datasets updated in 2025, most recently 2025-11-07 (Economic Survey
+2025 vital statistics, health, trade, plus CBK money and interest-rate
+series); (d) F-29's Cloudflare challenge was real when observed, so an
+adapter must treat any challenge-page response as an access-gate
+condition, never something to retry through. Tier moves from 4 to 2–3:
+machine-readable, robots-permitted, licence labelled at source level;
+third-party status is the remaining caution.
 
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package

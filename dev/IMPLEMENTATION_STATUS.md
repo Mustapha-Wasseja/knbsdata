@@ -19,11 +19,16 @@ place where phase progress, open decisions and blockers are recorded.
   finance by all 47 counties, CPI by region and the rest — with a
   coordinate-alignment regression test on the sparse JSON-stat expansion and
   a live cross-source check (hub CPI = CPI Explorer CPI = 154.91, June
-  2026). Gross County Product remains PDF-only on every official portal
-  (checked exhaustively 2026-08-08); the only data route for it would be a
-  registered experimental PDF-table parser per plan section 11.12. Other
-  threads: COICOP divisional series (F-25), classifications, boundaries,
-  `knbs_search()`.
+  2026). Gross County Product remains PDF-only on every first-party portal
+  (checked exhaustively 2026-08-08), but on 2026-08-11 the re-probed
+  third-party mirror `kenya.opendataforafrica.org` turned out to have
+  dropped its Cloudflare gate (F-29 → F-30): its robots-permitted JSON API
+  serves GCP 2013–2020 (constant and current prices plus GVA shares, all
+  47 counties) and a 202-dataset catalogue (169 KNBS-sourced, licence
+  labelled "Public Domain", updated through Nov 2025) — an adapter
+  candidate, with republisher provenance and the GCP vintage lag
+  (2021 edition only) as the honesty caveats. Other threads: COICOP
+  divisional series (F-25), classifications, boundaries, `knbs_search()`.
 - **Package version:** 0.4.0.9000
 - **Network access implemented:** five live sources — KeNADA, the website
   media library, the census data API, the CPI Explorer and the SDMX hub.
