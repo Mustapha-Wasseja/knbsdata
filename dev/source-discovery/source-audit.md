@@ -503,6 +503,38 @@ configuration with the package's own UA, not a disguise — and never solves
 or retries a challenge: one that returns anyway surfaces as
 `knbs_error_access_restricted`, per the F-29 rule.
 
+*F-30 verification addendum (2026-08-11).* The portal's own gallery page
+for GCP (`/reombx/gross-county-product-gcp-2021`, presented under official
+Kenya / KNBS branding as "Kenya Data Portal") displays figures that match
+the adapter's output exactly: national constant-price total 2020 =
+8,001,274; Nairobi 2,267,447 constant and 2,669,829 current; Kiambu
+453,872; Machakos 187,900 current in 2013. The adapter's expansion agrees
+with the portal's own rendering value for value, on top of the base-year
+identity (constant = current in 2016, to the shilling) already checked.
+
+**F-35 — The Statistical Abstract ships its tables as first-party xlsx
+workbooks.** The reports page
+`https://www.knbs.or.ke/reports/2025-statistical-abstract/` indexes 18
+chapter workbooks (Land & Water through Social & Economic Inclusion) at
+direct `wp-content/uploads` URLs — and every one is a media-library record
+the existing publications adapter already serves.
+`knbs_publications("chapter", format = "xlsx")` lists the 2025 set (upload
+date 2026-01-18) and the 2024 set beneath it (2025-05-11, including the
+chapters 19–20 that only that edition has);
+`knbs_publications("statistical abstract", format = "xlsx")` finds Chapter
+2, whose filename (`NA-Statistical-Abstract_2025-1.xlsx`) does not contain
+the word "chapter" — naming is inconsistent, so full discovery needs both
+queries. Verified end-to-end through the package: the National Accounts
+workbook downloads through the verify-and-checksum layer (declared
+spreadsheet content type, 106,803 bytes, SHA-256, `PK` magic) and opens as
+16 worksheets (Table 2.1 onward). Library quirks seen in passing:
+re-upload duplicates are distinct records with identical titles (Chapter
+12 twice; `NA-…-1` and `NA-…-1-1`), and per-county Statistical Abstract
+editions (2023–2025) exist as PDFs uploaded 2025-12 through 2026-02. No
+new adapter is needed to find or fetch the workbooks; turning the tables
+*inside* them into tidy observations would be a separately-scoped
+standardisation problem, unlike the JSON sources' fixed schemas.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
