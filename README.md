@@ -21,7 +21,8 @@ cite it correctly.
 
 ## Scope
 
-**Implemented: survey discovery, publications, and census tables.**
+**Implemented: surveys, publications, and indicators — census, prices,
+the economy, and Gross County Product.**
 
 - **Surveys**, against the Kenya National Data Archive: search studies,
   read their full documentation, search their variables, and list their
@@ -39,14 +40,20 @@ cite it correctly.
 - **The economy**, against the KNBS Data Portal: 323 SDMX dataflows —
   GDP by activity and expenditure, trade, balance of payments, county
   government finance, employment and more.
+- **Gross County Product and the republished datasets**, against Kenya
+  Open Data for Africa: GCP for all 47 counties (2013–2020, constant and
+  current prices) plus 200 more datasets from KNBS, the Central Bank of
+  Kenya and partner agencies — with republisher provenance stated on
+  every result.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Gross County Product as data.** Its five editions exist only as PDF
-  reports on every official portal; find and download them through
+- **The newest Gross County Product years as data.** The data version is
+  the 2021 edition (through 2020); the editions since exist only as PDF
+  reports — find and download them through
   `knbs_publications("gross county product")`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
@@ -74,7 +81,7 @@ library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
 knbs_sources()
-#> # A tibble: 6 × 8
+#> # A tibble: 7 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
@@ -82,14 +89,15 @@ knbs_sources()
 #> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
 #> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
 #> 5 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
-#> 6 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 6 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
+#> 7 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
-#> # A tibble: 6 × 3
+#> # A tibble: 7 × 3
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
@@ -97,7 +105,8 @@ knbs_status()[, c("source_id", "status", "message")]
 #> 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    
 #> 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    
 #> 5 knbs_opendata     not_checked Set live = TRUE to contact the source.    
-#> 6 fake_source       unverified  Endpoint not verified; nothing to contact.
+#> 6 opendataforafrica not_checked Set live = TRUE to contact the source.    
+#> 7 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
 Surveys (these contact the archive, so they are not run here):
@@ -133,6 +142,9 @@ Indicators (live requests, not run here):
 # Monthly CPI and inflation, from 2009
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
+
+# Gross County Product, all 47 counties, 2013-2020
+gcp <- knbs_get_indicator("jhbzkjc")
 
 # County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")

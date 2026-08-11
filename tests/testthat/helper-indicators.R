@@ -57,6 +57,7 @@ local_knbsapi <- function(overrides = list(), env = parent.frame()) {
     cpix_get = cpix_default_handler, # nolint: object_usage_linter. Defined in helper-cpix.R.
     hub_get = hub_default_get, # nolint: object_usage_linter. Defined in helper-hub.R.
     hub_post_data = hub_default_post, # nolint: object_usage_linter. Defined in helper-hub.R.
+    knoema_get = knoema_default_get, # nolint: object_usage_linter. Defined in helper-knoema.R.
     .package = "knbsdata",
     .env = env
   )

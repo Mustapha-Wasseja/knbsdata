@@ -3,36 +3,35 @@
 Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
-- **Last updated:** 2026-08-08
+- **Last updated:** 2026-08-11
 - **Current phase:** post-0.1.0 development. Phases 4, 5 and **6** are
   complete — publications, census indicators, and geographic reference codes.
   Every plan phase now has a shipped core, and the plan's headline example —
   `knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")` — works: the
   consumer-prices adapter is built on the traced CPI Explorer API (audit 1c),
-  with the F-24 region-substitution defence and F-26 empty-province behaviour
-  tested, and the unstated licence carried in every result's metadata.
-  Retail prices are delivered too (`knbs_retail_prices()`, audit F-27: the
-  full national history, no regional data exists). **The F-28 opportunity is
-  delivered**: the `sdmxhub` adapter serves all 323 dataflows of
-  `opendata.knbs.or.ke` through the same `knbs_indicators()` /
-  `knbs_get_indicator()` surface — GDP by activity, county government
-  finance by all 47 counties, CPI by region and the rest — with a
-  coordinate-alignment regression test on the sparse JSON-stat expansion and
-  a live cross-source check (hub CPI = CPI Explorer CPI = 154.91, June
-  2026). Gross County Product remains PDF-only on every first-party portal
-  (checked exhaustively 2026-08-08), but on 2026-08-11 the re-probed
-  third-party mirror `kenya.opendataforafrica.org` turned out to have
-  dropped its Cloudflare gate (F-29 → F-30): its robots-permitted JSON API
-  serves GCP 2013–2020 (constant and current prices plus GVA shares, all
-  47 counties) and a 202-dataset catalogue (169 KNBS-sourced, licence
-  labelled "Public Domain", updated through Nov 2025) — an adapter
-  candidate, with republisher provenance and the GCP vintage lag
-  (2021 edition only) as the honesty caveats. Other threads: COICOP
-  divisional series (F-25), classifications, boundaries, `knbs_search()`.
+  with retail prices (F-27) and the `sdmxhub` adapter over all 323 dataflows
+  of `opendata.knbs.or.ke` (F-28, coordinate-alignment regression + live
+  cross-source check) delivered. **The F-30 opportunity is delivered too**:
+  the `knoema` adapter serves the 202 datasets of
+  `kenya.opendataforafrica.org` — the third-party republisher whose
+  Cloudflare gate lifted (F-29 → F-30) — through the same
+  `knbs_indicators()` / `knbs_get_indicator()` surface, and with it **Gross
+  County Product as data** (`jhbzkjc`: GVA shares, constant- and
+  current-price GCP, 47 counties, 2013–2020), which no first-party portal
+  serves. Republisher provenance, per-dataset licence labels and the
+  portal's own publication/update dates travel on every result; the
+  2021-edition vintage lag is stated, not hidden. New defences: F-31
+  (200-with-a-string errors), F-32 (untrustworthy listing structure), F-33
+  (mixed-frequency datasets → the new `frequency` argument, no silent
+  pick), per-series timeline verification, and unstated period bounds no
+  longer trim (the old default 2000–now window went). Other threads: COICOP
+  divisional series (F-25), classifications, boundaries, `knbs_search()`,
+  and the still-PDF-only newest GCP years (2021+ data would need the plan
+  §11.12 experimental PDF-table route or a portal update).
 - **Package version:** 0.4.0.9000
-- **Network access implemented:** five live sources — KeNADA, the website
-  media library, the census data API, the CPI Explorer and the SDMX hub.
-  Every test still runs offline
+- **Network access implemented:** six live sources — KeNADA, the website
+  media library, the census data API, the CPI Explorer, the SDMX hub and
+  the Open Data for Africa republisher. Every test still runs offline
   against fixtures.
 
 ---

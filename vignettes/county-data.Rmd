@@ -70,6 +70,26 @@ head(joined[order(-joined$share), ])
 The join is exact by construction: observations and reference use the same
 codes from the same source.
 
+## Gross County Product
+
+The county economy itself is served by the Open Data for Africa republisher
+(`source_id` `"opendataforafrica"`), the one source that carries GCP as
+data: GVA shares plus constant- and current-price GCP for all 47 counties,
+annual 2013–2020.
+
+```{r, eval = FALSE}
+gcp <- knbs_get_indicator("jhbzkjc")
+latest <- gcp[gcp$table == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
+head(latest[order(-latest$value), c("geo_name", "value")])
+```
+
+Two cautions, both stated in `knbs_metadata()`: this is the **2021 edition**
+— newer GCP years exist only as PDF reports
+(`knbs_publications("gross county product")`) — and its geography codes are
+the **portal's own region codes**, not census territories. To relate GCP to
+census-coded data, join **by county name**, deliberately and visibly, not by
+code.
+
 ## What is deliberately absent
 
 - **Other vintages and crosswalks.** Only the 2019 frame has a verified

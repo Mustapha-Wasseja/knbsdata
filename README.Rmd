@@ -30,7 +30,8 @@ shape, keep the provenance attached to the data, and cite it correctly.
 
 ## Scope
 
-**Implemented: survey discovery, publications, and census tables.**
+**Implemented: surveys, publications, and indicators — census, prices, the
+economy, and Gross County Product.**
 
 - **Surveys**, against the Kenya National Data Archive: search studies, read
   their full documentation, search their variables, and list their data files —
@@ -47,14 +48,19 @@ shape, keep the provenance attached to the data, and cite it correctly.
 - **The economy**, against the KNBS Data Portal: 323 SDMX dataflows — GDP by
   activity and expenditure, trade, balance of payments, county government
   finance, employment and more.
+- **Gross County Product and the republished datasets**, against Kenya Open
+  Data for Africa: GCP for all 47 counties (2013–2020, constant and current
+  prices) plus 200 more datasets from KNBS, the Central Bank of Kenya and
+  partner agencies — with republisher provenance stated on every result.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
 
 Not implemented:
 
-- **Gross County Product as data.** Its five editions exist only as PDF
-  reports on every official portal; find and download them through
+- **The newest Gross County Product years as data.** The data version is the
+  2021 edition (through 2020); the editions since exist only as PDF reports —
+  find and download them through
   `knbs_publications("gross county product")`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
@@ -121,6 +127,9 @@ Indicators (live requests, not run here):
 # Monthly CPI and inflation, from 2009
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
+
+# Gross County Product, all 47 counties, 2013-2020
+gcp <- knbs_get_indicator("jhbzkjc")
 
 # County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")

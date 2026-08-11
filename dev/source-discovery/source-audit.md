@@ -461,6 +461,48 @@ condition, never something to retry through. Tier moves from 4 to 2–3:
 machine-readable, robots-permitted, licence labelled at source level;
 third-party status is the remaining caution.
 
+**F-31 — The africa portal answers unknown dataset ids with 200 and a bare
+string.** `GET /api/1.0/meta/dataset/{unknown}` and
+`GET /api/2.0/data?datasetId={unknown}` both answer HTTP 200 with the JSON
+string `"Requested dataset doesn't exist or you don't have access to it."`
+— the F-17 family again, in a third shape. The adapter recognises a bare
+string payload at its single network entry point and classes it as a
+missing resource; any *other* bare string is a schema change.
+
+**F-32 — The africa portal's dataset listing misstates structure.** The
+listing (`/api/1.0/meta/dataset`) says `hasGeoDimension: false` and
+`dimensions: null` for the GCP dataset, while the dataset's own metadata
+(`/api/1.0/meta/dataset/jhbzkjc`) says `hasGeoDimension: true` with a full
+dimension list. The listing is trustworthy for identity (id, name, source,
+licence label, dates) and for nothing structural; the adapter reads
+structure only from per-dataset metadata, and the test fixtures keep the
+listing's lie deliberately.
+
+**F-33 — One africa-portal dataset may mix frequencies.** The interest-rate
+dataset `doflnmd` carries the same indicators as annual series (2018–2023,
+unit "Percent") *and* quarterly series (2024, unit unstated); the money
+supply dataset mixes annual and monthly. Annual observations carry
+integer-year periods and sub-annual ones carry Dates, which cannot share a
+column, so the adapter refuses a mixed dataset until the caller names a
+frequency (`knbs_get_indicator(..., frequency = "annual")`) — the
+no-silent-guessing rule applied to time. Each series' values are expanded
+from its own `startDate` and verified against its own `endDate`, so a
+miscounted expansion is a refusal, not a shift onto wrong years.
+
+**F-34 — The africa portal's edge intermittently challenges libcurl's
+default HTTP negotiation.** During live verification of the adapter, the
+same request that curl served with 200 answered R's httr2 client with 403
+and a Cloudflare challenge page (`cf-mitigated: challenge`) — with the same
+transparent knbsdata User-Agent, so identity is not the trigger. Pinning an
+explicit standard HTTP version (`CURLOPT_HTTP_VERSION` to HTTP/1.1, or
+equally HTTP/2) makes the identical client pass, including immediately
+after a challenge; without the pin the challenge recurs intermittently,
+which reads as edge-side probabilistic scoring of the default negotiation
+fingerprint. The adapter pins plain HTTP/1.1 — an ordinary client
+configuration with the package's own UA, not a disguise — and never solves
+or retries a challenge: one that returns anyway surfaces as
+`knbs_error_access_restricted`, per the F-29 rule.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The

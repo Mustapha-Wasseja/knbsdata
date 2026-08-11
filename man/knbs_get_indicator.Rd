@@ -10,6 +10,7 @@ knbs_get_indicator(
   end = NULL,
   geo_level = NULL,
   geo_code = NULL,
+  frequency = NULL,
   source = NULL,
   cache = knbs_option("cache"),
   refresh = FALSE
@@ -27,6 +28,12 @@ indicator name to identify one unambiguously.}
 
 \item{geo_code}{Keep only these codes, as character, in the indicator's own
 geography.}
+
+\item{frequency}{Keep only series of this frequency: \code{"annual"},
+\code{"quarterly"} or \code{"monthly"}. Only the Open Data for Africa source
+accepts it — its datasets may carry annual and sub-annual series side by
+side, and a mixed dataset asks you to choose rather than picking one
+silently.}
 
 \item{source}{Source id, to disambiguate an indicator served by more than
 one source.}
@@ -71,6 +78,7 @@ so.
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
 }
 }
 \seealso{

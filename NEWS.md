@@ -1,5 +1,43 @@
 # knbsdata (development version)
 
+## Gross County Product, via the Open Data for Africa republisher
+
+The county economy arrives as data — from the one portal that serves it.
+`knbs_indicators()` and `knbs_get_indicator()` now also serve
+`kenya.opendataforafrica.org` (`opendataforafrica` in the registry), the
+Knoema-operated portal listed on KNBS's own portals page, which republishes
+202 Kenyan datasets: 169 from KNBS under a "Public Domain" licence label,
+the rest from the Central Bank of Kenya, ministries and agencies (audit
+F-30). Chief among them: **Gross County Product**
+(`knbs_get_indicator("jhbzkjc")`) — GVA shares plus constant- and
+current-price GCP for all 47 counties, annual 2013–2020, which no
+first-party KNBS portal serves as data.
+
+* This is a **republisher**, and the package says so: every result's
+  `knbs_metadata()` names the portal, the original producer, the dataset's
+  own licence label (verbatim; "Not stated by the source" where there is
+  none) and the portal's publication and update dates — so a vintage that
+  lags the producer's newest PDFs is visible, never hidden. The GCP dataset
+  is the 2021 edition; newer GCP years remain PDF-only.
+* New `frequency` argument to `knbs_get_indicator()`. A portal dataset may
+  mix annual, quarterly and monthly series under one id (audit F-33);
+  annual periods are integer years and sub-annual ones are `Date`s, which
+  cannot share a column, so a mixed dataset asks you to choose
+  (`frequency = "annual"`) instead of picking one silently. Sources where
+  the filter means nothing refuse it.
+* Every series' timeline is expanded from its own start date and verified
+  against its own stated end date; a mismatch is refused as a schema change
+  rather than shifting values onto wrong years. Geography codes are the
+  portal's own region codes (`geo_level` `NA`) and must never be joined
+  against `knbs_geographies()`; the listing's structural fields are not
+  trusted (audit F-32), and the portal's 200-with-a-string error answers
+  are classed as missing resources (audit F-31).
+* Unstated `start`/`end` bounds no longer imply a default window: previously
+  observations before 2000 (and, for sub-annual series, after the current
+  month) were silently trimmed even when no bounds were asked for. No
+  verified source served such observations until now, so no earlier result
+  changes; the bounds you *do* state behave exactly as before.
+
 ## The KNBS Data Portal: 323 dataflows
 
 The economy arrives as data. `knbs_indicators()` and `knbs_get_indicator()`

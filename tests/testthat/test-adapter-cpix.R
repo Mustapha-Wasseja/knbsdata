@@ -19,8 +19,11 @@ test_that("the catalogue aggregates census and CPI sources", {
   local_knbsapi()
   catalogue <- knbs_indicators()
 
-  expect_identical(nrow(catalogue), 37L)
-  expect_setequal(unique(catalogue$source_id), c("knbs_indicators", "knbs_cpi", "knbs_opendata"))
+  expect_identical(nrow(catalogue), 40L)
+  expect_setequal(
+    unique(catalogue$source_id),
+    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica")
+  )
 
   prices <- knbs_indicators(topic = "prices")
   expect_identical(nrow(prices), 3L)
@@ -208,13 +211,19 @@ test_that("start and end are validated", {
 test_that("period bounds parse years, months and dates", {
   expect_identical(
     normalise_period_bounds(2020, 2021),
-    list(from = as.Date("2020-01-01"), to = as.Date("2021-12-01"))
+    list(from = as.Date("2020-01-01"), to = as.Date("2021-12-01"),
+         from_given = TRUE, to_given = TRUE)
   )
   expect_identical(
     normalise_period_bounds("2020-07", "2020-09-15")$to,
     as.Date("2020-09-01")
   )
-  expect_identical(normalise_period_bounds(NULL, NULL)$from, as.Date("2000-01-01"))
+  # The default window still exists for adapters that need a concrete request
+  # start (the CPI Explorer), but it is marked as not caller-given, so it
+  # never trims results.
+  open_bounds <- normalise_period_bounds(NULL, NULL)
+  expect_identical(open_bounds$from, as.Date("2000-01-01"))
+  expect_false(open_bounds$from_given)
 })
 
 test_that("census indicators still work through the aggregated path", {
@@ -253,8 +262,11 @@ test_that("one unreachable source degrades the catalogue with a warning", {
     catalogue <- knbs_indicators(refresh = TRUE),
     class = "knbs_warning_partial_failure"
   )
-  expect_identical(nrow(catalogue), 5L)
-  expect_setequal(unique(catalogue$source_id), c("knbs_cpi", "knbs_opendata"))
+  expect_identical(nrow(catalogue), 8L)
+  expect_setequal(
+    unique(catalogue$source_id),
+    c("knbs_cpi", "knbs_opendata", "opendataforafrica")
+  )
 })
 
 test_that("no source at all is an error", {

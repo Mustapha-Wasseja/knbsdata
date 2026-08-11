@@ -6,9 +6,10 @@
 #' `r lifecycle::badge("experimental")`
 #'
 #' Lists the indicators served by every verified indicator source: the 2019
-#' Population and Housing Census tables (CC BY 4.0), and the monthly consumer
-#' price series from the KNBS CPI Explorer. The `source_id` column says which
-#' source serves each row.
+#' Population and Housing Census tables (CC BY 4.0), the monthly consumer
+#' price series from the KNBS CPI Explorer, the KNBS Data Portal's SDMX
+#' dataflows, and the datasets republished by Kenya Open Data for Africa.
+#' The `source_id` column says which source serves each row.
 #'
 #' @details
 #' `frequency` and `unit` are filled only where the source states them: the
@@ -161,6 +162,11 @@ knbs_indicators <- function(topic = NULL,
 #'   `"county"`, `"subcounty"`. CPI series: `"national"`, `"region"`.
 #' @param geo_code Keep only these codes, as character, in the indicator's own
 #'   geography.
+#' @param frequency Keep only series of this frequency: `"annual"`,
+#'   `"quarterly"` or `"monthly"`. Only the Open Data for Africa source
+#'   accepts it — its datasets may carry annual and sub-annual series side by
+#'   side, and a mixed dataset asks you to choose rather than picking one
+#'   silently.
 #' @param source Source id, to disambiguate an indicator served by more than
 #'   one source.
 #' @param cache Whether to use the local cache.
@@ -176,6 +182,7 @@ knbs_indicators <- function(topic = NULL,
 #' cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 #' inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 #' pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+#' gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
 #' }
 #' @export
 knbs_get_indicator <- function(indicator,
@@ -183,6 +190,7 @@ knbs_get_indicator <- function(indicator,
                                end = NULL,
                                geo_level = NULL,
                                geo_code = NULL,
+                               frequency = NULL,
                                source = NULL,
                                cache = knbs_option("cache"),
                                refresh = FALSE) {
@@ -194,13 +202,18 @@ knbs_get_indicator <- function(indicator,
     )
   }
   if (!is.null(geo_code)) check_character(geo_code, "geo_code")
+  if (!is.null(frequency)) {
+    check_string(frequency, "frequency")
+    check_values(frequency, "frequency", c("annual", "quarterly", "monthly"))
+  }
   bounds <- normalise_period_bounds(start, end)
 
   resolved <- resolve_indicator(indicator, source = source,
                                 cache = cache, refresh = refresh)
   src <- knbs_source(resolved$source_id)
 
-  filters <- compact_list(list(geo_level = geo_level, geo_code = geo_code))
+  filters <- compact_list(list(geo_level = geo_level, geo_code = geo_code,
+                               frequency = frequency))
   if (identical(src$adapter, "cpiexplorer")) {
     # Passed as strings so equivalent requests share a cache key; the adapter
     # parses them back.
@@ -365,22 +378,35 @@ normalise_period_bounds <- function(start, end, call = rlang::caller_env()) {
       call = call
     )
   }
-  list(from = from, to = to)
+  # The defaults exist so adapters that need concrete request windows (the CPI
+  # Explorer) have one; whether the caller actually stated a bound travels
+  # alongside, so that unstated bounds never trim anything.
+  list(from = from, to = to,
+       from_given = !is.null(start), to_given = !is.null(end))
 }
 
 #' Apply period bounds to observations of either period convention
+#'
+#' Only bounds the caller actually stated are applied. A default window would
+#' silently hide the ends of long histories, which is exactly the kind of
+#' quiet incompleteness the package refuses elsewhere.
+#'
 #' @noRd
 filter_period_bounds <- function(out, bounds) {
   if (!"period" %in% names(out) || nrow(out) == 0L) {
     return(out)
   }
+  if (!isTRUE(bounds$from_given) && !isTRUE(bounds$to_given)) {
+    return(out)
+  }
+  lower <- if (isTRUE(bounds$from_given)) bounds$from else as.Date("0001-01-01")
+  upper <- if (isTRUE(bounds$to_given)) bounds$to else as.Date("9999-12-01")
   keep <- if (inherits(out$period, "Date")) {
-    out$period >= bounds$from & out$period <= bounds$to
+    out$period >= lower & out$period <= upper
   } else {
     years <- as.integer(out$period)
-    from_year <- as.integer(format(bounds$from, "%Y"))
-    to_year <- as.integer(format(bounds$to, "%Y"))
-    is.na(years) | (years >= from_year & years <= to_year)
+    is.na(years) | (years >= as.integer(format(lower, "%Y")) &
+                      years <= as.integer(format(upper, "%Y")))
   }
   out[keep, ]
 }

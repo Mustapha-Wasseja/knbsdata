@@ -23,15 +23,15 @@ test_that("the catalogue maps dataflows to their statistical domain", {
   expect_identical(unique(catalogue$topic), "ECONOMIC STATISTICS")
 })
 
-test_that("the aggregate catalogue now spans three sources", {
+test_that("the aggregate catalogue spans every verified indicator source", {
   local_cache()
   local_knbsapi()
   combined <- knbs_indicators()
 
-  expect_identical(nrow(combined), 37L)
+  expect_identical(nrow(combined), 40L)
   expect_setequal(
     unique(combined$source_id),
-    c("knbs_indicators", "knbs_cpi", "knbs_opendata")
+    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica")
   )
 })
 

@@ -19,15 +19,18 @@ library(knbsdata)
 `knbs_get_indicator()` returns one indicator as tidy observations. Three
 families exist today: tables from the **2019 Population and Housing Census**
 (CC BY 4.0), the **monthly consumer price series** from the KNBS CPI
-Explorer, and the **323 economic dataflows of the KNBS Data Portal** — GDP,
+Explorer, the **323 economic dataflows of the KNBS Data Portal** — GDP,
 trade, balance of payments, county government finance and much else, in SDMX
-form.
+form — and the **202 datasets republished by Kenya Open Data for Africa**,
+which carry the one thing no first-party portal serves as data: Gross County
+Product.
 
 ```{r, eval = FALSE}
 knbs_indicators()                  # all families, source_id says which
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 gdp <- knbs_get_indicator("DF_NAT_GDPCP")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product, 2013-2020
 ```
 
 ## The Data Portal (SDMX)
@@ -48,6 +51,36 @@ they must never be joined against `knbs_geographies()`.
 
 Chunks that contact the services are shown but not run, so building this
 vignette never depends on them.
+
+## Open Data for Africa (the republisher)
+
+`knbs_indicators(source = "opendataforafrica")` lists the 202 datasets of
+`kenya.opendataforafrica.org`, the Knoema-operated portal on KNBS's own
+portals page — 169 sourced from KNBS, the rest from the Central Bank of
+Kenya, ministries and agencies. Dataset ids are the portal's own opaque
+slugs, so name search is the natural way in:
+
+```{r, eval = FALSE}
+knbs_indicators(source = "opendataforafrica", search = "county product")
+gcp <- knbs_get_indicator("jhbzkjc")
+gcp[gcp$table == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
+```
+
+Three behaviours to know:
+
+- **Mixed frequencies.** One dataset may hold annual, quarterly and monthly
+  series side by side. Annual periods are integer years and sub-annual ones
+  are `Date`s, which cannot share a column, so a mixed dataset refuses to
+  pick silently — say `frequency = "annual"` (or `"quarterly"`,
+  `"monthly"`) to choose.
+- **Republished provenance.** `knbs_metadata()` names the portal, the
+  original producer, the dataset's own licence label (most KNBS-sourced
+  datasets state "Public Domain") and the portal's publication and update
+  dates — the data vintage is visible, and can lag the producer's newest
+  PDFs.
+- **Geography codes are the portal's region codes** (`KE`, `KE-110-NA`, …),
+  `geo_level` is `NA`, and they must never be joined against
+  `knbs_geographies()`.
 
 ## Consumer prices
 

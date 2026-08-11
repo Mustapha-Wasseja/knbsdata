@@ -48,7 +48,7 @@ standardise_census_catalogue <- function(themes, source_id) {
 #' dimension labelled Sex becomes `sex`; every other dimension keeps its source
 #' id as a pair of columns, `<dim_id>` (code) and `<dim_id>_label`.
 #'
-#' @param parsed The result of [parse_jsonstat()].
+#' @param parsed The result of `parse_jsonstat()`.
 #' @param indicator_id Dataset id the observations belong to.
 #' @param source_id Source id.
 #' @noRd

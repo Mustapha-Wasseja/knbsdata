@@ -108,6 +108,43 @@ Three properties of this source to keep in mind, all carried in
   period.** Asking for them returns zero rows, because that is the source's
   answer.
 
+**Gross County Product and the republished datasets**, via Kenya Open Data
+for Africa (`kenya.opendataforafrica.org`): 202 datasets — 169 sourced from
+KNBS, the rest from the Central Bank of Kenya, ministries and agencies —
+including the one thing no first-party portal serves as data: Gross County
+Product (`knbs_get_indicator("jhbzkjc")` — GVA shares plus constant- and
+current-price GCP for all 47 counties, 2013–2020). `knbs_indicators()` lists
+them (`source_id` `"opendataforafrica"`).
+
+This source is different in kind from the others, and its honesty caveats
+are correspondingly heavier:
+
+- **It is a republisher, not the publisher.** The portal is operated on the
+  Knoema data platform and is listed on KNBS's own portals page; every
+  result's `knbs_metadata()` names the portal and points at the original
+  producer. Where a first-party portal serves the same data, prefer the
+  first-party portal.
+- **Its vintage can lag the PDFs.** The GCP dataset is the 2021 edition;
+  KNBS has since published newer GCP years as PDF reports only. The
+  metadata carries the portal's own publication and update dates so the lag
+  is visible, not hidden.
+- **Licence labels vary by dataset** and are carried verbatim — most
+  KNBS-sourced datasets say "Public Domain"; datasets without a label say
+  "Not stated by the source".
+- **Its geography codes are the portal's own region codes** (`KE`,
+  `KE-700-BA`, …), not census territories; never join them against
+  `knbs_geographies()`.
+- **A dataset may mix frequencies** — annual, quarterly and monthly series
+  side by side under one id. Annual periods are integer years and
+  sub-annual ones are Dates, which cannot share a column, so a mixed
+  dataset asks you to choose (`frequency = "annual"`) rather than picking
+  one silently.
+- **Its edge sometimes challenges automated clients.** The package
+  identifies itself transparently and speaks plain HTTP/1.1, which the
+  portal serves; if a challenge page comes back anyway, that is an access
+  gate and you get `knbs_error_access_restricted` — the package never
+  solves or retries a challenge. Trying again later usually suffices.
+
 ## What does not, and why
 
 ### Microdata cannot be downloaded
@@ -127,12 +164,15 @@ listing at the archive. Reaching them would mean parsing a web page, which this
 package does not do. The `catalogue_url` column from `knbs_search_surveys()`
 opens the study on the archive's own site, where they are linked.
 
-### Gross County Product is still a document
+### The newest Gross County Product years are still documents
 
-GCP has no machine-readable source on any official portal (checked
-exhaustively): its five editions exist only as PDF reports, reachable through
-`knbs_publications("gross county product")`. Sub-national *government
-finance* is data (through the Data Portal); sub-national *product* is not.
+GCP is data now — but only the 2021 edition (2013–2020), through the Open
+Data for Africa republisher above; no first-party KNBS portal serves it as
+data (checked exhaustively). The editions published since extend the series
+past 2020 as PDF reports only, reachable through
+`knbs_publications("gross county product")`. If the newest county figures
+matter, read the PDF; the metadata on the data version dates its vintage
+precisely so the gap is never invisible.
 
 ### Geography: one vintage, no boundaries, no classifications
 

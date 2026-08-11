@@ -171,6 +171,51 @@ sources:
       - Geography codes here (REF_AREA) are SDMX area codes, not census
         territory codes; they must never be joined against knbs_geographies().
 
+  - source_id: opendataforafrica
+    source_name: Kenya Open Data for Africa (Knoema)
+    owner: Kenya National Bureau of Statistics and partner agencies, via the Knoema-operated portal
+    source_type: indicator_portal
+    base_url: https://kenya.opendataforafrica.org/api
+    landing_page: https://kenya.opendataforafrica.org/
+    adapter: knoema
+    operations:
+      - list_indicators
+      - get_indicator
+      - indicator_metadata
+    authentication: none
+    formats:
+      - json
+    stability: experimental
+    last_verified: 2026-08-11
+    terms_url: null
+    notes:
+      - Knoema data platform republishing 202 Kenyan datasets, traced 2026-08-11
+        (audit F-30); 169 are KNBS-sourced under a "Public Domain" licence
+        label, the rest come from the Central Bank of Kenya, ministries and
+        agencies. Licence labels vary by dataset and are carried verbatim.
+      - A third-party republisher, listed on KNBS's own portals page. It fills
+        gaps no first-party portal serves as data (Gross County Product);
+        first-party portals stay preferred wherever they carry the same data,
+        and provenance names the portal and points at the original producer.
+      - robots.txt disallows /api/1.0/sdmx; the package must never use the
+        SDMX export route here. The JSON API is permitted.
+      - An unknown dataset id answers 200 with a bare explanatory string, not
+        a 404 (audit F-31); that is a missing resource, not data.
+      - The dataset listing's structural fields are unreliable - it says
+        hasGeoDimension false for datasets whose own metadata says true
+        (audit F-32). Structure is read only from per-dataset metadata.
+      - Datasets may mix frequencies in one id - annual, quarterly and monthly
+        series side by side (audit F-33). A mixed dataset requires an explicit
+        frequency choice; nothing is picked silently.
+      - Geography codes are the portal's own region codes, not census
+        territories; they must never be joined against knbs_geographies().
+      - The portal was Cloudflare-gated when first probed (F-29), and its
+        edge still intermittently challenges libcurl's default HTTP
+        negotiation (F-34). The adapter pins plain HTTP/1.1 under the
+        package's own transparent User-Agent - ordinary client
+        configuration, not a disguise. A challenge that returns anyway is
+        an access gate, never something to solve or retry through.
+
   # Internal fixture source used by tests (plan section 28, step 4). It never
   # touches the network and is not intended for users.
   - source_id: fake_source
