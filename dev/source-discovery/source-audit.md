@@ -534,6 +534,54 @@ editions (2023–2025) exist as PDFs uploaded 2025-12 through 2026-02. No
 new adapter is needed to find or fetch the workbooks; turning the tables
 *inside* them into tidy observations would be a separately-scoped
 standardisation problem, unlike the JSON sources' fixed schemas.
+*Update 2026-08-11: that problem is now scoped and solved for Chapter 2 —
+see F-36.*
+
+**F-36 — The Abstract workbooks are print layouts; extraction is curated,
+never guessed.** Anatomy of the National Accounts workbook, established
+sheet by sheet before any code was written:
+
+- Year headers carry the source's own status marks — `2024*` provisional,
+  `2022+` revised, and a superscript plus in the legacy sheets. The marks
+  become a per-year `status` column, not silently stripped.
+- Long tables repeat their title and year header mid-sheet where the print
+  layout breaks pages (Table 2.1 continues under a "- Cont'." title);
+  several sheets stack multiple tables (2.6(a)–(d), 2.7(a)–(d), 2.8 with
+  2.9, and the legacy "Tables 31a, b, c"). Blocks are delimited by title
+  anchors; repeats are recognised and skipped.
+- A value-less label row is **ambiguous**: it may be a section heading
+  (industries in 2.1, accounts in 2.8) or an item whose figures the source
+  simply does not print ("Less: Subsidies", twice, under different
+  aggregates). No mechanical rule separates the two, so each sectioned
+  table's spec enumerates its section labels; anything else value-less is
+  an item kept with honest `NA` values, and in flat tables it is refused.
+- Table 2.9 prints the same label twice within one section (the sources
+  and uses of financing each end in "Total"); a `line` column preserves
+  the sheet's own order instead of renaming anything.
+- Labels carry trailing footnote digits and dot leaders ("Discrepancy 1
+  ………"), and footnote lines ("1 Difference between…", "NPISH: …")
+  interleave with data; both are handled and the labels cleaned.
+- The workbook also carries the pre-revision 2012–2016 annex (Tables
+  30–35, six sheets) and three empty sheets; the annex is uncurated for
+  now and the registry is the extension point.
+
+The design answer is the plan's §11.12 philosophy applied to spreadsheets:
+a **registry of hand-verified extraction recipes** (sheet, anchor, section
+labels, unit, pinned reference values read by hand at curation time) and
+an engine that re-verifies all of it on every read. Fifteen tables of
+Chapter 2 are curated; a drifted workbook is refused with a classed error.
+Verified in tests against the real workbook, including cross-table
+identities (GDP by activity equals GDP by expenditure year by year) and a
+cross-source identity (the income account's GDP at factor cost for 2016
+equals the GCP dataset's national total on the africa portal: 6,926,656).
+Live verification added a third triangulation: the extracted GDP series
+equals the SDMX hub's `DF_NAT_GDPCP` "GDP at Market Prices" to the
+shilling for every shared final and revised year (2018–2023), while the
+two artefacts' *provisional* 2024 figures differ — hub 16,232,295 against
+the workbook's 16,224,478. That is a genuine vintage difference between
+official publications, not an extraction defect, and it is exactly what
+the per-year `status` flags and the workbook SHA-256 in the metadata
+exist to make visible.
 
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package

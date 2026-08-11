@@ -24,10 +24,18 @@ place where phase progress, open decisions and blockers are recorded.
   (200-with-a-string errors), F-32 (untrustworthy listing structure), F-33
   (mixed-frequency datasets → the new `frequency` argument, no silent
   pick), per-series timeline verification, and unstated period bounds no
-  longer trim (the old default 2000–now window went). Other threads: COICOP
-  divisional series (F-25), classifications, boundaries, `knbs_search()`,
-  and the still-PDF-only newest GCP years (2021+ data would need the plan
-  §11.12 experimental PDF-table route or a portal update).
+  longer trim (the old default 2000–now window went). **The Statistical
+  Abstract extraction layer is delivered** (F-35, F-36):
+  `knbs_abstract_tables()` / `knbs_abstract_table()` serve the 2025
+  edition's Chapter 2 (National Accounts, fifteen tables) as tidy
+  observations via a registry of hand-verified recipes
+  (`inst/extdata/abstract-registry.yml`) — the plan §11.12 philosophy
+  applied to xlsx: curated, pinned, refuse-on-drift, never guessed. The
+  registry is the extension point for the other seventeen chapters and the
+  legacy annex. Other threads: COICOP divisional series (F-25),
+  classifications, boundaries, `knbs_search()`, and the still-PDF-only
+  newest GCP years (2021+ data would need the plan §11.12 experimental
+  PDF-table route or a portal update).
 - **Package version:** 0.4.0.9000
 - **Network access implemented:** six live sources — KeNADA, the website
   media library, the census data API, the CPI Explorer, the SDMX hub and

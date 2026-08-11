@@ -1,0 +1,301 @@
+# knbsdata Statistical Abstract extraction registry
+#
+# One entry per curated table of the Statistical Abstract's chapter workbooks
+# (audit F-35, F-36). Nothing here is guessed at run time: each entry records
+# the sheet, the title anchor, the section labels (where the sheet has them),
+# the unit as printed on the sheet, and pinned reference values read by hand
+# from the workbook at curation time. The extraction engine verifies all of
+# it on every read - a workbook whose layout or figures have drifted is
+# refused with a classed error, never silently re-interpreted.
+#
+# Curated so far: Chapter 2 (National Accounts) of the 2025 edition, tables
+# 2.1-2.9. The legacy annex sheets (Tables 30-35, the pre-revision 2012-2016
+# series) and the other seventeen chapters are candidates for later
+# curation; the registry is the extension point.
+
+schema_version: 1
+edition: "2025"
+
+workbooks:
+  - workbook_id: na
+    chapter: "Chapter 2: National Accounts"
+    publication_id: "16372"
+    file_name: NA-Statistical-Abstract_2025-1.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+
+tables:
+  - table_id: "2.1"
+    workbook_id: na
+    sheet: Table 2.1
+    anchor: "Table 2.1"
+    title: "Annual Production Accounts by Industry, 2015 - 2024"
+    group_column: industry
+    item_column: measure
+    groups:
+      - Agriculture, forestry and fishing
+      - Mining and quarrying
+      - Manufacturing
+      - Electricity and water
+      - Construction
+      - Wholesale and retail trade, repair of motor vehicle
+      - Transport and storage
+      - Accommodation and food service activities
+      - Information and communication
+      - Financial and insurance activities
+      - Real estate
+      - Professional, scientific and technical activities
+      - Administrative and support service activities
+      - Public administration and defence
+      - Education
+      - Health and social work
+      - Other service activities
+      - "Less: Financial services indirectly measured"
+      - All industries at basic prices
+      - Total economy
+    unit: KSh million, current prices
+    checks:
+      through: 2024
+      pins:
+        - group: Total economy
+          item: GDP at market prices
+          period: 2016
+          value: 7594064
+        - group: Agriculture, forestry and fishing
+          item: Output at basic prices
+          period: 2015
+          value: 1648743
+
+  - table_id: "2.2"
+    workbook_id: na
+    sheet: Table 2.2
+    anchor: "Table 2.2"
+    title: "Gross Domestic Product by Activity, 2015 - 2024"
+    item_column: industry
+    unit: KSh million, current prices
+    checks:
+      through: 2024
+      pins:
+        - item: Agriculture, forestry and fishing
+          period: 2015
+          value: 1340350
+        - item: GDP at market prices
+          period: 2016
+          value: 7594064
+
+  - table_id: "2.3"
+    workbook_id: na
+    sheet: Table 2.3
+    anchor: "Table 2.3"
+    title: "Contribution to Gross Domestic Product by Activity, 2015 - 2024"
+    item_column: industry
+    unit: per cent of GDP
+    checks:
+      through: 2024
+      pins:
+        - item: GDP at market prices
+          period: 2016
+          value: 100
+        - item: Agriculture, forestry and fishing
+          period: 2020
+          value: 22.7
+
+  - table_id: "2.4"
+    workbook_id: na
+    sheet: Table 2.4
+    anchor: "Table 2.4"
+    title: "Gross Domestic Product by Activity, 2015 - 2024 (constant 2016 prices)"
+    item_column: industry
+    unit: KSh million, constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: GDP at market prices
+          period: 2016
+          value: 7594064
+        - item: Agriculture, forestry and fishing
+          period: 2016
+          value: 1521433
+
+  - table_id: "2.5"
+    workbook_id: na
+    sheet: Table 2.5
+    anchor: "Table 2.5"
+    title: "Growth of Gross Domestic Product by Activity at Constant 2016 Prices, 2015 - 2024"
+    item_column: industry
+    unit: per cent, annual growth at constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: GDP at market prices
+          period: 2016
+          value: 4.2
+
+  - table_id: "2.6a"
+    workbook_id: na
+    sheet: Table 2.6 a,b,c,d
+    anchor: "Table 2.6(a)"
+    title: "Expenditure on the Gross Domestic Product, 2015 - 2024 (current prices)"
+    item_column: expenditure_category
+    unit: KSh million, current prices
+    checks:
+      through: 2024
+      pins:
+        - item: Gross domestic product at market prices
+          period: 2015
+          value: 6884327
+        - item: Government final consumption expenditure
+          period: 2015
+          value: 876145
+
+  - table_id: "2.6b"
+    workbook_id: na
+    sheet: Table 2.6 a,b,c,d
+    anchor: "Table 2.6(b)"
+    title: "Expenditure on the Gross Domestic Product (percentage contribution to GDP)"
+    item_column: expenditure_category
+    unit: per cent of GDP
+    checks:
+      through: 2024
+      pins:
+        - item: Gross domestic product at market prices
+          period: 2016
+          value: 100
+
+  - table_id: "2.6c"
+    workbook_id: na
+    sheet: Table 2.6 a,b,c,d
+    anchor: "Table 2.6(c)"
+    title: "Expenditure on the Gross Domestic Product, 2015 - 2024 (constant 2016 prices)"
+    item_column: expenditure_category
+    unit: KSh million, constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: Gross domestic product at market prices
+          period: 2016
+          value: 7594064
+
+  - table_id: "2.6d"
+    workbook_id: na
+    sheet: Table 2.6 a,b,c,d
+    anchor: "Table 2.6(d)"
+    title: "Growth in Expenditure on the Gross Domestic Product at Constant 2016 Prices"
+    item_column: expenditure_category
+    unit: per cent, annual growth at constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: Gross domestic product at market prices
+          period: 2015
+          value: 5
+
+  - table_id: "2.7a"
+    workbook_id: na
+    sheet: Table 2.7a,b,c,d
+    anchor: "Table 2.7(a)"
+    title: "Gross Fixed Capital Formation, 2015 - 2024 (current prices)"
+    item_column: purpose
+    unit: KSh million, current prices
+    checks:
+      through: 2024
+      pins:
+        - item: Total
+          period: 2015
+          value: 1520817
+        - item: Dwellings
+          period: 2015
+          value: 371357
+
+  - table_id: "2.7b"
+    workbook_id: na
+    sheet: Table 2.7a,b,c,d
+    anchor: "Table 2.7(b)"
+    title: "Share of Gross Fixed Capital Formation, 2015 - 2024"
+    item_column: purpose
+    unit: per cent of total
+    checks:
+      through: 2024
+      pins:
+        - item: Total
+          period: 2015
+          value: 100
+
+  - table_id: "2.7c"
+    workbook_id: na
+    sheet: Table 2.7a,b,c,d
+    anchor: "Table 2.7(c)"
+    title: "Gross Fixed Capital Formation, 2015 - 2024 (constant 2016 prices)"
+    item_column: purpose
+    unit: KSh million, constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: Total
+          period: 2015
+          value: 1530261
+
+  - table_id: "2.7d"
+    workbook_id: na
+    sheet: Table 2.7a,b,c,d
+    anchor: "Table 2.7(d)"
+    title: "Growth in Gross Fixed Capital Formation, 2015 - 2024"
+    item_column: purpose
+    unit: per cent, annual growth at constant 2016 prices
+    checks:
+      through: 2024
+      pins:
+        - item: Dwellings
+          period: 2015
+          value: 6.7
+
+  - table_id: "2.8"
+    workbook_id: na
+    sheet: Table 2.8 - 2.9
+    anchor: "Table 2.8"
+    title: "Gross Domestic Product and Gross National Income, 2015 - 2024"
+    group_column: account
+    item_column: item
+    groups:
+      - Current Prices, KSh Million
+      - Primary incomes
+      - Current transfers
+      - Per capita
+      - Constant Prices
+    unit: >-
+      KSh million at current prices unless the item says otherwise
+      (per-capita items in KSh; growth items in per cent; the constant-price
+      section at 2016 prices)
+    checks:
+      through: 2024
+      pins:
+        - group: Current Prices, KSh Million
+          item: Gross domestic product at factor cost
+          period: 2016
+          value: 6926656
+        - group: Constant Prices
+          item: GDP at market prices, KSh Million
+          period: 2016
+          value: 7594064
+
+  - table_id: "2.9"
+    workbook_id: na
+    sheet: Table 2.8 - 2.9
+    anchor: "Table 2.9"
+    title: "National Disposable Income and Saving, 2015 - 2024"
+    group_column: account
+    item_column: item
+    groups:
+      - Disposable income and saving
+      - Financing of capital formation
+    # The sheet repeats "Total" within one section (sources and uses of
+    # financing); line preserves the sheet's own row order and keeps keys
+    # unique without renaming anything.
+    line_numbers: true
+    unit: KSh million, current prices
+    checks:
+      through: 2024
+      pins:
+        - group: Disposable income and saving
+          item: Gross national disposable income
+          period: 2015
+          value: 7143543

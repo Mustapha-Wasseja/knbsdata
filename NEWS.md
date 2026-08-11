@@ -1,5 +1,33 @@
 # knbsdata (development version)
 
+## The Statistical Abstract as tidy tables
+
+The 2025 Statistical Abstract ships its chapter tables as Excel workbooks
+on the KNBS website (audit F-35). New `knbs_abstract_tables()` and
+`knbs_abstract_table()` turn the curated ones into clean tidy
+observations — starting with all fifteen tables of Chapter 2, National
+Accounts: the production accounts, GDP by activity at current and constant
+prices, expenditure on GDP, capital formation, national income and saving.
+
+* Extraction is **curated, never guessed** (audit F-36). Each table has a
+  hand-verified recipe — sheet, title anchor, section labels, unit, pinned
+  reference values — and every read re-verifies all of it. A workbook whose
+  layout or figures have drifted is refused with a classed error;
+  plausible-but-wrong tidy data is the one outcome the design rules out.
+* The tidy shape keeps the table's meaning: `period` (integer year),
+  `status` carrying the source's own provisional (`*`) and revised (`+`)
+  year flags, the row dimension as a named column (`industry`,
+  `expenditure_category`, `purpose`), sections as a second named column
+  where the sheet has them, and rows the source prints without figures
+  ("Less: Subsidies") kept with honest `NA` values.
+* The workbook is fetched once through the existing verify-and-checksum
+  layer, cached, and hashed; `knbs_metadata()` names the edition, sheet
+  and workbook SHA-256 on every result, and `knbs_cite()` cites it.
+* The extraction registry (`inst/extdata/abstract-registry.yml`) is the
+  extension point: further chapters and the legacy annex sheets can be
+  curated without touching the engine. Requires the new `readxl`
+  dependency.
+
 ## Gross County Product, via the Open Data for Africa republisher
 
 The county economy arrives as data — from the one portal that serves it.

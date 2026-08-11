@@ -11,6 +11,7 @@ articles:
   - survey-catalogue
   - census-indicators
   - county-data
+  - statistical-abstract
   - source-status
 
 reference:
@@ -32,6 +33,14 @@ reference:
   contents:
   - knbs_publications
   - knbs_download_publication
+
+- title: Statistical Abstract tables
+  desc: >
+    Curated, validated extraction of the Statistical Abstract's chapter
+    workbooks into tidy tables.
+  contents:
+  - knbs_abstract_tables
+  - knbs_abstract_table
 
 - title: Indicators and prices
   desc: >

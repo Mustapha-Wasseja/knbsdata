@@ -145,6 +145,16 @@ are correspondingly heavier:
   gate and you get `knbs_error_access_restricted` — the package never
   solves or retries a challenge. Trying again later usually suffices.
 
+**Statistical Abstract tables**, via the KNBS website's chapter workbooks:
+`knbs_abstract_tables()` and `knbs_abstract_table()`. The 2025 edition's
+National Accounts chapter — fifteen tables — extracts into tidy
+observations by hand-verified recipes. Extraction is deliberately strict:
+layout anchors, section labels and pinned reference values are re-checked
+on every read, and a workbook that has drifted is refused with a classed
+error rather than re-interpreted. The other seventeen chapters remain
+verified *downloads* (`knbs_download_publication()`) until they are
+curated. See `vignette("statistical-abstract")`.
+
 ## What does not, and why
 
 ### Microdata cannot be downloaded

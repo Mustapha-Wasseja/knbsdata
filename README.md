@@ -45,6 +45,10 @@ the economy, and Gross County Product.**
   current prices) plus 200 more datasets from KNBS, the Central Bank of
   Kenya and partner agencies — with republisher provenance stated on
   every result.
+- **Statistical Abstract tables as tidy data**: the 2025 edition’s
+  National Accounts chapter — production accounts, GDP, expenditure,
+  capital formation, income and saving — extracted from the official
+  workbooks by hand-verified recipes that are re-checked on every read.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use.
@@ -145,6 +149,10 @@ knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 
 # Gross County Product, all 47 counties, 2013-2020
 gcp <- knbs_get_indicator("jhbzkjc")
+
+# The Statistical Abstract's National Accounts tables, tidy
+knbs_abstract_tables()
+gdp <- knbs_abstract_table("2.2")
 
 # County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
