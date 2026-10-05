@@ -1,0 +1,388 @@
+# Changelog
+
+## knbsdata (development version)
+
+### The tidyverse contract, locked in tests
+
+Every data-carrying result has always been a vctrs-backed tidy tibble;
+the behaviour is now guaranteed rather than incidental. Tests pin that
+dplyr verbs —
+[`filter()`](https://dplyr.tidyverse.org/reference/filter.html),
+[`mutate()`](https://dplyr.tidyverse.org/reference/mutate.html),
+[`arrange()`](https://dplyr.tidyverse.org/reference/arrange.html),
+[`select()`](https://dplyr.tidyverse.org/reference/select.html),
+[`slice_max()`](https://dplyr.tidyverse.org/reference/slice.html),
+joins,
+[`bind_rows()`](https://dplyr.tidyverse.org/reference/bind_rows.html) —
+keep both the class and the provenance metadata
+([`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+still answers on the result); that
+[`group_by()`](https://dplyr.tidyverse.org/reference/group_by.html) +
+[`summarise()`](https://dplyr.tidyverse.org/reference/summarise.html)
+and the tidyr pivots return plain tibbles, since a derived table is the
+caller’s data rather than the source’s; and that
+[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+strips the wrapper cleanly. dplyr and tidyr join Suggests for these
+tests, and the getting-started and statistical-abstract vignettes now
+show the piped workflows, including
+[`pivot_wider()`](https://tidyr.tidyverse.org/reference/pivot_wider.html)
+recreating the printed-table look.
+
+### The Statistical Abstract as tidy tables
+
+The 2025 Statistical Abstract ships its chapter tables as Excel
+workbooks on the KNBS website (audit F-35). New
+[`knbs_abstract_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_tables.md)
+and
+[`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
+turn the curated ones into clean tidy observations — starting with all
+fifteen tables of Chapter 2, National Accounts: the production accounts,
+GDP by activity at current and constant prices, expenditure on GDP,
+capital formation, national income and saving.
+
+- Extraction is **curated, never guessed** (audit F-36). Each table has
+  a hand-verified recipe — sheet, title anchor, section labels, unit,
+  pinned reference values — and every read re-verifies all of it. A
+  workbook whose layout or figures have drifted is refused with a
+  classed error; plausible-but-wrong tidy data is the one outcome the
+  design rules out.
+- The tidy shape keeps the table’s meaning: `period` (integer year),
+  `status` carrying the source’s own provisional (`*`) and revised (`+`)
+  year flags, the row dimension as a named column (`industry`,
+  `expenditure_category`, `purpose`), sections as a second named column
+  where the sheet has them, and rows the source prints without figures
+  (“Less: Subsidies”) kept with honest `NA` values.
+- The workbook is fetched once through the existing verify-and-checksum
+  layer, cached, and hashed;
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  names the edition, sheet and workbook SHA-256 on every result, and
+  [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
+  cites it.
+- The extraction registry (`inst/extdata/abstract-registry.yml`) is the
+  extension point: further chapters and the legacy annex sheets can be
+  curated without touching the engine. Requires the new `readxl`
+  dependency.
+
+### Gross County Product, via the Open Data for Africa republisher
+
+The county economy arrives as data — from the one portal that serves it.
+[`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
+and
+[`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
+now also serve `kenya.opendataforafrica.org` (`opendataforafrica` in the
+registry), the Knoema-operated portal listed on KNBS’s own portals page,
+which republishes 202 Kenyan datasets: 169 from KNBS under a “Public
+Domain” licence label, the rest from the Central Bank of Kenya,
+ministries and agencies (audit F-30). Chief among them: **Gross County
+Product** (`knbs_get_indicator("jhbzkjc")`) — GVA shares plus constant-
+and current-price GCP for all 47 counties, annual 2013–2020, which no
+first-party KNBS portal serves as data.
+
+- This is a **republisher**, and the package says so: every result’s
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  names the portal, the original producer, the dataset’s own licence
+  label (verbatim; “Not stated by the source” where there is none) and
+  the portal’s publication and update dates — so a vintage that lags the
+  producer’s newest PDFs is visible, never hidden. The GCP dataset is
+  the 2021 edition; newer GCP years remain PDF-only.
+- New `frequency` argument to
+  [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md).
+  A portal dataset may mix annual, quarterly and monthly series under
+  one id (audit F-33); annual periods are integer years and sub-annual
+  ones are `Date`s, which cannot share a column, so a mixed dataset asks
+  you to choose (`frequency = "annual"`) instead of picking one
+  silently. Sources where the filter means nothing refuse it.
+- Every series’ timeline is expanded from its own start date and
+  verified against its own stated end date; a mismatch is refused as a
+  schema change rather than shifting values onto wrong years. Geography
+  codes are the portal’s own region codes (`geo_level` `NA`) and must
+  never be joined against
+  [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md);
+  the listing’s structural fields are not trusted (audit F-32), and the
+  portal’s 200-with-a-string error answers are classed as missing
+  resources (audit F-31).
+- Unstated `start`/`end` bounds no longer imply a default window:
+  previously observations before 2000 (and, for sub-annual series, after
+  the current month) were silently trimmed even when no bounds were
+  asked for. No verified source served such observations until now, so
+  no earlier result changes; the bounds you *do* state behave exactly as
+  before.
+
+### The KNBS Data Portal: 323 dataflows
+
+The economy arrives as data.
+[`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
+and
+[`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
+now also serve the KNBS Data Portal (`knbs_opendata` in the registry) —
+an SDMX hub carrying 323 dataflows across five statistical domains: GDP
+by activity and by expenditure, GFCF, GNI, production accounts, CPI by
+division and by region, balance of payments, trade, money and banking,
+county government finance, employment, agriculture, tourism, health and
+justice (audit F-28).
+
+- Dataflow ids are the SDMX ids, e.g.
+  `knbs_get_indicator("DF_NAT_GDPCP")` for GDP by activity at current
+  prices. Annual flows carry integer-year periods; monthly and quarterly
+  flows carry first-of-period `Date`s — the same conventions as
+  everywhere else, and `start`/`end` work unchanged.
+- The payload’s own `role` field names the time and geography
+  dimensions, so neither is guessed. Hub geography codes are SDMX area
+  codes, not census territories, and `geo_level` is `NA` rather than
+  invented; do not join them against
+  [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md).
+- Dimensions with a single category are facts about the whole dataflow —
+  “Prices = Current prices”, “Unit = Kenya Shillings” — and fold into
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  notes instead of arriving as constant columns.
+- Data queries are POSTs with a JSON criteria body (a GET answers 405);
+  the responses are JSON-stat with sparse values, parsed by the same
+  generic parser the census adapter uses. The portal states no licence,
+  and the metadata say so.
+
+## knbsdata 0.4.0
+
+Retail prices join the CPI family: what a kilogram of maize flour, a
+litre of petrol or a month’s single-room rent actually costs, monthly
+back to 2019.
+
+- New
+  [`knbs_retail_prices()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_retail_prices.md):
+  the monthly national average retail prices of the 22 commodities
+  tracked for the CPI basket — maize flour, milk, petrol, house rent and
+  the rest — in Kenya Shillings per stated unit, with the full history
+  the CPI Explorer holds (audit F-27). Filter by commodity code or name
+  and by period; a single month is fetched directly, a range walks the
+  paginated listing once and caches it. National only: the source holds
+  no regional retail prices, so no region argument exists. The portal’s
+  unstated licence is carried in the result’s metadata, as for the CPI
+  series.
+
+## knbsdata 0.3.0
+
+Consumer prices arrive as data, completing the plan’s headline example:
+`knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")`.
+
+### Consumer prices
+
+- Three new indicators from the KNBS CPI Explorer (`knbs_cpi` in the
+  registry): `CPI_ALL_ITEMS` (index points), `CPI_INFLATION_YOY` and
+  `CPI_INFLATION_MOM` (percent) — monthly from January 2009, nationally
+  and by the CPI collection strata (the Nairobi income bands, Nairobi
+  Combined, Rest of Urban). Monthly observations carry `period` as a
+  first-of-month `Date` plus a `period_label`; `start` and `end` accept
+  a year, a month or a date, and now also bound census tables by their
+  year.
+- [`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
+  aggregates every verified indicator source, with a `source_id` column;
+  one unreachable source degrades the catalogue with a warning, and a
+  single requested source that fails keeps its own error class instead
+  of a generic “unreachable”.
+- Honesty, carried in
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  on every CPI result: the portal states no licence and no index base
+  period, and its regions are collection strata that must never be
+  joined against
+  [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md).
+  Six listed regions — the former provinces — carry no data in any
+  period (audit F-26); asking for them returns zero rows because that is
+  the source’s answer.
+- Defences from the audit: a requested region is validated against the
+  source’s own region list before any data request, and a returned
+  series that was not asked for is refused — the endpoint otherwise
+  substitutes the national series for unknown regions silently (F-24).
+  Date bounds are enforced client-side even though the server honoured
+  them when traced.
+
+### Other
+
+- [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md)
+  with a `format` filter now pages back through older uploads until it
+  has `limit` matches, instead of filtering only the most recent page.
+  The live server ignores its file-type parameter (audit F-22), so a run
+  of recent PDFs used to hide every workbook behind them —
+  `knbs_publications(format = "xlsx")` could return nothing while dozens
+  of Excel files existed. A record repeated across a page boundary by a
+  mid-scan upload is kept once, running one page past the end is treated
+  as the end, and a 5,000-document scan cap warns rather than trailing
+  off silently.
+
+## knbsdata 0.2.0
+
+Three new source families join the survey catalogue: publications,
+census tables as tidy indicators, and geographic reference codes. Every
+family is audited, adapter-built, tested offline against fixtures and
+verified live;
+[`vignette("source-status")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/source-status.md)
+states what each supports and what remains absent.
+
+### Geographic reference codes (Phase 6)
+
+- [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md)
+  returns the 2019 census frame: Kenya, its 47 counties and their
+  sub-counties, with names, structural parent codes and an explicit
+  `vintage` column. Codes are character with leading zeros intact, read
+  live from the census service’s own Territory dimension (CC BY 4.0)
+  rather than shipped as a snapshot that could drift from the source.
+- A sub-county referencing a county the source did not list, or
+  duplicate codes, are refused as validation failures rather than passed
+  into joins.
+- Asking for any vintage other than 2019 fails with a clear error: no
+  other vintage, no crosswalk and no boundary file has a verified
+  source, and a wrong crosswalk is worse than none. Classifications
+  remain unimplemented for the same reason. New vignette, `county-data`.
+
+### Census indicators (Phase 5)
+
+The Phase 5 audit found a first-party machine-readable source: the KNBS
+census data service behind `data.knbs.or.ke`, built with Istat and
+serving 2019 Population and Housing Census tables as JSON-stat 2.0 under
+an explicit CC BY 4.0 statement.
+
+- [`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
+  lists the 32 tables across their themes (Population, Health, ICT,
+  Household Farming).
+- [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
+  returns a table as tidy observations: geography down to sub-county
+  with leading zeros intact and a documented `geo_level`, `sex` in the
+  source’s own categories, and every other dimension as a
+  `<dim_id>`/`<dim_id>_label` column pair. Provenance carries the
+  licence and the release date; citations work as everywhere else.
+- A generic JSON-stat 2.0 parser (dense and sparse values, status
+  arrays, shape validation) with no KNBS specifics, ready for any future
+  JSON-stat source.
+- The registry gains an explicit `http_only` flag: the census API host
+  has no TLS listener, and the exception is declared and validated
+  rather than slipped past the HTTPS rule. Traffic to it is unencrypted
+  in transit; it carries public aggregates and no credentials.
+- Honesty notes: `frequency` and `unit` are `NA` — a census table is not
+  a recurring series and the source states no units. Running indicators
+  (CPI, GDP) are still not available as data: the CPI Explorer’s backend
+  could not be identified (audit F-21), so monthly releases remain
+  available as documents via
+  [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md).
+  The API answers unknown ids with HTTP 200 and the body `errore`; the
+  package reports not-found.
+
+### Publications (Phase 4 completed)
+
+The host that blocked Phase 4 recovered, its TLS chain fixed. The audit
+found the WordPress core REST API open over the site’s media library —
+roughly 1,600 documents with direct, ungated file URLs — while the
+Download Monitor catalogue remains gated and untouched.
+
+- [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md)
+  searches statistical releases, reports and workbooks, with free-text,
+  format and reference-year filters.
+- [`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)
+  downloads one publication through the verifying download layer:
+  official filename preserved, a web page arriving in place of a
+  document refused, SHA-256 recorded, provenance sidecar written.
+- Honesty notes, both from the audit: `release_date` is the site’s
+  upload date, not the publication’s reference period — the `year`
+  column is read from the title and is `NA` when the title names none.
+  And the media library also holds speeches and forms; narrowing to what
+  you mean is the caller’s query.
+- The `format` filter is applied client-side even when the source also
+  filtered, after the survey audit showed this family of APIs can
+  silently ignore query parameters.
+
+## knbsdata 0.1.0
+
+First release. It covers **survey and census study discovery** through
+the Kenya National Data Archive, and nothing else — see
+[`vignette("source-status")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/source-status.md)
+for what that excludes and why.
+
+### Survey catalogue
+
+- [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
+  searches the study catalogue, with filters for free text, reference
+  year, producer and access type.
+- [`knbs_survey_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_metadata.md)
+  retrieves a study’s full descriptive record. An identifier it does not
+  recognise falls back to searching the catalogue: one match is used,
+  several are reported so you can choose, none is a plain not-found.
+- [`knbs_variables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_variables.md)
+  searches variable metadata without downloading microdata, optionally
+  retrieving each variable’s full record.
+- [`knbs_survey_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_files.md)
+  lists a study’s data files with their access conditions.
+- [`knbs_download_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_microdata.md)
+  refuses, explains that the archive requires an account, and points at
+  the official access process. It exists so the refusal is explicit
+  rather than looking like an oversight.
+
+### Provenance
+
+- [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  returns the provenance record attached to every object: the source,
+  the retrieval time, the release date, the access conditions and the
+  package version.
+- [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
+  builds a citation in plain, BibTeX or RIS form. Where the archive
+  states a required citation, that text wins and the package adds only
+  the retrieval information.
+- Provenance survives row subsetting.
+
+### Sources and health
+
+- [`knbs_sources()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_sources.md)
+  reports what the package knows about each source and how far it has
+  been verified.
+- [`knbs_status()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_status.md)
+  reports source health. Offline by default in any non-interactive
+  session, so checks and CI never depend on a live service. Sources with
+  unverified endpoints are never contacted, even when a live check is
+  requested.
+
+### Configuration and caching
+
+- [`knbs_options()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_options.md)
+  and
+  [`knbs_option()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_option.md),
+  backed by ordinary R options under the `knbsdata.` prefix.
+- [`knbs_cache_dir()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_dir.md),
+  [`knbs_cache_info()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_info.md),
+  [`knbs_cache_clear()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_clear.md)
+  and
+  [`knbs_cache_prune()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_prune.md).
+  Entries are keyed on the source, operation, normalised query and
+  parser version, checksummed, and written atomically. An entry that
+  fails its checksum is discarded and refetched rather than returned.
+
+### Behaviour worth knowing
+
+- Every failure carries a `knbs_error_*` class. Nothing returns partial
+  data dressed up as a result.
+- A login gate signalled by an HTTP `Refresh` header — which is how the
+  archive gates downloads — is raised as
+  `knbs_error_authentication_required`, not mistaken for an empty but
+  successful response.
+- Responses are checked for the fields their operation requires, because
+  the archive answers unknown paths with `200` and a study record rather
+  than a 404. A payload arriving from the wrong place raises
+  `knbs_error_schema_changed`.
+- Access types are translated into a canonical vocabulary. `public_use`
+  means public-use files exist; it does not mean they can be downloaded.
+- No test touches the network.
+
+### Known limitations
+
+- **Publications, aggregate indicators and geographic reference data are
+  not implemented.** All three live on a host that was unavailable
+  throughout the source audit and every re-check, so its endpoints were
+  never verified and no adapter was written.
+- **Microdata cannot be downloaded**, by design.
+- **Documentation files are not listed**: the archive publishes no
+  machine-readable listing of questionnaires, reports or technical
+  documents.
+- Variable documentation is missing for some studies, which returns zero
+  rows.
+
+### Internal
+
+- A download layer — streaming, type verification, SHA-256, provenance
+  sidecars, manifests and archive path-traversal protection — is built
+  and tested but not yet reachable, since no supported source permits a
+  download.
