@@ -151,12 +151,14 @@ Every downloaded object should preserve, where available:
 The package should support both:
 
 ``` r
+
 knbs_get_indicator("CPI_ALL_ITEMS", release = "latest")
 ```
 
 and, where source versions exist:
 
 ``` r
+
 knbs_get_indicator(
   "CPI_ALL_ITEMS",
   release = "2026-06-30"
@@ -296,24 +298,28 @@ These may be future extensions or separate packages.
 Development installation:
 
 ``` r
+
 pak::pak("OWNER/knbsdata")
 ```
 
 Eventually, if published on CRAN:
 
 ``` r
+
 install.packages("knbsdata")
 ```
 
 Load the package:
 
 ``` r
+
 library(knbsdata)
 ```
 
 ## 5.2 Search across supported resources
 
 ``` r
+
 results <- knbs_search("consumer price index")
 results
 ```
@@ -339,6 +345,7 @@ source_url
 ## 5.3 List indicators
 
 ``` r
+
 indicators <- knbs_indicators(
   topic = "prices",
   frequency = "monthly"
@@ -348,6 +355,7 @@ indicators <- knbs_indicators(
 ## 5.4 Retrieve an indicator
 
 ``` r
+
 cpi <- knbs_get_indicator(
   indicator = "CPI_ALL_ITEMS",
   start = "2020-01",
@@ -380,6 +388,7 @@ consistently through a dimensions column or long schema.
 ## 5.5 Retrieve several indicators
 
 ``` r
+
 macro <- knbs_get_indicator(
   indicator = c(
     "GDP_REAL",
@@ -393,6 +402,7 @@ macro <- knbs_get_indicator(
 ## 5.6 Search survey studies
 
 ``` r
+
 studies <- knbs_search_surveys("household budget")
 ```
 
@@ -414,6 +424,7 @@ metadata_updated
 ## 5.7 Retrieve study metadata
 
 ``` r
+
 metadata <- knbs_survey_metadata("KIHBS-2015")
 print(metadata)
 ```
@@ -421,6 +432,7 @@ print(metadata)
 ## 5.8 Search variables within a survey
 
 ``` r
+
 variables <- knbs_variables(
   survey = "KIHBS-2015",
   search = "consumption expenditure"
@@ -445,6 +457,7 @@ metadata_url
 ## 5.9 List survey files
 
 ``` r
+
 files <- knbs_survey_files("KIHBS-2015")
 ```
 
@@ -465,6 +478,7 @@ checksum
 ## 5.10 Download public-use files
 
 ``` r
+
 paths <- knbs_download_microdata(
   survey = "KIHBS-2015",
   files = c("household", "consumption"),
@@ -485,6 +499,7 @@ Expected behaviour:
 ## 5.11 Search publications
 
 ``` r
+
 pubs <- knbs_publications(
   topic = "economic survey",
   year = 2026
@@ -494,6 +509,7 @@ pubs <- knbs_publications(
 ## 5.12 Download a publication
 
 ``` r
+
 path <- knbs_download_publication(
   publication_id = "ECONOMIC_SURVEY_2026",
   destination = "data/publications"
@@ -503,6 +519,7 @@ path <- knbs_download_publication(
 ## 5.13 Retrieve geography reference data
 
 ``` r
+
 counties <- knbs_geographies(
   level = "county",
   vintage = 2019
@@ -515,6 +532,7 @@ Only implement when official, reusable, and legally distributable files
 are identified.
 
 ``` r
+
 county_sf <- knbs_boundaries(
   level = "county",
   vintage = 2019
@@ -535,6 +553,7 @@ source
 ## 5.15 Produce a citation
 
 ``` r
+
 knbs_cite(cpi)
 ```
 
@@ -549,18 +568,21 @@ knbsdata version 0.1.0.
 ## 5.16 Inspect metadata
 
 ``` r
+
 knbs_metadata(cpi)
 ```
 
 ## 5.17 Inspect package-supported sources
 
 ``` r
+
 knbs_sources()
 ```
 
 ## 5.18 Test source health
 
 ``` r
+
 knbs_status()
 ```
 
@@ -622,6 +644,7 @@ Convert user arguments into internal query objects.
 Example internal class:
 
 ``` r
+
 new_knbs_query <- function(
   resource_type,
   resource_id = NULL,
@@ -672,6 +695,7 @@ Each source adapter implements a standard interface.
 Suggested internal generic operations:
 
 ``` r
+
 source_search(source, query)
 source_list(source, resource_type, filters)
 source_fetch(source, resource_id, filters)
@@ -1123,6 +1147,7 @@ source_url
 Use an S3 object backed by a named list:
 
 ``` r
+
 list(
   title = NULL,
   resource_id = NULL,
@@ -1157,6 +1182,7 @@ list(
 A tibble subclass for downloaded data.
 
 ``` r
+
 new_knbs_data <- function(x, metadata) {
   stopifnot(tibble::is_tibble(x))
   structure(
@@ -1172,6 +1198,7 @@ new_knbs_data <- function(x, metadata) {
 Implement:
 
 ``` r
+
 print.knbs_data()
 summary.knbs_data()
 knbs_metadata.knbs_data()
@@ -1230,6 +1257,7 @@ Search across all supported KNBS resources.
 ## Signature
 
 ``` r
+
 knbs_search(
   query,
   type = c("all", "indicator", "survey", "publication", "geography", "classification"),
@@ -1282,6 +1310,7 @@ Suggested ranking components:
 ## Signature
 
 ``` r
+
 knbs_sources(
   operation = NULL,
   status = NULL
@@ -1308,6 +1337,7 @@ base_url
 ## Signature
 
 ``` r
+
 knbs_indicators(
   topic = NULL,
   frequency = NULL,
@@ -1332,6 +1362,7 @@ knbs_indicators(
 ## Signature
 
 ``` r
+
 knbs_get_indicator(
   indicator,
   start = NULL,
@@ -1369,6 +1400,7 @@ knbs_get_indicator(
 If user supplies:
 
 ``` r
+
 knbs_get_indicator("unemployment")
 ```
 
@@ -1417,6 +1449,7 @@ the source explicitly defines multiple statuses or units.
 ## Signature
 
 ``` r
+
 knbs_search_surveys(
   query = NULL,
   year = NULL,
@@ -1441,6 +1474,7 @@ knbs_search_surveys(
 ## Signature
 
 ``` r
+
 knbs_survey_metadata(
   survey,
   include = c(
@@ -1479,6 +1513,7 @@ Show:
 ## Signature
 
 ``` r
+
 knbs_variables(
   survey,
   search = NULL,
@@ -1515,6 +1550,7 @@ Implement:
 ## Signature
 
 ``` r
+
 knbs_survey_files(
   survey,
   type = NULL,
@@ -1543,6 +1579,7 @@ Potential values:
 ## Signature
 
 ``` r
+
 knbs_download_microdata(
   survey,
   files = NULL,
@@ -1589,6 +1626,7 @@ source_id
 ## Signature
 
 ``` r
+
 knbs_publications(
   query = NULL,
   topic = NULL,
@@ -1613,6 +1651,7 @@ knbs_publications(
 ## Signature
 
 ``` r
+
 knbs_download_publication(
   publication_id,
   destination = ".",
@@ -1640,6 +1679,7 @@ This should be experimental in early versions.
 ## Signature
 
 ``` r
+
 knbs_get_table(
   publication,
   table,
@@ -1664,6 +1704,7 @@ Do not advertise universal PDF extraction.
 Mark with lifecycle status:
 
 ``` r
+
 lifecycle::badge("experimental")
 ```
 
@@ -1674,6 +1715,7 @@ lifecycle::badge("experimental")
 ## Signature
 
 ``` r
+
 knbs_geographies(
   level = NULL,
   vintage = NULL,
@@ -1697,6 +1739,7 @@ knbs_geographies(
 ## Signature
 
 ``` r
+
 knbs_boundaries(
   level,
   vintage,
@@ -1720,7 +1763,7 @@ Implement only after confirming:
 
 ## Validation
 
-- [`sf::st_is_valid()`](https://r-spatial.github.io/sf/reference/valid.html)
+- `sf::st_is_valid()`
 - Unique geographic codes.
 - Expected feature count.
 - No unexpected empty geometries.
@@ -1734,6 +1777,7 @@ Implement only after confirming:
 ## Signature
 
 ``` r
+
 knbs_classifications(
   classification = NULL,
   version = NULL,
@@ -1761,12 +1805,14 @@ Do not infer unsupported mappings.
 ## Generic
 
 ``` r
+
 knbs_metadata(x, ...)
 ```
 
 Methods:
 
 ``` r
+
 knbs_metadata.knbs_data()
 knbs_metadata.knbs_survey()
 knbs_metadata.knbs_publication()
@@ -1782,6 +1828,7 @@ For a resource ID, retrieve metadata from the appropriate catalogue.
 ## Signature
 
 ``` r
+
 knbs_cite(
   x,
   style = c("plain", "bibtex", "ris"),
@@ -1814,6 +1861,7 @@ Prioritise:
 ## Signature
 
 ``` r
+
 knbs_status(
   source = NULL,
   live = interactive(),
@@ -1845,6 +1893,7 @@ may perform live checks only when explicitly called.
 # 11.19 Cache functions
 
 ``` r
+
 knbs_cache_dir()
 knbs_cache_info()
 knbs_cache_clear()
@@ -1884,6 +1933,7 @@ Use:
 # 11.20 Package options
 
 ``` r
+
 knbs_options(
   cache = TRUE,
   cache_dir = NULL,
@@ -2149,6 +2199,7 @@ knbsdata/{version} ({project URL}; contact: package maintainer)
 Create an internal helper:
 
 ``` r
+
 knbs_request <- function(url, source_id) {
   httr2::request(url) |>
     httr2::req_user_agent(knbs_user_agent()) |>
@@ -2224,6 +2275,7 @@ For file downloads:
 Use:
 
 ``` r
+
 jsonlite::fromJSON(..., simplifyVector = FALSE)
 ```
 
@@ -2231,9 +2283,7 @@ Then parse explicitly rather than trusting automatic simplification.
 
 ## 16.2 CSV
 
-Use
-[`readr::read_csv()`](https://readr.tidyverse.org/reference/read_delim.html)
-with:
+Use `readr::read_csv()` with:
 
 - Explicit column specifications for registered datasets.
 - UTF-8 handling.
@@ -2462,6 +2512,7 @@ knbs_error_cache_corrupt
 ## 18.2 Example
 
 ``` r
+
 cli::cli_abort(
   c(
     "Indicator name is ambiguous.",
@@ -2520,6 +2571,7 @@ Never store secrets in:
 Example:
 
 ``` r
+
 knbs_download_microdata("RESTRICTED_SURVEY")
 ```
 
@@ -2634,6 +2686,7 @@ Each adapter must satisfy a common adapter contract.
 Example:
 
 ``` r
+
 test_adapter_contract <- function(adapter) {
   expect_true(is.function(adapter$search))
   expect_true(is.function(adapter$fetch))
@@ -3518,6 +3571,7 @@ Every exported function must include:
 Use explicit namespace calls internally where it improves clarity:
 
 ``` r
+
 tibble::tibble()
 dplyr::mutate()
 httr2::request()
@@ -3629,6 +3683,7 @@ Package has a clear maintainer and contact route.
 ## 32.1 Search wrapper
 
 ``` r
+
 knbs_search <- function(
   query,
   type = c(
@@ -3693,6 +3748,7 @@ knbs_search <- function(
 ## 32.2 Indicator wrapper
 
 ``` r
+
 knbs_get_indicator <- function(
   indicator,
   start = NULL,
@@ -3771,6 +3827,7 @@ knbs_get_indicator <- function(
 # 33. Suggested first README example
 
 ``` r
+
 library(knbsdata)
 
 # Search the supported KNBS catalogues

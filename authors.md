@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/Mustapha-Wasseja/knbsdata/blob/HEAD/inst/CITATION)
+[`inst/CITATION`](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/inst/CITATION)
 
 Wasseja, M. (2026). knbsdata: Discover, Retrieve and Cite Official
 Kenyan Statistics. R package version 0.4.0.

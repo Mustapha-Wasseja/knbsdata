@@ -28,6 +28,7 @@ merged:
 ## Development setup
 
 ``` r
+
 install.packages("devtools")
 devtools::load_all()
 devtools::test()
@@ -48,10 +49,8 @@ configuration is in `.lintr`.
   rework.
 - Add tests with fixtures for any new behaviour, including the failure
   paths.
-- Run
-  [`devtools::document()`](https://devtools.r-lib.org/reference/document.html)
-  if you touched roxygen comments, and commit the generated `man/` and
-  `NAMESPACE`.
+- Run `devtools::document()` if you touched roxygen comments, and commit
+  the generated `man/` and `NAMESPACE`.
 - Update `NEWS.md` and `dev/IMPLEMENTATION_STATUS.md`.
 
 ## Adding a source adapter

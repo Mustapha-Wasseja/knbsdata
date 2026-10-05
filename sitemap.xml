@@ -1,5 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/404.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/CONTRIBUTING.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/LICENSE-text.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/LICENSE.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/SECURITY.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/articles/census-indicators.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/articles/county-data.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/articles/getting-started.html</loc></url>
@@ -8,15 +13,10 @@
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/articles/statistical-abstract.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/articles/survey-catalogue.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/authors.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/CODE_OF_CONDUCT.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/CONTRIBUTING.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/index.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/knbsdata_implementation_plan.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/LICENSE-text.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/LICENSE.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/news/index.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/index.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbsdata-package.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_tables.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_clear.html</loc></url>
@@ -40,7 +40,7 @@
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_files.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_metadata.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_variables.html</loc></url>
+<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/knbsdata-package.html</loc></url>
 <url><loc>https://Mustapha-Wasseja.github.io/knbsdata/reference/vec_restore.knbs_data.html</loc></url>
-<url><loc>https://Mustapha-Wasseja.github.io/knbsdata/SECURITY.html</loc></url>
 </urlset>
 

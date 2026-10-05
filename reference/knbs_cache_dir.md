@@ -31,5 +31,5 @@ The cache directory path, invisibly when `create = TRUE`.
 
 ``` r
 knbs_cache_dir(create = FALSE)
-#> [1] "C:\\Users\\musta\\AppData\\Local/R/cache/R/knbsdata"
+#> [1] "/home/runner/.cache/R/knbsdata"
 ```

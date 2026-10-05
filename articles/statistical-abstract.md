@@ -1,6 +1,7 @@
 # The Statistical Abstract as tidy tables
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -38,6 +39,7 @@ and saving. The registry is the extension point for further chapters.
 ## Listing and fetching
 
 ``` r
+
 knbs_abstract_tables()
 #> <knbs_catalogue>
 #> Title: 2025 Statistical Abstract: curated tables
@@ -65,6 +67,7 @@ knbs_abstract_tables()
 ```
 
 ``` r
+
 gdp <- knbs_abstract_table("2.2")     # GDP by activity, current prices
 gdp[gdp$industry == "GDP at market prices", c("period", "status", "value")]
 #> # A tibble: 10 x 3
@@ -80,6 +83,7 @@ gdp[gdp$industry == "GDP at market prices", c("period", "status", "value")]
 A table id works, and so does enough of a title:
 
 ``` r
+
 saving <- knbs_abstract_table("disposable income")   # resolves to 2.9
 ```
 
@@ -111,6 +115,7 @@ still answers on the result. Aggregations and reshapes return plain
 tibbles, because a derived table is your data, not the source’s.
 
 ``` r
+
 library(dplyr)
 library(tidyr)
 
@@ -148,6 +153,7 @@ with
 ## Provenance travels
 
 ``` r
+
 meta <- knbs_metadata(gdp)
 meta$source_url   # the workbook on knbs.or.ke
 meta$notes        # edition, sheet, workbook SHA-256, flag legend

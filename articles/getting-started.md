@@ -1,6 +1,7 @@
 # Getting started with knbsdata
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -19,6 +20,7 @@ this vignette never depends on a live service.
 ## What is and is not in this version
 
 ``` r
+
 knbs_sources()
 #> # A tibble: 7 × 8
 #>   source_id         source_name  source_type operations stability authentication
@@ -52,6 +54,7 @@ is and is not covered, and why.
 Objects returned by the package know where they came from.
 
 ``` r
+
 meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
 knbs_metadata(meta)
 ```
@@ -63,6 +66,7 @@ later what exactly was used.
 ### 2. Citations come from the data, not from you
 
 ``` r
+
 knbs_cite(meta)
 knbs_cite(meta, style = "bibtex")
 ```
@@ -94,6 +98,7 @@ Every failure carries a condition class, and none of them return partial
 data dressed up as a result:
 
 ``` r
+
 tryCatch(
   knbs_survey_metadata("Kenya"),
   knbs_error_ambiguous_resource = function(cnd) cnd$matches
@@ -116,6 +121,7 @@ data, not the source’s;
 drops the wrapper whenever you want out.
 
 ``` r
+
 library(dplyr)
 library(tidyr)
 
@@ -131,6 +137,7 @@ knbs_abstract_table("2.2") |>                       # years across, like print
 ## A first session
 
 ``` r
+
 # 1. Find something
 studies <- knbs_search_surveys("household budget")
 
@@ -151,6 +158,7 @@ Publications work the same way, and these files *can* be downloaded —
 they are served openly by the KNBS website:
 
 ``` r
+
 pubs <- knbs_publications("economic survey", year = 2026)
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
 ```
@@ -164,6 +172,7 @@ national accounts, Gross County Product, and census tables with
 geography down to sub-county:
 
 ``` r
+
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 gdp <- knbs_get_indicator("DF_NAT_GDPCP")            # GDP by activity, SDMX
 knbs_get_indicator("DF_PF_CG_REV")                   # county govt revenue
@@ -181,6 +190,7 @@ knbs_geographies(level = "county")
 Options are ordinary R options under the `knbsdata.` prefix:
 
 ``` r
+
 knbs_options()
 #> $cache
 #> [1] TRUE
@@ -202,6 +212,7 @@ knbs_options()
 ```
 
 ``` r
+
 knbs_options(timeout = 60, retries = 5)
 ```
 
@@ -213,6 +224,7 @@ upgrading the package invalidates anything a new parser would read
 differently.
 
 ``` r
+
 knbs_cache_info()
 knbs_search_surveys("household budget", refresh = TRUE)  # ignore the cache
 knbs_cache_clear()

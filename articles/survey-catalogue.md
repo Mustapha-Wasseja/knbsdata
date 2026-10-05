@@ -1,6 +1,7 @@
 # Working with the survey catalogue
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -17,6 +18,7 @@ reports what the package knows about each source and how far it has been
 verified. Nothing here makes a request:
 
 ``` r
+
 knbs_sources(operation = "search_surveys")
 #> # A tibble: 2 × 8
 #>   source_id   source_name        source_type operations stability authentication
@@ -35,6 +37,7 @@ could change without notice. If it does, the package raises a
 ## Finding a survey
 
 ``` r
+
 studies <- knbs_search_surveys("household budget")
 studies
 ```
@@ -42,6 +45,7 @@ studies
 You can filter by reference year, by producer and by access type:
 
 ``` r
+
 knbs_search_surveys(year = c(2015, 2020))
 knbs_search_surveys(access = "public_use", limit = 10)
 ```
@@ -56,6 +60,7 @@ retrieves them.
 ## Reading a study’s documentation
 
 ``` r
+
 meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
 meta
 ```
@@ -65,6 +70,7 @@ geographic coverage, unit of analysis and access type. The full
 descriptive sections are in `meta$sections`; `include` narrows them:
 
 ``` r
+
 knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01", include = c("scope", "access"))
 ```
 
@@ -82,6 +88,7 @@ chosen “best” match.
 Variable metadata are available without downloading any microdata:
 
 ``` r
+
 knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", file = "HH_Information")
 ```
@@ -95,6 +102,7 @@ Question text, universe, concept and value labels each cost one request
 per variable, so they are empty unless you ask:
 
 ``` r
+
 knbs_variables(
   "KEN-KNBS-KIHBS-2015-2016-v01",
   search = "county",
@@ -112,6 +120,7 @@ zero rows, which is an answer rather than a failure.
 ## Files, and what you may do with them
 
 ``` r
+
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
 ```
 
@@ -136,6 +145,7 @@ linked.
 You cannot do this through `knbsdata`, and that is deliberate:
 
 ``` r
+
 knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
 #> Error: Microdata from "kenada" cannot be downloaded programmatically.
 #> x Every download requires an account with the archive.
@@ -161,6 +171,7 @@ Every failure carries a specific condition class, so you can react to
 the particular problem rather than matching on message text:
 
 ``` r
+
 result <- tryCatch(
   knbs_survey_metadata("Kenya"),
   knbs_error_ambiguous_resource = function(cnd) {
@@ -188,6 +199,7 @@ see your error.
 ## Citing what you used
 
 ``` r
+
 knbs_cite(meta)
 ```
 
@@ -201,6 +213,7 @@ shows the full provenance record behind any object.
 Catalogue responses are cached for 24 hours by default:
 
 ``` r
+
 knbs_cache_info()
 knbs_search_surveys("household budget", refresh = TRUE)  # bypass the cache
 knbs_cache_clear()

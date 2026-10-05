@@ -66,6 +66,7 @@ states all of this in full. Findings are in
 ## Installation
 
 ``` r
+
 # install.packages("pak")
 pak::pak("Mustapha-Wasseja/knbsdata")
 ```
@@ -73,6 +74,7 @@ pak::pak("Mustapha-Wasseja/knbsdata")
 ## What works today
 
 ``` r
+
 library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
@@ -91,6 +93,7 @@ knbs_sources()
 ```
 
 ``` r
+
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
 #> # A tibble: 7 × 3
@@ -108,6 +111,7 @@ knbs_status()[, c("source_id", "status", "message")]
 Surveys (these contact the archive, so they are not run here):
 
 ``` r
+
 # Find a study
 studies <- knbs_search_surveys("household budget")
 
@@ -125,6 +129,7 @@ knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
 Publications (also live requests, not run here):
 
 ``` r
+
 # Find publications
 pubs <- knbs_publications("economic survey", year = 2026)
 
@@ -135,6 +140,7 @@ knbs_download_publication(pubs$publication_id[[1]], "data/publications")
 Indicators (live requests, not run here):
 
 ``` r
+
 # Monthly CPI and inflation, from 2009
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
@@ -159,6 +165,7 @@ knbs_geographies(level = "county")
 Specified but not yet implemented:
 
 ``` r
+
 knbs_search("consumer price index")
 ```
 

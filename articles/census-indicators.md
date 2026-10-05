@@ -1,6 +1,7 @@
 # Indicators: census tables and consumer prices
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -17,6 +18,7 @@ carry the one thing no first-party portal serves as data: Gross County
 Product.
 
 ``` r
+
 knbs_indicators()                  # all families, source_id says which
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 gdp <- knbs_get_indicator("DF_NAT_GDPCP")
@@ -55,6 +57,7 @@ of Kenya, ministries and agencies. Dataset ids are the portal’s own
 opaque slugs, so name search is the natural way in:
 
 ``` r
+
 knbs_indicators(source = "opendataforafrica", search = "county product")
 gcp <- knbs_get_indicator("jhbzkjc")
 gcp[gcp$table == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
@@ -92,6 +95,7 @@ like `"2026-06"`. `start` and `end` take a year, a `"YYYY-MM"` month, or
 a date.
 
 ``` r
+
 knbs_get_indicator("CPI_INFLATION_YOY", start = 2015, end = 2020)
 ```
 
@@ -102,6 +106,7 @@ CPI collection strata: the Nairobi income bands, Nairobi Combined, and
 Rest of Urban.
 
 ``` r
+
 knbs_get_indicator("CPI_ALL_ITEMS", geo_level = "region")
 knbs_get_indicator("CPI_ALL_ITEMS", geo_code = c("national", "1"))
 ```
@@ -131,6 +136,7 @@ of the 22 commodities tracked for the CPI basket, in Kenya Shillings per
 stated unit:
 
 ``` r
+
 knbs_retail_prices(commodity = "petrol", start = 2024)
 knbs_retail_prices(start = "2026-06", end = "2026-06")   # one month, all 22
 ```
@@ -162,6 +168,7 @@ Three properties worth knowing before you use it:
 ### Finding a table
 
 ``` r
+
 knbs_indicators()
 knbs_indicators(topic = "Population")
 knbs_indicators(search = "marital")
@@ -172,6 +179,7 @@ Thirty-two tables across four populated themes at the time of writing.
 ### Getting observations
 
 ``` r
+
 pop <- knbs_get_indicator("POPCEN0001")
 pop
 ```
@@ -196,6 +204,7 @@ The result has one row per cell:
 ### Filtering geography
 
 ``` r
+
 counties <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 nairobi  <- knbs_get_indicator("POPCEN0001", geo_code = "47")
 ```
@@ -209,6 +218,7 @@ for seven days by default.
 County population aged 12+, both sexes, all marital statuses:
 
 ``` r
+
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
               c("geo_code", "geo_name", "value")]
@@ -221,6 +231,7 @@ join cleanly against any other dataset keyed the same way.
 ### Provenance and citation
 
 ``` r
+
 knbs_metadata(pop)
 knbs_cite(pop)
 ```

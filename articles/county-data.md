@@ -1,6 +1,7 @@
 # County codes and joins
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -15,6 +16,7 @@ Chunks that contact the service are shown but not run.
 ## The reference
 
 ``` r
+
 geo <- knbs_geographies()
 counties <- knbs_geographies(level = "county")
 mombasa_subs <- knbs_geographies(parent = "01")
@@ -48,6 +50,7 @@ it before joining anything that did not come from this package.
 County population against the reference, giving each county its share:
 
 ``` r
+
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
               c("geo_code", "geo_name", "value")]
@@ -70,6 +73,7 @@ carries GCP as data: GVA shares plus constant- and current-price GCP for
 all 47 counties, annual 2013–2020.
 
 ``` r
+
 gcp <- knbs_get_indicator("jhbzkjc")
 latest <- gcp[gcp$table == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
 head(latest[order(-latest$value), c("geo_name", "value")])

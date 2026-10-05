@@ -1,6 +1,7 @@
 # Source status and limitations
 
 ``` r
+
 library(knbsdata)
 ```
 
@@ -11,6 +12,7 @@ matters.
 ## Registered sources
 
 ``` r
+
 knbs_sources()
 #> # A tibble: 7 × 8
 #>   source_id         source_name  source_type operations stability authentication
@@ -26,17 +28,18 @@ knbs_sources()
 ```
 
 ``` r
+
 knbs_status()
 #> # A tibble: 7 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-06 00:14:29
-#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-06 00:14:29
-#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-06 00:14:29
-#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-06 00:14:29
-#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-06 00:14:29
-#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-06 00:14:29
-#> 7 fake_source  search_s… unver…          NA               NA 2026-10-06 00:14:29
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-05 21:29:03
+#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-05 21:29:03
+#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
+#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-05 21:29:03
+#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
+#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
+#> 7 fake_source  search_s… unver…          NA               NA 2026-10-05 21:29:03
 #> # ℹ 1 more variable: message <chr>
 ```
 
