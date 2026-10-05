@@ -61,9 +61,12 @@ reference:
 - title: Geography
   desc: >
     The coded territorial hierarchy of the 2019 census frame — the join keys
-    the census tables themselves use.
+    the census tables themselves use — and official county codes for county
+    names written any way.
   contents:
   - knbs_geographies
+  - knbs_county_code
+  - knbs_match_counties
 
 - title: Sources
   desc: >

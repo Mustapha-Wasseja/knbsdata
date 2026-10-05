@@ -54,7 +54,10 @@ the economy, and Gross County Product.**
   workbooks by hand-verified recipes that are re-checked on every read.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
-  explicit vintage — the join keys the census tables themselves use.
+  explicit vintage — the join keys the census tables themselves use —
+  and `knbs_county_code()`, which turns county names spelled any way
+  (census, Data Portal, Treasury, your own spreadsheet) into those
+  codes.
 
 Not implemented:
 
@@ -176,6 +179,10 @@ knbs_cite(pop)
 
 # The matching reference codes, for joins
 knbs_geographies(level = "county")
+
+# County names written any way, as census codes - for joining anyone's data
+knbs_county_code(c("Murang'a", "MURANGA", "Nairobi City County", "47"))
+#> [1] "21" "21" "47" "47"
 ```
 
 ## Access conditions

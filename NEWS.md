@@ -1,5 +1,26 @@
 # knbsdata (development version)
 
+## County names, matched across sources
+
+County names are not spelled alike even inside KNBS: the census writes
+"Murang'a", "Tharaka-Nithi" and "Nairobi City", the Data Portal "MURANGA",
+"THARAKA NITHI" and "NAIROBI", each under its own codes. New
+`knbs_county_code()` turns county names — or numbers — written any way into
+the census frame's two-digit codes, ready for `mutate()` and a join; new
+`knbs_match_counties()` shows how each value matched.
+
+* A name matches once case, punctuation, spacing and apostrophes are set
+  aside and "County", "City", "Government", "of" and "the" are dropped:
+  "Taita/Taveta", "Taita Taveta" and "TAITA-TAVETA COUNTY" are all `"06"`.
+  Numbers 1–47 are county numbers; "Kenya" and "National" are `"00"`.
+* Nothing else is matched — no list of alternative names exists to guess
+  from. A misspelling becomes `NA` with one `knbs_warning_unmatched`
+  warning naming it and, where one official name is close, suggesting it
+  ("Kakamenga" → did you mean "Kakamega"?).
+* Verified live: all 48 names the Data Portal's county tables use match,
+  to 48 distinct codes, and its rural-population table joins the census on
+  all 47 counties. The county-data vignette works the example through.
+
 ## One search across everything
 
 New `knbs_search()` answers "where does this live?" in one call. It

@@ -43,7 +43,8 @@ knbs_warning_classes <- function() {
     "knbs_warning_provisional_data",
     "knbs_warning_missing_metadata",
     "knbs_warning_latest_release",
-    "knbs_warning_ignored_filter"
+    "knbs_warning_ignored_filter",
+    "knbs_warning_unmatched"
   )
 }
 
