@@ -157,6 +157,10 @@ pubs <- knbs_publications("economic survey", year = 2026)
 
 # Download one: verified, checksummed, with a provenance sidecar
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+
+# What has KNBS released lately? Series and period read from each title
+knbs_releases()                      # last 30 days, tenders and adverts left out
+knbs_releases(series = "cpi")[1, ]   # the latest CPI release
 ```
 
 Indicators (live requests, not run here):

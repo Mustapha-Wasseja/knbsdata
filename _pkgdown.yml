@@ -40,6 +40,8 @@ reference:
   contents:
   - knbs_publications
   - knbs_download_publication
+  - knbs_releases
+  - knbs_release_series
 
 - title: Statistical Abstract tables
   desc: >

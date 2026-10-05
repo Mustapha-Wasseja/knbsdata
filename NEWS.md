@@ -1,5 +1,31 @@
 # knbsdata (development version)
 
+## What KNBS has released lately
+
+New `knbs_releases()` lists what KNBS has put on its website, newest first:
+the last 30 days by default, any window with `since` and `until`, or one
+series' whole history with `series = "cpi"`. Each row carries its release
+`series`, the `period` it covers and the call that downloads it.
+
+* Series are KNBS's regular releases, read from titles by a curated list
+  (`knbs_release_series()`): the monthly CPI and inflation release and
+  Leading Economic Indicators; quarterly GDP, balance of payments and
+  trade, producer, construction-input and residential property price
+  indices, and labour force reports; the Economic Survey, Facts and
+  Figures, national and county Statistical Abstracts, Gross County
+  Product and the Advance Release Calendar. Patterns allow for the
+  library's own spellings ("Proprety", "Leading Economic Indicators-
+  March 2026").
+* `period` is the month (`"2026-09"`) or quarter (`"2026-Q2"`) a title
+  names, `NA` otherwise. It matters because the date is the upload date:
+  years of older releases were uploaded together when the library was
+  set up in mid-2023.
+* Tenders, adverts, vacancies and other notices — 23 of 2026's first 151
+  uploads — are left out unless `notices = TRUE`.
+
+Live: the last 30 days give the September 2026 CPI release and July's
+Leading Economic Indicators; the CPI series holds 255 distinct months.
+
 ## Fixes
 
 * Citations dated a retrieval in UTC, so anything retrieved between
