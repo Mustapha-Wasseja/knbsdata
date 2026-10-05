@@ -15,6 +15,13 @@ articles:
   - source-status
 
 reference:
+- title: Search
+  desc: >
+    One search across every catalogue the package reads, each result with
+    the call that retrieves it.
+  contents:
+  - knbs_search
+
 - title: Surveys
   desc: >
     Discovering studies and their documentation. Metadata only: no supported

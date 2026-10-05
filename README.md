@@ -24,6 +24,9 @@ cite it correctly.
 **Implemented: surveys, publications, and indicators — census, prices,
 the economy, and Gross County Product.**
 
+- **One search across everything**: `knbs_search()` ranks indicators,
+  Abstract tables, surveys and publications together, and hands back the
+  call that retrieves each one.
 - **Surveys**, against the Kenya National Data Archive: search studies,
   read their full documentation, search their variables, and list their
   data files — with provenance and citations attached throughout.
@@ -113,6 +116,19 @@ knbs_status()[, c("source_id", "status", "message")]
 #> 7 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
+Search everything at once — indicators, Statistical Abstract tables,
+surveys and publications. Each result carries the call that retrieves it
+(live requests, not run here):
+
+``` r
+hits <- knbs_search("consumer price index")
+hits$get[[1]]
+#> [1] "knbs_get_indicator(\"CPI_ALL_ITEMS\", source = \"knbs_cpi\")"
+
+knbs_search("gdp", type = c("indicator", "table"))
+knbs_search("kdhs", type = "survey")
+```
+
 Surveys (these contact the archive, so they are not run here):
 
 ``` r
@@ -160,14 +176,6 @@ knbs_cite(pop)
 
 # The matching reference codes, for joins
 knbs_geographies(level = "county")
-```
-
-## What it will look like
-
-Specified but not yet implemented:
-
-``` r
-knbs_search("consumer price index")
 ```
 
 ## Access conditions

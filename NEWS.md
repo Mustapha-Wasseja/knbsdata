@@ -1,5 +1,31 @@
 # knbsdata (development version)
 
+## One search across everything
+
+New `knbs_search()` answers "where does this live?" in one call. It
+searches the indicator catalogues of every verified source, the survey
+archive, the publications library and the curated Abstract tables, and
+returns one ranked table — each row with `get`, the exact call that
+retrieves it: `knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")`,
+`knbs_abstract_table("2.2")`, `knbs_survey_metadata(...)`,
+`knbs_download_publication(...)`.
+
+* Matching is the package's own, over each catalogue in full, so it means
+  the same everywhere: every word must appear in a title, id or topic.
+  Words match by stem — the library's own search is literal, and for
+  "consumer price index" returns 2 documents while KNBS publishes a
+  "Consumer Price Indices and Inflation Rates" release every month; this
+  finds them all — and four-letter prefixes match longer words. CPI, GDP, GCP, GVA, PPI, BOP, KDHS, KIHBS
+  and LEI are understood both ways.
+* Ranking is by tier — exact id, exact title, the query as a phrase,
+  every word in the title, a match elsewhere — then data before documents
+  and newer before older, so the CPI series leads a CPI search and the
+  latest monthly release follows it.
+* Catalogues are cached for a day. The first search of the day lists the
+  whole publications library (about 16 requests); later ones take a
+  second or two. An unreachable catalogue is a warning naming it; the
+  error comes only when nothing answers.
+
 ## Rough edges: a silent row loss, readable columns, totals and parts
 
 A live review on 2026-10-05 turned up places where correct data was still
