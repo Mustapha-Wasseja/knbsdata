@@ -69,6 +69,34 @@ knbs_file_columns <- function() {
   )
 }
 
+#' A NADA year field, with the archive's "no year" placeholder made explicit
+#'
+#' KeNADA stores `year_start` and `year_end` as `"0"` for studies catalogued
+#' without a reference year (53 of 131 studies, observed 2026-10-05). Zero is a
+#' placeholder, not a year, so it becomes `NA`. The year is never inferred from
+#' the title or identifier, even where one appears to carry it.
+#'
+#' @noRd
+nada_year <- function(x, field) {
+  year <- json_chr(x, field)
+  if (!is.na(year) && grepl("^0+$", year)) NA_character_ else year
+}
+
+#' A study's reference years as one string
+#'
+#' One year when the study starts and ends in the same year or only one end is
+#' recorded, both joined by `sep` otherwise, and `NA` when neither is recorded.
+#'
+#' @noRd
+nada_year_span <- function(x, sep) {
+  from <- nada_year(x, "year_start")
+  to <- nada_year(x, "year_end")
+  if (is.na(from) || is.na(to) || identical(from, to)) {
+    return(if (is.na(from)) to else from)
+  }
+  paste0(from, sep, to)
+}
+
 #' Standardise NADA search rows into the survey catalogue schema
 #'
 #' Several catalogue fields (acronym, geographic coverage, unit of analysis) are
@@ -78,17 +106,7 @@ knbs_file_columns <- function() {
 #' @noRd
 standardise_nada_surveys <- function(rows, source_id) {
   n <- length(rows)
-  years <- vapply(rows, function(r) {
-    from <- json_chr(r, "year_start")
-    to <- json_chr(r, "year_end")
-    if (is.na(from) && is.na(to)) {
-      NA_character_
-    } else if (identical(from, to) || is.na(to)) {
-      from
-    } else {
-      paste0(from, "-", to)
-    }
-  }, character(1))
+  years <- vapply(rows, nada_year_span, character(1), sep = "-")
 
   tibble::tibble(
     survey_id = vapply(rows, json_chr, character(1), "idno"),

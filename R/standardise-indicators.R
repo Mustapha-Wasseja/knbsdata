@@ -148,6 +148,40 @@ standardise_census_catalogue <- function(themes, source_id) {
   do.call(rbind, rows)
 }
 
+#' The name a census table goes by
+#'
+#' The census API gives every table the same JSON-stat label, "Census 2019 -
+#' Population by sex and marital status" (observed 2026-10-05 on POPCEN0002,
+#' POPCEN0003 and POPCEN0004), so a payload's label cannot say which table it
+#' holds. The dataset list names each table correctly, and its name wins
+#' whenever there is one. The source's label is never dropped: where it is not
+#' the title, a note records it.
+#'
+#' @param label The payload's own `label`.
+#' @param catalogue_name The dataset list's name for the table, or `NA`.
+#' @return A list: `name`, and `note` (`NULL` when there is nothing to add).
+#' @noRd
+census_table_name <- function(label, catalogue_name) {
+  if (is.na(catalogue_name)) {
+    return(list(
+      name = label,
+      note = paste(
+        "Titled with the source's own table label, which the census API repeats",
+        "across tables; the dataset list gave no name for this one."
+      )
+    ))
+  }
+  list(
+    name = catalogue_name,
+    note = if (!is.na(label) && !identical(label, catalogue_name)) {
+      paste0(
+        "The source labels this table \"", label, "\"; the title is the name ",
+        "its dataset list gives."
+      )
+    }
+  )
+}
+
 #' Standardise a parsed JSON-stat census table into observations
 #'
 #' The Territory dimension becomes `geo_code`, `geo_name` and `geo_level`; a
@@ -159,8 +193,11 @@ standardise_census_catalogue <- function(themes, source_id) {
 #' @param parsed The result of `parse_jsonstat()`.
 #' @param indicator_id Dataset id the observations belong to.
 #' @param source_id Source id.
+#' @param indicator_name The table's name; see `census_table_name()`. Defaults
+#'   to the payload's own label.
 #' @noRd
 standardise_census_obs <- function(parsed, indicator_id, source_id,
+                                   indicator_name = parsed$meta$label,
                                    call = rlang::caller_env()) {
   table <- parsed$table
   meta <- parsed$meta
@@ -173,7 +210,7 @@ standardise_census_obs <- function(parsed, indicator_id, source_id,
 
   out <- tibble::tibble(
     indicator_id = rep(indicator_id, nrow(table)),
-    indicator_name = rep(meta$label %||% NA_character_, nrow(table)),
+    indicator_name = rep(indicator_name %||% NA_character_, nrow(table)),
     period = rep(period, nrow(table)),
     value = table$value
   )

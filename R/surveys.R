@@ -16,7 +16,10 @@
 #'
 #' @param query Free-text search. `NULL` returns the whole catalogue.
 #' @param year A single year, or `c(from, to)` for a range. Matched against the
-#'   study's reference years.
+#'   study's reference years; a study spanning several years matches if any of
+#'   them falls in the range. Studies the source records no reference year for
+#'   cannot match, so they are excluded with a `knbs_warning_missing_metadata`
+#'   warning that says how many, and names them in its `excluded` field.
 #' @param producer Keep only studies whose producing entity contains this text.
 #' @param access Keep only these access types; see the `access_type` column.
 #' @param limit Maximum number of studies to return.
@@ -67,7 +70,13 @@ knbs_search_surveys <- function(query = NULL,
 
   results <- cache_fetch(
     cache_key(src$source_id, "search_surveys", knbs_query),
-    fetch = function() source_search(src, knbs_query),
+    fetch = function() {
+      out <- source_search(src, knbs_query)
+      if (!is.null(years$from)) {
+        out <- search_every_match(src, knbs_query, out)
+      }
+      out
+    },
     cache = cache,
     refresh = refresh,
     ttl = knbs_cache_ttl("catalogue"),
@@ -82,6 +91,25 @@ knbs_search_surveys <- function(query = NULL,
   }
   if (!is.null(access)) {
     keep <- keep & results$access_type %in% access
+  }
+  if (!is.null(years$from)) {
+    # The source's year filter also returns every study it holds no year for,
+    # so the filter is applied again here. A study without a recorded year
+    # cannot be shown to match, so it is excluded, and the user is told.
+    in_range <- survey_years_overlap(results$reference_years, years$from, years$to)
+    unrecorded <- keep & is.na(in_range)
+    keep <- keep & in_range %in% TRUE
+    if (any(unrecorded)) {
+      knbs_warn(
+        c(
+          "Excluded {sum(unrecorded)} stud{?y/ies} with no recorded reference year.",
+          "i" = "The source returns such studies for any {.arg year}; their years are not guessed from titles.",
+          "i" = "Search without {.arg year} to see them; their {.field reference_years} is {.code NA}."
+        ),
+        class = "knbs_warning_missing_metadata",
+        excluded = results$survey_id[unrecorded]
+      )
+    }
   }
   results <- results[keep, ]
   if (nrow(results) > limit) {
@@ -393,6 +421,41 @@ normalise_year_range <- function(year, call = rlang::caller_env()) {
     )
   }
   list(from = as.integer(min(year)), to = as.integer(max(year)))
+}
+
+#' Whether each study's reference years overlap a requested range
+#'
+#' Reads the standardised `reference_years` (`"2015"` or `"2015-2016"`). A study
+#' spanning the range's edge matches, as it does at the source. `NA` where the
+#' years are not recorded: such a study cannot be shown to match or not.
+#'
+#' @noRd
+survey_years_overlap <- function(reference_years, from, to) {
+  bounds <- strsplit(reference_years, "-", fixed = TRUE)
+  first <- suppressWarnings(as.integer(vapply(bounds, `[`, character(1), 1L)))
+  last <- suppressWarnings(as.integer(vapply(bounds, function(b) b[[length(b)]], character(1))))
+  out <- first <= to & last >= from
+  out[is.na(first) | is.na(last)] <- NA
+  out
+}
+
+#' Every study the source matched, when one page did not hold them all
+#'
+#' A year-filtered search is filtered again client-side, dropping the studies
+#' the source holds no year for (see `nada_year()`). The page is sized by
+#' `limit`, so when the source matched more studies than fit, the dropped ones
+#' would be undercounted. In that case every match is asked for in one page,
+#' and `limit` is applied afterwards. The archive honours page sizes well
+#' beyond its catalogue (observed 2026-10-05).
+#'
+#' @noRd
+search_every_match <- function(src, query, first) {
+  found <- json_int(knbs_metadata(first)$raw, "found")
+  if (is.na(found) || found <= nrow(first)) {
+    return(first)
+  }
+  query$filters$limit <- found
+  source_search(src, query)
 }
 
 #' Resolve a user-supplied study reference to its metadata

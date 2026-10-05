@@ -33,6 +33,48 @@ test_that("search standardises rows into the survey schema", {
   # form_model "public" is translated, not passed through: it means public-use
   # files exist, not that they can be downloaded.
   expect_identical(results$access_type[[1]], "public_use")
+
+  # The source's own match count travels with the page.
+  expect_identical(json_int(knbs_metadata(results)$raw, "found"), 129L)
+})
+
+test_that("a year stored as 0 is standardised to NA, never read off the title", {
+  # KeNADA stores "0" for studies catalogued without a reference year. One of
+  # them is titled "... BUSIA 2016"; its year still stays unknown.
+  local_kenada_api(list("catalog/search" = kenada_fixture("catalog-search-year-zero.json")))
+  results <- source_search(kenada_source(), new_knbs_query("survey"))
+  years <- stats::setNames(results$reference_years, results$survey_id)
+
+  expect_identical(
+    unname(years[c("DDI-KEN-KNBS-MSME-2016-v1.0", "KEN-KNBS-KIHBS-2015-2016-v01")]),
+    c("2016", "2015-2016")
+  )
+  unrecorded <- c("DDI-KEN-KNBS-FNS-2013-V01", "DDI-KEN-MOH-SMS-WRK-2016-V001",
+                  "KEN-KNBS-KPHC-2019-v01")
+  expect_true(all(is.na(years[unrecorded])))
+  expect_false("0" %in% results$reference_years)
+})
+
+test_that("a year of 0 at either end of a span counts as unrecorded", {
+  span <- function(from, to, sep = "-") {
+    nada_year_span(list(year_start = from, year_end = to), sep)
+  }
+  expect_identical(span("0", "0"), NA_character_)
+  expect_identical(span("2015", "0"), "2015")
+  expect_identical(span("0", "2016"), "2016")
+  expect_identical(span("2015", "2016", " to "), "2015 to 2016")
+  expect_identical(span("2016", "2016"), "2016")
+  expect_identical(nada_year_span(list(), "-"), NA_character_)
+})
+
+test_that("a study record with year 0 has no reference period", {
+  study <- kenada_fixture("study-metadata.json")
+  study$dataset$year_start <- "0"
+  study$dataset$year_end <- "0"
+  local_kenada_api(list("^catalog/[^/]+$" = study))
+  meta <- source_metadata(kenada_source(), "KEN-KNBS-KIHBS-2015-2016-v01")
+
+  expect_identical(meta$reference_period, NA_character_)
 })
 
 test_that("an empty catalogue response returns zero rows with the full schema", {

@@ -60,8 +60,33 @@ easy to misuse, or where it was not correct at all.
   differed — May 2026 year on year was 6.9 there against 6.68 here. Nothing
   is substituted silently.
 
-The cache's parser and schema versions move to 2, so results cached in the
-old shape are re-fetched rather than served.
+The cache moves to parser version 3 and schema version 2 (with the two
+source quirks below), so results cached in an older shape are re-fetched
+rather than served.
+
+## Two source quirks kept out of results
+
+Both found by live testing on 2026-10-05.
+
+* **Survey years of 0.** KeNADA stores `year_start` and `year_end` as `"0"`
+  for the 53 of its 131 studies catalogued without a reference year, and its
+  year filter returns all of them for any year: `knbs_search_surveys(year =
+  2022)` came back with 54 rows, 53 of them dated `"0"` — the 2013 FinAccess
+  National Survey among them. A year of 0 now standardises to `NA`, in
+  `reference_years` and in `knbs_survey_metadata()`'s `reference_period`. A
+  `year` filter is applied again client-side, matching a study whose years
+  overlap the range; a study with no recorded year cannot match, so it is
+  excluded, and a `knbs_warning_missing_metadata` warning says how many and
+  names them in its `excluded` field. Years are never inferred from titles
+  or ids. When the source matches more studies than one page holds, every
+  match is fetched before filtering, so `limit` cannot shorten the count.
+* **Census table titles.** The census API labels every table "Census 2019 -
+  Population by sex and marital status" (POPCEN0002, POPCEN0003 and
+  POPCEN0004 all carry it), whatever the table holds. `indicator_name` and
+  the metadata title now come from the dataset list — POPCEN0002 is
+  "Population by Single and Grouped Ages, Sex and sub County" — and the
+  source's own label is recorded in `knbs_metadata()$notes`. Where the
+  dataset list gives no name, the label stands and the notes say so.
 
 ## The tidyverse contract, locked in tests
 

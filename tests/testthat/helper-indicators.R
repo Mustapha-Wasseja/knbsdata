@@ -18,6 +18,17 @@ mini <- function() {
   knbsapi_fixture("dataset-small.json")
 }
 
+# Observed 2026-10-05: the census API labels POPCEN0002, POPCEN0003 and
+# POPCEN0004 alike, while its dataset list names each one correctly.
+repeated_census_label <- "Census 2019 - Population by sex and marital status"
+
+# A getDataset override serving the miniature table under that label.
+mislabelled_dataset <- function(path, query) {
+  payload <- knbsapi_fixture("dataset-small.json")
+  payload$label <- repeated_census_label
+  payload
+}
+
 #' Mock the census API for the duration of a test
 #'
 #' @param overrides Named list mapping a path pattern to a value or a function

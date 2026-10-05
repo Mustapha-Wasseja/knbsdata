@@ -19,7 +19,10 @@ knbs_search_surveys(
 \item{query}{Free-text search. \code{NULL} returns the whole catalogue.}
 
 \item{year}{A single year, or \code{c(from, to)} for a range. Matched against the
-study's reference years.}
+study's reference years; a study spanning several years matches if any of
+them falls in the range. Studies the source records no reference year for
+cannot match, so they are excluded with a \code{knbs_warning_missing_metadata}
+warning that says how many, and names them in its \code{excluded} field.}
 
 \item{producer}{Keep only studies whose producing entity contains this text.}
 

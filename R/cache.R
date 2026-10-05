@@ -9,9 +9,10 @@
 # entries that a new parser would read differently, rather than silently
 # returning yesterday's shape.
 
-# 2: the abstract header fix (a parser change) and the readable dimension
-# columns and abstract parent column (a schema change).
-knbs_parser_version <- function() 2L
+# Parser 2: the abstract header fix. Parser 3: survey years of 0 read as NA,
+# census tables named from the dataset list. Schema 2: the readable dimension
+# columns and the abstract parent column.
+knbs_parser_version <- function() 3L
 knbs_schema_version <- function() 2L
 
 # Suggested defaults from plan section 20.1.

@@ -1,6 +1,11 @@
 # Fixtures captured from the Kenya National Data Archive on 2026-08-03. Tests
 # mock the adapter's single network entry point, so no test ever makes a
 # request, and the fixtures pin the exact payload shapes the audit observed.
+#
+# catalog-search-year-zero.json is trimmed from a 2026-10-05 capture of a
+# search with from = to = 2016: the two dated studies it matched, and three of
+# the 53 it matched because their years are stored as "0". `found` is set to
+# the five rows kept.
 
 kenada_fixture <- function(name) {
   jsonlite::fromJSON(

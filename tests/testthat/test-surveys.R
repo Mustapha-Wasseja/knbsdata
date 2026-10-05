@@ -34,6 +34,106 @@ test_that("a year or a range both work", {
   expect_identical(normalise_year_range(c(2020, 2015)), list(from = 2015L, to = 2020L))
 })
 
+test_that("a year filter excludes studies with no recorded year, and says how many", {
+  # The live archive answers a 2016 search with every study it stores year 0
+  # for; the fixture keeps three of them beside the two genuine matches.
+  local_cache()
+  local_kenada_api(list("catalog/search" = kenada_fixture("catalog-search-year-zero.json")))
+
+  expect_warning(
+    results <- knbs_search_surveys(year = 2016),
+    class = "knbs_warning_missing_metadata"
+  )
+  expect_identical(
+    results$survey_id,
+    c("DDI-KEN-KNBS-MSME-2016-v1.0", "KEN-KNBS-KIHBS-2015-2016-v01")
+  )
+
+  cnd <- rlang::catch_cnd(knbs_search_surveys(year = 2016), "knbs_warning_missing_metadata")
+  expect_match(conditionMessage(cnd), "Excluded 3 studies", fixed = TRUE)
+  expect_setequal(
+    cnd$excluded,
+    c("DDI-KEN-KNBS-FNS-2013-V01", "DDI-KEN-MOH-SMS-WRK-2016-V001", "KEN-KNBS-KPHC-2019-v01")
+  )
+
+  # Only studies the other filters would have kept are counted.
+  cnd <- rlang::catch_cnd(
+    knbs_search_surveys(year = 2016, producer = "Kenya National Bureau"),
+    "knbs_warning_missing_metadata"
+  )
+  expect_match(conditionMessage(cnd), "Excluded 2 studies", fixed = TRUE)
+})
+
+test_that("without a year filter, studies with no recorded year are kept", {
+  local_cache()
+  local_kenada_api(list("catalog/search" = kenada_fixture("catalog-search-year-zero.json")))
+
+  expect_no_warning(results <- knbs_search_surveys())
+  expect_identical(nrow(results), 5L)
+  expect_identical(sum(is.na(results$reference_years)), 3L)
+})
+
+test_that("a year filter leaves studies with recorded years as they were", {
+  local_cache()
+  local_kenada_api()
+
+  # Every study in this fixture has its year recorded: nothing to report.
+  expect_no_warning(results <- knbs_search_surveys(year = 2021))
+  expect_identical(
+    results$survey_id,
+    c("DDI-KEN-KNBS-FHS-2021-V01", "DDI-KEN-KNBS-KTUS-2021-V001")
+  )
+  expect_identical(results$reference_years, c("2021", "2021"))
+  expect_no_warning(wide <- knbs_search_surveys(year = c(2015, 2025)))
+  expect_identical(nrow(wide), 3L)
+})
+
+test_that("a study spanning several years matches any year it covers", {
+  local_cache()
+  local_kenada_api(list("catalog/search" = kenada_fixture("catalog-search-year-zero.json")))
+
+  spanning <- suppressWarnings(knbs_search_surveys(year = 2015))
+  expect_identical(spanning$survey_id, "KEN-KNBS-KIHBS-2015-2016-v01")
+  expect_identical(spanning$reference_years, "2015-2016")
+
+  expect_identical(
+    survey_years_overlap(c("2016", "2015-2016", NA, "2010"), 2016L, 2018L),
+    c(TRUE, TRUE, NA, FALSE)
+  )
+})
+
+test_that("a year-filtered page short of the source's matches is widened first", {
+  # Otherwise `limit` would cut the page before the unrecorded studies are
+  # counted, and the warning would undercount them.
+  local_cache()
+  full <- kenada_fixture("catalog-search-year-zero.json")
+  page_sizes <- character(0)
+  testthat::local_mocked_bindings(
+    nada_get = function(source, path, query = list(), call = NULL) {
+      page_sizes <<- c(page_sizes, query$ps)
+      page <- full
+      page$result$rows <- page$result$rows[seq_len(min(as.integer(query$ps), 5L))]
+      page
+    },
+    .package = "knbsdata"
+  )
+
+  cnd <- rlang::catch_cnd(knbs_search_surveys(year = 2016, limit = 1),
+                          "knbs_warning_missing_metadata")
+  # The first page held one of the five matches, so all five were asked for.
+  expect_identical(page_sizes, c("1", "5"))
+  expect_length(cnd$excluded, 3L)
+
+  results <- suppressWarnings(knbs_search_surveys(year = 2016, limit = 1))
+  expect_identical(results$survey_id, "DDI-KEN-KNBS-MSME-2016-v1.0")
+  # The widened answer was cached under the original query.
+  expect_identical(page_sizes, c("1", "5"))
+
+  # Without a year filter nothing is dropped, so the page is not widened.
+  knbs_search_surveys(limit = 1)
+  expect_identical(page_sizes, c("1", "5", "1"))
+})
+
 test_that("survey metadata come back as a printable knbs_survey", {
   local_cache()
   local_kenada_api()

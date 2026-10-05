@@ -125,11 +125,88 @@ test_that("provenance carries the licence, release and dimensions", {
   expect_match(meta$licence, "CC BY 4.0", fixed = TRUE)
   expect_identical(meta$release_date, as.Date("2019-12-31"))
   expect_identical(meta$reference_period, "KNBS Population Census 2019")
-  expect_match(meta$notes, "Marital Status", fixed = TRUE)
+  notes <- paste(meta$notes, collapse = " ")
+  expect_match(notes, "Marital Status", fixed = TRUE)
+  # The source's own label is kept beside the catalogue's name for the table.
+  expect_match(notes, "Miniature fixture table", fixed = TRUE)
 
   citation <- format(knbs_cite(meta))
   expect_match(citation, "Kenya National Bureau of Statistics", fixed = TRUE)
-  expect_match(citation, "Miniature fixture table", fixed = TRUE)
+  expect_match(citation, "Population Age 12+ years by Sex and Marital Status", fixed = TRUE)
+})
+
+test_that("census tables are named from the catalogue, not their repeated label", {
+  local_cache()
+  list_calls <- 0L
+  local_knbsapi(list(
+    "getDatasetList" = function(path, query) {
+      list_calls <<- list_calls + 1L
+      knbsapi_fixture("dataset-list.json")
+    },
+    "^getDataset$" = mislabelled_dataset
+  ))
+
+  ages <- knbs_get_indicator("POPCEN0002")
+  religion <- knbs_get_indicator("POPCEN0003")
+  # The name comes from the catalogue the id was resolved against; the adapter
+  # does not ask for the dataset list a second time.
+  expect_identical(list_calls, 1L)
+
+  expect_identical(
+    unique(ages$indicator_name),
+    "Population by Single and Grouped Ages, Sex and sub County"
+  )
+  expect_identical(
+    unique(religion$indicator_name),
+    "Population by Religion, Sex and sub County"
+  )
+
+  meta <- knbs_metadata(ages)
+  expect_identical(meta$title, "Population by Single and Grouped Ages, Sex and sub County")
+  # Nothing the source said is hidden: its label is in the notes and in $raw.
+  expect_match(paste(meta$notes, collapse = " "), repeated_census_label, fixed = TRUE)
+  expect_identical(meta$raw$label, repeated_census_label)
+})
+
+test_that("called directly, the census adapter looks the name up itself", {
+  local_knbsapi(list("^getDataset$" = mislabelled_dataset))
+
+  meta <- source_metadata(indicators_source(), "POPCEN0004")
+  expect_identical(meta$title, "Population Age 3+ years by Schooling Status and Sex")
+  expect_match(paste(meta$notes, collapse = " "), repeated_census_label, fixed = TRUE)
+
+  direct <- source_fetch(indicators_source(),
+                         new_knbs_query("indicator", resource_id = "POPCEN0004"))
+  expect_identical(
+    unique(direct$indicator_name),
+    "Population Age 3+ years by Schooling Status and Sex"
+  )
+})
+
+test_that("without the catalogue's name, the source's label stands and says so", {
+  local_knbsapi(list(
+    "getDatasetList" = function(path, query) {
+      knbs_abort("gone", class = "knbs_error_source_unavailable")
+    },
+    "^getDataset$" = mislabelled_dataset
+  ))
+
+  expect_warning(
+    meta <- source_metadata(indicators_source(), "POPCEN0002"),
+    class = "knbs_warning_missing_metadata"
+  )
+  expect_identical(meta$title, repeated_census_label)
+  expect_match(paste(meta$notes, collapse = " "), "own table label", fixed = TRUE)
+
+  # Asked for an id the dataset list does not hold, likewise.
+  local_knbsapi(list("^getDataset$" = mislabelled_dataset))
+  unlisted <- source_metadata(indicators_source(), "POPCEN9999")
+  expect_identical(unlisted$title, repeated_census_label)
+})
+
+test_that("a label that already is the catalogue's name adds no note", {
+  expect_identical(census_table_name("Same", "Same"), list(name = "Same", note = NULL))
+  expect_identical(census_table_name(NA_character_, "Named")$name, "Named")
 })
 
 test_that("names resolve to ids, ambiguously or not", {

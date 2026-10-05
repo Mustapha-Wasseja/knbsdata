@@ -241,9 +241,14 @@ knbs_get_indicator <- function(indicator,
     source = src$source_id
   )
 
+  # The catalogue's name for the indicator travels with it: the census API
+  # labels every table alike, so its adapter titles tables from the catalogue
+  # (census_table_name()). Adapters that name their own data ignore it.
   out <- cache_fetch(
     cache_key(src$source_id, "get_indicator", query),
-    fetch = function() source_fetch(src, query),
+    fetch = function() {
+      source_fetch(src, query, catalogue_name = resolved$indicator_name)
+    },
     cache = cache,
     refresh = refresh,
     ttl = knbs_cache_ttl("data"),
@@ -291,7 +296,8 @@ resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
 
   exact <- catalogue[catalogue$indicator_id == indicator, ]
   if (nrow(exact) == 1L) {
-    return(list(indicator_id = exact$indicator_id, source_id = exact$source_id))
+    return(list(indicator_id = exact$indicator_id, source_id = exact$source_id,
+                indicator_name = exact$indicator_name))
   }
   if (nrow(exact) > 1L) {
     knbs_abort(
@@ -328,7 +334,8 @@ resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
       matches = hits$indicator_id
     )
   }
-  list(indicator_id = hits$indicator_id, source_id = hits$source_id)
+  list(indicator_id = hits$indicator_id, source_id = hits$source_id,
+       indicator_name = hits$indicator_name)
 }
 
 #' Parse start/end into first-of-month Date bounds

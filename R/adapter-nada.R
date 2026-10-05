@@ -141,7 +141,10 @@ source_search.knbs_source_nada <- function(source, query, ...) {
       notes = paste0(
         "Matched ", json_int(result, "found"), " of ",
         json_int(result, "total"), " studies in the catalogue."
-      )
+      ),
+      # The paging facts (found, total, limit, offset), kept so a caller can
+      # tell whether this page held every match.
+      raw = result[setdiff(names(result), "rows")]
     )
   )
 }
@@ -166,7 +169,7 @@ source_metadata.knbs_source_nada <- function(source, resource_id, ...) {
     source_url = nada_study_url(source, dataset),
     producer = json_chr(dataset, "authoring_entity"),
     release_date = json_date(dataset, "created"),
-    reference_period = nada_reference_period(dataset),
+    reference_period = nada_year_span(dataset, sep = " to "),
     version = json_chr(study$version_statement, "version"),
     geographic_level = json_chr(dataset, "nation"),
     access = nada_access_type(json_chr(dataset, "data_access_type")),
@@ -283,13 +286,4 @@ nada_study_url <- function(source, dataset) {
     return(NA_character_)
   }
   paste0(sub("/home$", "", landing), "/catalog/", json_chr(dataset, "id"))
-}
-
-nada_reference_period <- function(dataset) {
-  from <- json_chr(dataset, "year_start")
-  to <- json_chr(dataset, "year_end")
-  if (is.na(from) && is.na(to)) {
-    return(NA_character_)
-  }
-  if (identical(from, to) || is.na(to)) from else paste0(from, " to ", to)
 }
