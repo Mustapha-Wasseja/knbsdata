@@ -36,6 +36,16 @@ carry their section as an extra column named for what it is —
 "Less: Subsidies" in the production accounts) is kept with \code{NA} values,
 because that is what the source shows.
 
+Tables that print totals beside their parts (GDP by activity, expenditure
+on GDP, capital formation) carry a \code{parent} column naming the row each item
+is a component of: industries have \code{"All industries"} (or \code{"All industries at basic prices"}) as their parent, sub-industries have their industry, and
+headline totals and memo items have \code{NA}. Summing rows that share a parent
+never double counts; summing the whole table does. For level and share
+tables the parts are checked to add up to their parent in every year,
+within rounding. Imports enter GDP with a negative sign, and the metadata
+says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
+identities rather than parts and totals, and have no \code{parent} column.
+
 The extraction is deliberately strict: if the workbook's layout, sections
 or pinned reference values no longer match what was verified at curation
 time, the function stops with \code{knbs_error_schema_changed} or

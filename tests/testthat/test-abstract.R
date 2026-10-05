@@ -246,3 +246,125 @@ test_that("the mid-sheet continuation of Table 2.1 is not data", {
   expect_false(any(prod$measure == "Industry"))
   expect_false(any(prod$value %in% 2015:2024 & prod$measure == "Industry"))
 })
+
+test_that("a data row of four-digit values is not taken for a year header", {
+  # The "Tree, crop and plant resources" row of Tables 2.7a and 2.7c reads
+  # 7866, 8269, 8922, 9615, ... - four-digit cells that once passed for a
+  # repeated year header, so the row was silently dropped and the parts no
+  # longer added up to Total.
+  local_cache()
+  local_abstract_workbook()
+  tree <- "Tree, crop and plant resources yielding repeat products"
+
+  for (id in c("2.7a", "2.7c")) {
+    gfcf <- knbs_abstract_table(id)
+    expect_identical(length(unique(gfcf$purpose)), 10L, info = id)
+    expect_identical(sum(gfcf$purpose == tree), 10L, info = id)
+  }
+  current <- knbs_abstract_table("2.7a")
+  expect_identical(
+    current$value[current$purpose == tree & current$period == 2015L],
+    7866
+  )
+})
+
+test_that("tables of totals and parts name the row each item belongs to", {
+  local_cache()
+  local_abstract_workbook()
+  gdp <- knbs_abstract_table("2.2")
+
+  # parent sits beside the item it describes.
+  expect_identical(names(gdp)[[match("industry", names(gdp)) + 1L]], "parent")
+  parent_of <- function(item) unique(gdp$parent[gdp$industry == item])
+  expect_identical(parent_of("Growing of crops"), "Agriculture, forestry and fishing")
+  expect_identical(parent_of("Agriculture, forestry and fishing"), "All industries")
+  expect_identical(parent_of("All industries"), "GDP at market prices")
+  expect_identical(parent_of("GDP at market prices"), NA_character_)
+
+  # Rows sharing a parent add up to it, within rounding, in every year.
+  for (year in 2015:2024) {
+    in_year <- gdp[gdp$period == year, ]
+    parts <- sum(in_year$value[in_year$parent %in% "All industries"])
+    total <- in_year$value[in_year$industry == "All industries"]
+    expect_lte(abs(parts - total), 11)
+  }
+
+  notes <- paste(knbs_metadata(gdp)$notes, collapse = " ")
+  expect_match(notes, "parent names the row")
+  expect_match(notes, "checked to add up")
+})
+
+test_that("subtracted parts are stated and growth tables are not summed", {
+  local_cache()
+  local_abstract_workbook()
+
+  expenditure <- knbs_abstract_table("2.6a")
+  imports <- expenditure$expenditure_category == "Imports of goods and services"
+  expect_identical(
+    unique(expenditure$parent[imports]),
+    "Gross domestic product at market prices"
+  )
+  expect_match(
+    paste(knbs_metadata(expenditure)$notes, collapse = " "),
+    "Imports of goods and services enters Gross domestic product at market prices with a negative sign",
+    fixed = TRUE
+  )
+
+  growth <- knbs_abstract_table("2.5")
+  expect_true("parent" %in% names(growth))
+  expect_match(paste(knbs_metadata(growth)$notes, collapse = " "),
+               "Growth rates do not add")
+
+  # The accounts tables are identities, not parts and totals.
+  expect_false("parent" %in% names(knbs_abstract_table("2.1")))
+  expect_false("parent" %in% names(knbs_abstract_table("2.8")))
+})
+
+test_that("parts that no longer add up, or a missing part, are refused", {
+  spec <- abstract_spec("2.2")
+  cells <- abstract_fixture_cells(spec$sheet)
+
+  # Nudge one sub-industry's 2018 figure. The pinned reference values are
+  # untouched, so only the sum check can notice.
+  labels <- trimws(as.character(cells[[1]]))
+  header <- which(trimws(as.character(cells[[2]])) == "2015")[[1]]
+  col <- which(trimws(as.character(unlist(cells[header, ]))) == "2018")
+  row <- which(labels == "Growing of crops")[[1]]
+  nudged <- cells
+  nudged[[col]][[row]] <- as.character(as.numeric(cells[[col]][[row]]) + 1000)
+  expect_error(extract_abstract_table(nudged, spec),
+               class = "knbs_error_validation_failed")
+  expect_error(extract_abstract_table(nudged, spec), regexp = "do not add up")
+
+  demanding <- spec
+  demanding$hierarchy$parents[[3]]$components <- c(
+    spec$hierarchy$parents[[3]]$components, "A crop that never existed"
+  )
+  expect_error(extract_abstract_table(cells, demanding),
+               class = "knbs_error_schema_changed")
+  expect_error(extract_abstract_table(cells, demanding), regexp = "missing")
+})
+
+test_that("a malformed structure fails the registry check", {
+  spec <- abstract_spec("2.2")
+  expect_true(abstract_hierarchy_valid(spec))
+  expect_true(abstract_hierarchy_valid(abstract_spec("2.1")))
+
+  twice <- spec
+  twice$hierarchy$parents[[3]]$components <- c(
+    spec$hierarchy$parents[[3]]$components, "Mining and quarrying"
+  )
+  expect_false(abstract_hierarchy_valid(twice))
+
+  stray <- spec
+  stray$hierarchy$parents[[1]]$subtract <- "Not one of its parts"
+  expect_false(abstract_hierarchy_valid(stray))
+
+  vague <- spec
+  vague$hierarchy$rounding <- NULL
+  expect_false(abstract_hierarchy_valid(vague))
+
+  sectioned <- abstract_spec("2.8")
+  sectioned$hierarchy <- spec$hierarchy
+  expect_false(abstract_hierarchy_valid(sectioned))
+})

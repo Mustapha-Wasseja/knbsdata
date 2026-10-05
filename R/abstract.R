@@ -84,6 +84,17 @@ knbs_abstract_tables <- function() {
 #' "Less: Subsidies" in the production accounts) is kept with `NA` values,
 #' because that is what the source shows.
 #'
+#' Tables that print totals beside their parts (GDP by activity, expenditure
+#' on GDP, capital formation) carry a `parent` column naming the row each item
+#' is a component of: industries have `"All industries"` (or `"All industries
+#' at basic prices"`) as their parent, sub-industries have their industry, and
+#' headline totals and memo items have `NA`. Summing rows that share a parent
+#' never double counts; summing the whole table does. For level and share
+#' tables the parts are checked to add up to their parent in every year,
+#' within rounding. Imports enter GDP with a negative sign, and the metadata
+#' says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
+#' identities rather than parts and totals, and have no `parent` column.
+#'
 #' The extraction is deliberately strict: if the workbook's layout, sections
 #' or pinned reference values no longer match what was verified at curation
 #' time, the function stops with `knbs_error_schema_changed` or
@@ -172,6 +183,7 @@ knbs_abstract_table <- function(table,
           paste0("line preserves the sheet's own row order; the source ",
                  "repeats some row labels within a section.")
         },
+        abstract_hierarchy_notes(spec),
         paste0("Curated extraction: layout anchors and pinned reference ",
                "values are verified on every read, and a changed workbook ",
                "is refused rather than re-interpreted.")
@@ -203,7 +215,8 @@ abstract_registry <- function(call = rlang::caller_env()) {
       is.character(t$sheet %||% NULL) && is.character(t$anchor %||% NULL) &&
         is.character(t$item_column %||% NULL) &&
         (t$workbook_id %||% "") %in% workbook_ids &&
-        (is.null(t$groups) || is.character(t$group_column %||% NULL))
+        (is.null(t$groups) || is.character(t$group_column %||% NULL)) &&
+        abstract_hierarchy_valid(t)
     }, logical(1)))
   if (!ok) {
     knbs_abort(
@@ -213,6 +226,73 @@ abstract_registry <- function(call = rlang::caller_env()) {
     )
   }
   registry
+}
+
+#' Provenance notes describing a table's parts-and-totals structure
+#' @noRd
+abstract_hierarchy_notes <- function(spec) {
+  h <- spec$hierarchy
+  if (is.null(h)) {
+    return(NULL)
+  }
+  subtracted <- unlist(lapply(h$parents, function(e) {
+    vapply(as.character(e$subtract %||% character(0)), function(s) {
+      paste0(s, " enters ", e$parent, " with a negative sign.")
+    }, character(1), USE.NAMES = FALSE)
+  }))
+  c(
+    paste0("parent names the row each item is a component of; headline ",
+           "totals and memo items have none. Rows sharing a parent are its ",
+           "parts, so sum within one parent, never across levels."),
+    if (isTRUE(h$sums)) {
+      paste0("The parts were checked to add up to their parent in every ",
+             "year, within rounding.")
+    } else {
+      "Growth rates do not add; the parts are not summed against their parent."
+    },
+    subtracted
+  )
+}
+
+#' Is a table's parts-and-totals structure well formed?
+#'
+#' Absent is fine. Present, it must name each parent once with at least one
+#' part, never list a row under two parents or as its own part, subtract only
+#' its own parts, and say how precisely the figures are printed when the sums
+#' are to be checked. It describes the item column alone, so a sectioned or
+#' line-numbered table cannot carry one.
+#'
+#' @noRd
+abstract_hierarchy_valid <- function(spec) {
+  h <- spec$hierarchy
+  if (is.null(h)) {
+    return(TRUE)
+  }
+  if (!is.null(spec$groups) || isTRUE(spec$line_numbers)) {
+    return(FALSE)
+  }
+  if (!is.list(h$parents) || length(h$parents) == 0L) {
+    return(FALSE)
+  }
+  if (!is.logical(h$sums) || length(h$sums) != 1L || is.na(h$sums)) {
+    return(FALSE)
+  }
+  if (h$sums && !(is.numeric(h$rounding) && length(h$rounding) == 1L &&
+                    !is.na(h$rounding) && h$rounding > 0)) {
+    return(FALSE)
+  }
+  entries_ok <- all(vapply(h$parents, function(e) {
+    is.list(e) && is.character(e$parent) && length(e$parent) == 1L &&
+      is.character(e$components) && length(e$components) > 0L &&
+      !e$parent %in% e$components &&
+      all(as.character(e$subtract %||% character(0)) %in% e$components)
+  }, logical(1)))
+  if (!entries_ok) {
+    return(FALSE)
+  }
+  parents <- vapply(h$parents, function(e) e$parent, character(1))
+  components <- unlist(lapply(h$parents, function(e) e$components))
+  !anyDuplicated(parents) && !anyDuplicated(components)
 }
 
 #' Resolve a user-supplied table reference against the registry

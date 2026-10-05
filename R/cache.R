@@ -9,8 +9,10 @@
 # entries that a new parser would read differently, rather than silently
 # returning yesterday's shape.
 
-knbs_parser_version <- function() 1L
-knbs_schema_version <- function() 1L
+# 2: the abstract header fix (a parser change) and the readable dimension
+# columns and abstract parent column (a schema change).
+knbs_parser_version <- function() 2L
+knbs_schema_version <- function() 2L
 
 # Suggested defaults from plan section 20.1.
 knbs_cache_ttl <- function(kind = c("catalogue", "data", "immutable")) {

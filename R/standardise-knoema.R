@@ -284,9 +284,12 @@ standardise_knoema_obs <- function(series, meta, indicator_id, source_id,
     # from the code, and is not guessed.
     cols$geo_level <- rep(NA_character_, nrow(long))
   }
-  for (d in varying) {
-    cols[[d]] <- long[[d]]
-    cols[[paste0(d, "_label")]] <- long[[paste0(d, "_label")]]
+  # Each varying dimension as `<name>` (its members' names) and
+  # `<name>_code` (their ids), the pattern every indicator source follows.
+  dim_cols <- dimension_column_names(varying)
+  for (i in seq_along(varying)) {
+    cols[[dim_cols[[i]]]] <- long[[paste0(varying[[i]], "_label")]]
+    cols[[paste0(dim_cols[[i]], "_code")]] <- long[[varying[[i]]]]
   }
   if ("unit" %in% names(long)) {
     cols$unit <- long$unit
@@ -300,7 +303,7 @@ standardise_knoema_obs <- function(series, meta, indicator_id, source_id,
   key_cols <- c(
     "period_label",
     if ("geo_code" %in% names(out)) "geo_code",
-    varying
+    dimension_code_columns(dim_cols)
   )
   keys <- do.call(paste, c(out[key_cols], sep = "\r"))
   if (anyDuplicated(keys) > 0L) {

@@ -50,8 +50,11 @@ test_that("an annual geographic dataset becomes tidy integer-year rows", {
   expect_identical(nrow(gcp), 1144L)
   expect_type(gcp$period, "integer")
   expect_identical(sort(unique(gcp$period)), 2013:2020)
-  expect_true(all(c("table", "table_label", "geo_code", "geo_name") %in% names(gcp)))
-  expect_identical(length(unique(gcp$table)), 3L)
+  expect_true(all(c("table", "table_code", "geo_code", "geo_name") %in% names(gcp)))
+  # Members' names in the dimension's own column, their ids in `_code`.
+  expect_false("table_label" %in% names(gcp))
+  expect_true("County Contribution to Gross Value Added (GVA) (%)" %in% gcp$table)
+  expect_identical(length(unique(gcp$table_code)), 3L)
   expect_identical(length(unique(gcp$geo_code)), 48L)
   expect_true("KE" %in% gcp$geo_code)
   # Portal region codes, not census territories; no level is guessed.
@@ -96,12 +99,12 @@ test_that("series values land on the right coordinates", {
   )[[1]]
 
   gcp <- knbs_get_indicator("jhbzkjc")
-  hit <- gcp[gcp$table == want_table & gcp$geo_code == want_geo &
+  hit <- gcp[gcp$table_code == want_table & gcp$geo_code == want_geo &
                gcp$period == want_year, ]
   expect_identical(nrow(hit), 1L)
   expect_identical(hit$value, want_value)
 
-  late <- gcp[gcp$table == "T2" & gcp$geo_code == "KE-110-NA" &
+  late <- gcp[gcp$table_code == "T2" & gcp$geo_code == "KE-110-NA" &
                 gcp$period == want_year + 7L, ]
   expect_identical(late$value, as.numeric(nairobi$values[[8]]))
 })
@@ -115,7 +118,7 @@ test_that("a geography filter keeps the asked-for codes or is refused", {
   # The contribution-to-GVA table has no national row (shares sum to 100
   # across counties), so KE appears in two of the three tables.
   expect_identical(nrow(kenya), 16L)
-  expect_setequal(unique(kenya$table), c("T2", "T3"))
+  expect_setequal(unique(kenya$table_code), c("T2", "T3"))
 
   expect_error(
     knbs_get_indicator("gvhnvfe", frequency = "monthly", geo_code = "KE"),
@@ -145,10 +148,10 @@ test_that("a frequency choice keeps exactly those series", {
   expect_identical(nrow(annual), 54L)
   expect_type(annual$period, "integer")
   expect_identical(sort(unique(annual$period)), 2018:2023)
-  expect_identical(length(unique(annual$indicator)), 9L)
+  expect_identical(length(unique(annual$indicator_code)), 9L)
   expect_identical(knbs_metadata(annual)$unit, "Percent")
   expect_identical(knbs_metadata(annual)$frequency, "annual")
-  tbill <- annual[annual$indicator == "CBK_91_T" & annual$period == 2018L, ]
+  tbill <- annual[annual$indicator_code == "CBK_91_T" & annual$period == 2018L, ]
   expect_identical(tbill$value, 7.34)
 
   quarterly <- knbs_get_indicator("doflnmd", frequency = "quarterly")
@@ -160,7 +163,7 @@ test_that("a frequency choice keeps exactly those series", {
   )
   # The quarterly series state no unit; none is inherited from the annual ones.
   expect_identical(knbs_metadata(quarterly)$unit, NA_character_)
-  overdraft <- quarterly[quarterly$indicator == "C_BANKS_OVER_DRA" &
+  overdraft <- quarterly[quarterly$indicator_code == "C_BANKS_OVER_DRA" &
                            quarterly$period_label == "2024-Q1", ]
   expect_identical(overdraft$period, as.Date("2024-01-01"))
   expect_identical(overdraft$value, 15.97)
@@ -181,7 +184,7 @@ test_that("monthly series carry first-of-month Dates", {
   expect_identical(min(monthly$period), as.Date("2022-01-01"))
   expect_identical(max(monthly$period), as.Date("2024-12-01"))
   expect_identical(knbs_metadata(monthly)$unit, "KSh Million")
-  m1 <- monthly[monthly$indicator == "M1" & monthly$period_label == "2022-01", ]
+  m1 <- monthly[monthly$indicator_code == "M1" & monthly$period_label == "2022-01", ]
   expect_identical(m1$value, 1768316)
 
   annual <- knbs_get_indicator("gvhnvfe", frequency = "annual")
@@ -243,7 +246,7 @@ test_that("a null cell becomes NA quietly at its own coordinates", {
 
   expect_no_warning(gcp <- knbs_get_indicator("jhbzkjc"))
   first <- doctored$data[[1]]
-  hole <- gcp[gcp$table == first$table$id &
+  hole <- gcp[gcp$table_code == first$table$id &
                 gcp$geo_code == first$`administrative-unit`$RegionId &
                 gcp$period == 2015L, ]
   expect_identical(hole$value, NA_real_)
@@ -267,7 +270,7 @@ test_that("continuation tokens are followed until the dataset is whole", {
   annual <- knbs_get_indicator("doflnmd", frequency = "annual")
   expect_identical(seen$token, "abc")
   expect_identical(nrow(annual), 54L)
-  expect_identical(length(unique(annual$indicator)), 9L)
+  expect_identical(length(unique(annual$indicator_code)), 9L)
 })
 
 test_that("the portal's 200-with-a-string answers are classed at the boundary", {
@@ -361,7 +364,7 @@ test_that("a single-member dimension folds into metadata", {
     "gvhnvfe", "opendataforafrica", frequency = "monthly"
   )
 
-  expect_false("indicator" %in% names(out$table))
+  expect_false(any(c("indicator", "indicator_code") %in% names(out$table)))
   expect_match(out$fixed, "Indicator = M1")
   expect_identical(nrow(out$table), 36L)
 })

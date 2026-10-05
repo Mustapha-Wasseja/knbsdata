@@ -114,7 +114,7 @@ library(dplyr)
 library(tidyr)
 
 knbs_get_indicator("jhbzkjc") |>                    # Gross County Product
-  filter(table == "T3", period == 2020) |>
+  filter(table_code == "T3", period == 2020) |>
   slice_max(value, n = 5)
 
 knbs_abstract_table("2.2") |>                       # years across, like print

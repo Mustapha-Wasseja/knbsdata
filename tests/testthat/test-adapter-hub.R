@@ -45,12 +45,16 @@ test_that("an annual dataflow becomes tidy integer-year observations", {
   expect_type(gdp$period, "integer")
   expect_identical(length(unique(gdp$period)), 8L)
   expect_true(all(gdp$period >= 2016L))
-  expect_true(all(c("NA_INDIC", "NA_INDIC_label") %in% names(gdp)))
-  expect_identical(length(unique(gdp$NA_INDIC)), 41L)
+  # A varying dimension is named by its SDMX id in lower case: labels in
+  # `na_indic`, the source's codes in `na_indic_code`.
+  expect_true(all(c("na_indic", "na_indic_code") %in% names(gdp)))
+  expect_false(any(c("NA_INDIC", "NA_INDIC_label") %in% names(gdp)))
+  expect_identical(length(unique(gdp$na_indic_code)), 41L)
+  expect_true("Accommodation and food service activities" %in% gdp$na_indic)
 
   # Single-category dimensions fold into metadata, not constant columns.
-  expect_false("APPROACH" %in% names(gdp))
-  expect_false("UNIT_MEASURE" %in% names(gdp))
+  expect_false(any(c("approach", "APPROACH") %in% names(gdp)))
+  expect_false(any(c("unit_measure", "UNIT_MEASURE") %in% names(gdp)))
 
   meta <- knbs_metadata(gdp)
   expect_identical(meta$frequency, "annual")
@@ -186,7 +190,7 @@ test_that("sparse values land on the right coordinates", {
   want_period <- code_at("TIME_PERIOD", coords[[match("TIME_PERIOD", dims)]])
 
   gdp <- knbs_get_indicator("DF_NAT_GDPCP")
-  hit <- gdp[gdp$NA_INDIC == want_indic & gdp$period_label == want_period, ]
+  hit <- gdp[gdp$na_indic_code == want_indic & gdp$period_label == want_period, ]
   expect_identical(nrow(hit), 1L)
   expect_identical(hit$value, expected)
 })
@@ -211,4 +215,58 @@ test_that("SDMX time codes classify by convention", {
   mixed <- sdmx_periods(c("2020", "2020-01"))
   expect_true(all(is.na(mixed$period)))
   expect_identical(mixed$frequency, NA_character_)
+})
+
+test_that("an undeclared geo role falls back to the SDMX reference area", {
+  # By 2026-10-05 the hub had stopped declaring role.geo, which it declared in
+  # August (audit F-37). REF_AREA is the SDMX concept for the reference area,
+  # so it stands in, as TIME_PERIOD does for an undeclared time role.
+  local_cache()
+  local_knbsapi()
+  undeclared <- hub_fixture("cpir-data.json")
+  undeclared$role$geo <- list()
+  local_hub_api(post_overrides = list("DF_CPI_R" = undeclared))
+
+  cpi <- knbs_get_indicator("DF_CPI_R")
+  expect_true(all(c("geo_code", "geo_name") %in% names(cpi)))
+  expect_false(any(c("ref_area", "ref_area_code") %in% names(cpi)))
+  kenya <- knbs_get_indicator("DF_CPI_R", geo_code = "KE")
+  expect_identical(unique(kenya$geo_code), "KE")
+})
+
+test_that("a Sex dimension becomes lower-case sex, like the census tables'", {
+  payload <- list(
+    class = "dataset",
+    version = "2.0",
+    label = "A hand-built dataflow",
+    id = list("SEX", "EDUCATION_LEVEL", "TIME_PERIOD"),
+    size = list(3L, 2L, 1L),
+    role = list(time = list("TIME_PERIOD"), geo = list()),
+    dimension = list(
+      SEX = list(label = "Sex", category = list(
+        index = list("_T", "F", "M"),
+        label = list(`_T` = "Total", F = "Female", M = "Male")
+      )),
+      EDUCATION_LEVEL = list(label = "Education level", category = list(
+        index = list("PRI", "SEC"),
+        label = list(PRI = "Primary", SEC = "Secondary")
+      )),
+      TIME_PERIOD = list(label = "Time", category = list(
+        index = list("2024"), label = list(`2024` = "2024")
+      ))
+    ),
+    value = as.list(1:6)
+  )
+  out <- standardise_sdmx_obs(
+    parse_jsonstat(payload), "DF_TEST", "knbs_opendata",
+    roles = list(time = "TIME_PERIOD", geo = character(0))
+  )$table
+
+  expect_setequal(unique(out$sex), c("total", "female", "male"))
+  expect_false(any(c("SEX", "SEX_label", "sex_code") %in% names(out)))
+  expect_true(all(c("education_level", "education_level_code") %in% names(out)))
+  expect_identical(
+    unique(out$education_level[out$education_level_code == "SEC"]),
+    "Secondary"
+  )
 })

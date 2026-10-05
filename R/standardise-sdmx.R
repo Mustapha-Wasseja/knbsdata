@@ -2,7 +2,17 @@
 #
 # Turns a parsed JSON-stat dataflow from the SDMX hub into the observation
 # schema. The payload's own `role` field names the time and geography
-# dimensions, so neither is guessed from labels.
+# dimensions, so neither is guessed from labels. Where a role is empty the
+# SDMX cross-domain concepts stand in - TIME_PERIOD for time, REF_AREA for the
+# reference area - because their meaning is fixed by the standard, not
+# inferred (audit F-37: by 2026-10-05 the hub had stopped declaring the geo
+# role it declared in August).
+#
+# Every other varying dimension becomes `<id>` (its labels) and `<id>_code`,
+# named by the dimension's SDMX id in lower case (`na_indic`, `commodity`).
+# The ids, not the labels, because the hub labels ten different
+# dimensions just "Indicator", and some labels are wrong outright. A Sex
+# dimension becomes `sex`, lower-cased like the census tables'.
 
 #' Classify SDMX time codes into the package's period convention
 #'
@@ -59,6 +69,9 @@ standardise_sdmx_obs <- function(parsed, indicator_id, source_id, roles,
     )
   }
   geo_dim <- intersect(roles$geo, dim_ids)
+  if (length(geo_dim) != 1L) {
+    geo_dim <- intersect("REF_AREA", dim_ids)
+  }
 
   time_codes <- as.character(table[[time_dim]])
   periods <- sdmx_periods(unique(time_codes))
@@ -86,9 +99,15 @@ standardise_sdmx_obs <- function(parsed, indicator_id, source_id, roles,
   fixed_dims <- setdiff(dim_ids[sizes == 1L], c(time_dim, geo_dim))
   varying <- setdiff(dim_ids[sizes > 1L], c(time_dim, geo_dim))
 
-  for (d in varying) {
-    out[[d]] <- table[[d]]
-    out[[paste0(d, "_label")]] <- table[[paste0(d, "_label")]]
+  sex_dim <- intersect("SEX", varying)
+  if (length(sex_dim) == 1L) {
+    out$sex <- tolower(table[[paste0(sex_dim, "_label")]])
+  }
+  varying <- setdiff(varying, sex_dim)
+  dim_names <- dimension_column_names(tolower(varying))
+  for (i in seq_along(varying)) {
+    out[[dim_names[[i]]]] <- table[[paste0(varying[[i]], "_label")]]
+    out[[paste0(dim_names[[i]], "_code")]] <- as.character(table[[varying[[i]]]])
   }
   if ("status" %in% names(table)) {
     out$observation_status <- table$status
@@ -106,7 +125,8 @@ standardise_sdmx_obs <- function(parsed, indicator_id, source_id, roles,
     NA_character_
   }
 
-  key_cols <- c("period_label", if (length(geo_dim) == 1L) "geo_code", varying)
+  key_cols <- c("period_label", if (length(geo_dim) == 1L) "geo_code",
+                if (length(sex_dim) == 1L) "sex", dimension_code_columns(dim_names))
   keys <- do.call(paste, c(out[key_cols], sep = "\r"))
   if (anyDuplicated(keys) > 0L) {
     knbs_abort(

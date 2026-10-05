@@ -3,7 +3,16 @@
 Update this file after each significant implementation step. It is the single
 place where phase progress, open decisions and blockers are recorded.
 
-- **Last updated:** 2026-08-11
+- **Last updated:** 2026-10-05
+- **Latest pass (2026-10-05): rough edges.** A live review fixed a silent
+  row loss in the Abstract extractor (four-digit data values taken for a
+  year header, F-36 update), added a verified `parent` column to the
+  parts-and-totals Abstract tables, renamed every indicator dimension to
+  the `<name>`/`<name>_code` pattern with curated census names and an
+  `age_type` for the census age table, restored portal geography after the
+  hub stopped declaring it (F-37), and made CPI Explorer outages name the
+  portal's stand-in series and how far it differs (F-38). Cache parser and
+  schema versions are now 2.
 - **Current phase:** post-0.1.0 development. Phases 4, 5 and **6** are
   complete — publications, census indicators, and geographic reference codes.
   Every plan phase now has a shipped core, and the plan's headline example —

@@ -57,7 +57,7 @@ County population against the reference, giving each county its share:
 
 ```{r, eval = FALSE}
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
+totals <- pop[pop$sex == "total" & pop$marital_status == "Total",
               c("geo_code", "geo_name", "value")]
 
 geo <- knbs_geographies(level = "county")
@@ -79,7 +79,7 @@ annual 2013–2020.
 
 ```{r, eval = FALSE}
 gcp <- knbs_get_indicator("jhbzkjc")
-latest <- gcp[gcp$table == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
+latest <- gcp[gcp$table_code == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
 head(latest[order(-latest$value), c("geo_name", "value")])
 ```
 

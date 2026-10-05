@@ -583,6 +583,50 @@ official publications, not an extraction defect, and it is exactly what
 the per-year `status` flags and the workbook SHA-256 in the metadata
 exist to make visible.
 
+*Update 2026-10-05: the extraction had a defect after all.* A data row whose
+values are four-digit numbers ("Tree, crop and plant resources yielding
+repeat products" in Tables 2.7a and 2.7c: 7866, 8269, 8922, 9615, …) matched
+the year-header pattern and was skipped as a repeated header, so the row
+vanished and the parts of capital formation fell short of Total by exactly
+its value. Pins and layout checks could not see a missing row. Fixed: a
+header must be a run of consecutive years, and a repeat must repeat the same
+years in the same columns. Each curated table that prints totals beside
+their parts now records that structure in the registry, and every read
+checks that each named row is present and — for level and share tables —
+that the parts add up to their parent within rounding (observed worst case:
+3 KSh million across 21 rounded industries; 0.2 points in the share
+tables).
+
+**F-37 — The Data Portal stopped declaring its geography role.**
+Re-checked 2026-10-05: every one of the 322 dataflows now answers with
+`role.geo` empty, where the August payloads (the `cpir-data.json` fixture)
+named `REF_AREA`. `role.time` still names `TIME_PERIOD`. Without the role,
+`REF_AREA` became an ordinary dimension: `geo_code` disappeared from flows
+such as `DF_CPI_R`, and `geo_code` filters were refused as "no geography
+dimension". The standardiser now falls back to `REF_AREA` when the role is
+empty, as it already fell back to `TIME_PERIOD` for time: both are SDMX
+cross-domain concepts whose meaning is fixed by the standard, so nothing is
+inferred from labels. The same survey of all 322 flows found the hub's
+dimension *labels* unusable as column names — ten different dimensions
+are labelled "Indicator", and `SECTOR` is labelled "Indicator for
+Environment" in two flows — so columns are named from the SDMX ids instead.
+
+**F-38 — The CPI Explorer's API failed, and the portal is a partial
+stand-in.** On 2026-10-05 the Explorer's front page loaded but its API
+answered HTTP 500 on `/api/v1/periods/` and `/api/v1/explorer/regions/`.
+The Data Portal carries CPI as SDMX (`DF_CPI_R`, base February 2019 = 100,
+by `REF_AREA` KE / KE_110_NA / OTHER_URB and income-group coverage), so it
+was compared against the Explorer fixture for April–June 2026. The national
+index matches to the Explorer's two decimals (152.1496 / 154.5581 /
+154.9056 against 152.15 / 154.56 / 154.91). The inflation rates do not:
+`DF_CPI_YR` gives 5.6 / 6.9 / 6.6 against the Explorer's computed 5.5937 /
+6.6814 / 6.4088, and `DF_CPI_MR` 1.4 / 1.8 / 0.2 against 1.4333 / 1.584 /
+0.2264. The portal's figures are KNBS's published, rounded rates; the
+Explorer computes its own changes. The two disagree by more than rounding
+in May and June, so substituting one for the other silently would change
+the numbers. The adapter's outage errors now name the portal series and
+state this difference; nothing is substituted automatically.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -751,3 +795,6 @@ Copy this block for each new candidate source.
 | 2026-08-08 | cpiexplorer | F-21 resolved by runtime trace: full `/api/v1` surface mapped — monthly CPI/inflation 2009–2026 by 13 regions, COICOP hierarchy with weights, 22 retail-price commodities | Recorded as audit section 1c; adapter not yet built; licence unstated on the portal |
 | 2026-08-08 | cpiexplorer | F-24 unknown region falls back to national silently | Adapter built: regions validated pre-flight against `/explorer/regions/`, returned series matched by `metadata.region`, substitution refused |
 | 2026-08-08 | cpiexplorer | F-26 the six former provinces are listed but empty in every period | Adapter returns zero rows for them; documented in the indicators vignette and metadata notes |
+| 2026-10-05 | knbs_publications | F-36 update: four-digit data values in Tables 2.7a/2.7c taken for a repeated year header; one row silently dropped | Header must be consecutive years and a repeat must match it; curated parts-and-totals structure verified on every read; row pinned |
+| 2026-10-05 | knbs_opendata | F-37 every dataflow now sends an empty `role.geo` (August payloads named `REF_AREA`); hub dimension labels unusable as column names | `REF_AREA` stands in when the role is empty; columns named from lower-cased SDMX ids |
+| 2026-10-05 | knbs_cpi | F-38 Explorer API answering HTTP 500; portal `DF_CPI_R` index matches it to two decimals, portal inflation rates (`DF_CPI_YR`, `DF_CPI_MR`) differ beyond rounding | Outage errors name the portal series and the difference; no silent substitution |

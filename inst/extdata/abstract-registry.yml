@@ -12,6 +12,17 @@
 # 2.1-2.9. The legacy annex sheets (Tables 30-35, the pre-revision 2012-2016
 # series) and the other seventeen chapters are candidates for later
 # curation; the registry is the extension point.
+#
+# A table whose rows mix totals with their parts carries a `hierarchy`: each
+# `parents` entry names a row and the rows it is made of, with `subtract`
+# marking parts that enter negatively (imports). The engine checks that every
+# named row exists and, where `sums` is true, that the parts add up to their
+# parent in every year, within what rounding to the printed precision
+# (`rounding`) can explain: (parts + 1) / 2 units. Growth-rate tables keep the
+# structure with `sums: false`. Rows outside every entry - headline totals
+# and memo items such as "All industries excl. agriculture and forestry" -
+# have no parent. The accounts tables (2.1, 2.8, 2.9) are linked by
+# accounting identities rather than parts and totals, and carry none.
 
 schema_version: 1
 edition: "2025"
@@ -72,6 +83,68 @@ tables:
     title: "Gross Domestic Product by Activity, 2015 - 2024"
     item_column: industry
     unit: KSh million, current prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: GDP at market prices
+          components: [All industries, Taxes less subsidies on products]
+        - parent: All industries
+          components: &industries
+            - Agriculture, forestry and fishing
+            - Mining and quarrying
+            - Manufacturing
+            - Electricity supply
+            - Water supply; sewerage, waste management
+            - Construction
+            - Wholesale and retail trade, repairs
+            - Transport and storage
+            - Accommodation and food service activities
+            - Information communication technology
+            - Financial and insurance activities
+            - Real estate
+            - Professional, scientific and technical activities
+            - Administrative and support service activities
+            - Public administration and defence
+            - Education
+            - Human health and social work activities
+            - Arts, entertainment and recreation
+            - Other service activities
+            - Activities of households as employers;
+            - "Less: Financial intermediation services indirectly measured"
+        - &agriculture
+          parent: Agriculture, forestry and fishing
+          components:
+            - Growing of crops
+            - Animal production
+            - Support activities to agriculture
+            - Forestry & logging
+            - Fishing & aquaculture
+        - &manufacturing
+          parent: Manufacturing
+          components:
+            - Manufacture of food, beverages and tobacco
+            - All other manufacturing
+        - &transport
+          parent: Transport and storage
+          components:
+            - Land transport
+            - Air transport including support services
+            - All other transport including postal and courier activities
+        - &ict
+          parent: Information communication technology
+          components:
+            - Telecommunications
+            - Publishing, broadcasting, other IT and information activities
+        - &finance
+          parent: Financial and insurance activities
+          components: [Financial activities, Insurance activities]
+        - &education
+          parent: Education
+          components:
+            - Pre-primary and Primary education
+            - General sec education
+            - Higher and other education
     checks:
       through: 2024
       pins:
@@ -89,6 +162,24 @@ tables:
     title: "Contribution to Gross Domestic Product by Activity, 2015 - 2024"
     item_column: industry
     unit: per cent of GDP
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: GDP at market prices
+          components: [All industries at basic prices, Taxes less subsidies on products]
+        - parent: All industries at basic prices
+          components: *industries
+        - *agriculture
+        - *manufacturing
+        - *transport
+        - *ict
+        - *finance
+        - parent: Education
+          components:
+            - Primary education
+            - General sec education
+            - Higher and other education
     checks:
       through: 2024
       pins:
@@ -106,6 +197,20 @@ tables:
     title: "Gross Domestic Product by Activity, 2015 - 2024 (constant 2016 prices)"
     item_column: industry
     unit: KSh million, constant 2016 prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: GDP at market prices
+          components: [All industries at basic prices, Taxes less subsidies on products]
+        - parent: All industries at basic prices
+          components: *industries
+        - *agriculture
+        - *manufacturing
+        - *transport
+        - *ict
+        - *finance
+        - *education
     checks:
       through: 2024
       pins:
@@ -123,6 +228,25 @@ tables:
     title: "Growth of Gross Domestic Product by Activity at Constant 2016 Prices, 2015 - 2024"
     item_column: industry
     unit: per cent, annual growth at constant 2016 prices
+    hierarchy:
+      # Growth rates do not add; the structure is kept, the sums are not
+      # checked.
+      sums: false
+      parents:
+        - parent: GDP at market prices
+          components: [All industries at basic prices, Taxes less subsidies on products]
+        - parent: All industries at basic prices
+          components: *industries
+        - *agriculture
+        - *manufacturing
+        - *transport
+        - *ict
+        - *finance
+        - parent: Education
+          components:
+            - Primary education
+            - General Secondary Education
+            - Higher and Other Education
     checks:
       through: 2024
       pins:
@@ -137,6 +261,24 @@ tables:
     title: "Expenditure on the Gross Domestic Product, 2015 - 2024 (current prices)"
     item_column: expenditure_category
     unit: KSh million, current prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents: &expenditure_tree
+        - parent: Gross domestic product at market prices
+          components:
+            - Gross domestic expenditure
+            - Exports of goods and services
+            - Imports of goods and services
+            - Discrepancy
+          subtract: [Imports of goods and services]
+        - parent: Gross domestic expenditure
+          components:
+            - Government final consumption expenditure
+            - Private final consumption expenditure
+            - Final consumption expenditure by NPISH
+            - Gross fixed capital formation
+            - Changes in inventories
     checks:
       through: 2024
       pins:
@@ -154,6 +296,10 @@ tables:
     title: "Expenditure on the Gross Domestic Product (percentage contribution to GDP)"
     item_column: expenditure_category
     unit: per cent of GDP
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents: *expenditure_tree
     checks:
       through: 2024
       pins:
@@ -168,6 +314,10 @@ tables:
     title: "Expenditure on the Gross Domestic Product, 2015 - 2024 (constant 2016 prices)"
     item_column: expenditure_category
     unit: KSh million, constant 2016 prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents: *expenditure_tree
     checks:
       through: 2024
       pins:
@@ -182,6 +332,22 @@ tables:
     title: "Growth in Expenditure on the Gross Domestic Product at Constant 2016 Prices"
     item_column: expenditure_category
     unit: per cent, annual growth at constant 2016 prices
+    hierarchy:
+      # The growth table prints neither inventories nor the discrepancy.
+      sums: false
+      parents:
+        - parent: Gross domestic product at market prices
+          components:
+            - Gross domestic expenditure
+            - Exports of goods and services
+            - Imports of goods and services
+          subtract: [Imports of goods and services]
+        - parent: Gross domestic expenditure
+          components:
+            - Government final consumption expenditure
+            - Private final consumption expenditure
+            - Final consumption expenditure by NPISH
+            - Gross fixed capital formation
     checks:
       through: 2024
       pins:
@@ -196,6 +362,21 @@ tables:
     title: "Gross Fixed Capital Formation, 2015 - 2024 (current prices)"
     item_column: purpose
     unit: KSh million, current prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents: &capital_formation_tree
+        - parent: Total
+          components:
+            - Dwellings
+            - Buildings other than dwellings
+            - Other structures
+            - Transport equipment
+            - ICT equipment
+            - Other machinery and equipment
+            - Animal resources yielding repeat products
+            - Tree, crop and plant resources yielding repeat products
+            - Intellectual property products
     checks:
       through: 2024
       pins:
@@ -205,6 +386,11 @@ tables:
         - item: Dwellings
           period: 2015
           value: 371357
+        # Its four-digit values once passed for a year header; pinned so the
+        # row can never again drop out unnoticed.
+        - item: Tree, crop and plant resources yielding repeat products
+          period: 2015
+          value: 7866
 
   - table_id: "2.7b"
     workbook_id: na
@@ -213,6 +399,10 @@ tables:
     title: "Share of Gross Fixed Capital Formation, 2015 - 2024"
     item_column: purpose
     unit: per cent of total
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents: *capital_formation_tree
     checks:
       through: 2024
       pins:
@@ -227,12 +417,19 @@ tables:
     title: "Gross Fixed Capital Formation, 2015 - 2024 (constant 2016 prices)"
     item_column: purpose
     unit: KSh million, constant 2016 prices
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents: *capital_formation_tree
     checks:
       through: 2024
       pins:
         - item: Total
           period: 2015
           value: 1530261
+        - item: Tree, crop and plant resources yielding repeat products
+          period: 2015
+          value: 8336
 
   - table_id: "2.7d"
     workbook_id: na
@@ -241,6 +438,9 @@ tables:
     title: "Growth in Gross Fixed Capital Formation, 2015 - 2024"
     item_column: purpose
     unit: per cent, annual growth at constant 2016 prices
+    hierarchy:
+      sums: false
+      parents: *capital_formation_tree
     checks:
       through: 2024
       pins:

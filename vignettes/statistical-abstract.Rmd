@@ -82,6 +82,16 @@ saving <- knbs_abstract_table("disposable income")   # resolves to 2.9
 - A row the source prints without figures — "Less: Subsidies" in the
   production accounts — is kept with `NA` values, because that is what the
   source shows.
+- The tables print totals beside their parts: "GDP at market prices", then
+  "All industries", then each industry, then sub-industries such as
+  "Growing of crops". `parent` names the row each item is a component of —
+  industries have `"All industries"`, sub-industries their industry,
+  headline totals and memo items `NA` — so summing within one parent never
+  double counts, while summing a whole year does. The parts are checked to
+  add up to their parent, within rounding, on every read. Imports enter GDP
+  with a negative sign, and `knbs_metadata()` says so. The accounts tables
+  (2.1, 2.8, 2.9) are linked by accounting identities instead and have no
+  `parent`.
 - Units are stated in `knbs_metadata()`, not repeated on every row; a
   mixed-unit table (2.8 carries KSh million aggregates *and* per-capita
   KSh) says so there.
@@ -97,11 +107,17 @@ because a derived table is your data, not the source's.
 library(dplyr)
 library(tidyr)
 
-# The largest industries in 2024, straight off the table
+# The largest industries in 2024. Keeping one level of the table - the
+# parts of "All industries" - leaves out the totals and the sub-industries
+# that would otherwise crowd the ranking.
 knbs_abstract_table("2.2") |>
-  filter(period == 2024, industry != "GDP at market prices") |>
+  filter(period == 2024, parent == "All industries") |>
   slice_max(value, n = 5) |>
   select(industry, value, status)
+
+# The breakdown of one industry
+knbs_abstract_table("2.2") |>
+  filter(period == 2024, parent == "Agriculture, forestry and fishing")
 
 # Recreate the printed-table look: industries by year, wide
 knbs_abstract_table("2.4") |>
@@ -148,7 +164,9 @@ numbers came from.
   `knbs_download_publication()`.
 - **Not a modelling of the tables' arithmetic.** Aggregate rows ("GDP at
   market prices", "Total") are rows like any other, as printed; nothing is
-  summed, derived or reconciled for you.
+  summed, derived or reconciled for you. `parent` records how the printed
+  rows nest, and the check that parts add up guards the extraction — it
+  never adjusts a figure.
 - **Not immune to source revisions — by design.** A changed workbook stops
   extraction until the registry is re-verified against it. That is the
   honest failure mode.

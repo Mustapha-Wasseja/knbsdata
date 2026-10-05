@@ -62,3 +62,47 @@ local_knbsapi <- function(overrides = list(), env = parent.frame()) {
     .env = env
   )
 }
+
+#' A hand-built census table: one dimension under test, by sex and territory
+#'
+#' @param dim_id,dim_label The dimension's source id and label.
+#' @param codes,labels Its categories.
+#' @param base Named numeric: the value of each code in the first cell; the
+#'   other cells are multiples of it, so every cell keeps the same structure.
+census_payload <- function(dim_id, dim_label, codes, labels, base) {
+  factors <- c(10, 4, 6, 2) # (Total, Kenya), (Total, Mombasa), (Male, ...)
+  values <- unlist(lapply(codes, function(code) base[[code]] * factors))
+  dimension <- list(
+    list(label = dim_label,
+         category = list(index = as.list(codes),
+                         label = stats::setNames(as.list(labels), codes))),
+    list(label = "Sex",
+         category = list(index = list("T", "1"),
+                         label = list(T = "Total", `1` = "Male"))),
+    list(label = "Territory",
+         category = list(index = list("00", "01"),
+                         label = list(`00` = "Kenya", `01` = "Mombasa")))
+  )
+  names(dimension) <- c(dim_id, "p11_vs1", "system_total")
+  list(
+    class = "dataset",
+    version = "2.0",
+    label = "Census 2019 - hand-built test table",
+    source = "KNBS Population Census 2019",
+    updated = "2019-12-31",
+    id = list(dim_id, "p11_vs1", "system_total"),
+    size = list(length(codes), 2L, 2L),
+    dimension = dimension,
+    value = as.list(values)
+  )
+}
+
+#' The census age table in miniature: a total, single years, their groups,
+#' and an open-ended group with no single years of its own
+census_age_payload <- function() {
+  codes <- c("T", "0", "1", "0-1", "2", "3", "2-3", "100-120", "   ")
+  labels <- c("Total", "0", "1", "0 - 1", "2", "3", "2 - 3", "100 - 120", "NR")
+  base <- c(T = 15, `0` = 1, `1` = 2, `0-1` = 3, `2` = 3, `3` = 4, `2-3` = 7,
+            `100-120` = 5, `   ` = NA)
+  census_payload("p12_vs3", "Single and Grouped Ages", codes, labels, base)
+}

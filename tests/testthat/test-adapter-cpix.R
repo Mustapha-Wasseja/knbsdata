@@ -297,3 +297,23 @@ test_that("indicator metadata and health work", {
                class = "knbs_error_resource_not_found")
   expect_identical(source_health(cpi_source())$status, "ok")
 })
+
+test_that("an outage names the portal's equivalent and how far it stands in", {
+  # The portal's index matched this source to two decimals (April to June
+  # 2026); its inflation rates are KNBS's published, rounded ones and
+  # differed. The error says which - nothing is substituted silently.
+  local_cache()
+  local_knbsapi()
+  local_cpix_api(list("^explorer/" = function(path, query) {
+    knbs_abort(c("The source failed to answer.", "x" = "HTTP 500."),
+               class = "knbs_error_source_unavailable")
+  }))
+
+  expect_error(knbs_get_indicator("CPI_ALL_ITEMS"),
+               class = "knbs_error_source_unavailable")
+  expect_error(knbs_get_indicator("CPI_ALL_ITEMS"), regexp = "DF_CPI_R")
+  expect_error(knbs_get_indicator("CPI_INFLATION_YOY"), regexp = "DF_CPI_YR")
+  expect_error(knbs_get_indicator("CPI_INFLATION_YOY"), regexp = "6.68",
+               fixed = TRUE)
+  expect_error(knbs_get_indicator("CPI_INFLATION_MOM"), regexp = "DF_CPI_MR")
+})

@@ -54,6 +54,72 @@ cpix_indicator_defs <- function() {
   )
 }
 
+#' Name the KNBS Data Portal's equivalent when the CPI Explorer is down
+#'
+#' The portal publishes the same national index as `DF_CPI_R` (base February
+#' 2019 = 100): compared on 2026-10-05, it matched this source to the two
+#' decimals this source serves for April to June 2026. Its inflation series,
+#' `DF_CPI_YR` and `DF_CPI_MR`, are KNBS's own published rates, rounded to
+#' one decimal - and not always this source's computed changes: May 2026 year
+#' on year was 6.9 there against 6.68 here, month on month 1.8 against 1.58.
+#' So nothing is substituted: the error names the alternative and says how
+#' far it stands in, and the caller decides.
+#'
+#' @noRd
+cpix_hint_on_outage <- function(expr, indicator_id, call = rlang::caller_env()) {
+  call_for <- function(id) {
+    paste0("{.code knbs_get_indicator(\"", id, "\", source = \"knbs_opendata\")}")
+  }
+  rates_differ <- function(portal, here) {
+    paste0(
+      "Those are KNBS's published rates, rounded to one decimal, not this ",
+      "source's computed change: May 2026 was ", portal, " there and ", here,
+      " here."
+    )
+  }
+  hint <- switch(indicator_id,
+    CPI_ALL_ITEMS = c(
+      "i" = paste0("The KNBS Data Portal publishes the same national index ",
+                   "(base February 2019 = 100): ", call_for("DF_CPI_R"), "."),
+      "i" = paste0("It matched this source to two decimals when last ",
+                   "compared (April to June 2026).")
+    ),
+    CPI_INFLATION_YOY = c(
+      "i" = paste0("The KNBS Data Portal publishes KNBS's year-on-year rates: ",
+                   call_for("DF_CPI_YR"), "."),
+      "!" = rates_differ("6.9", "6.68")
+    ),
+    CPI_INFLATION_MOM = c(
+      "i" = paste0("The KNBS Data Portal publishes KNBS's month-on-month rates: ",
+                   call_for("DF_CPI_MR"), "."),
+      "!" = rates_differ("1.8", "1.58")
+    ),
+    NULL
+  )
+  tryCatch(
+    expr,
+    knbs_error_source_unavailable = function(cnd) {
+      if (is.null(hint)) {
+        rlang::cnd_signal(cnd)
+      }
+      knbs_abort(
+        c(
+          "The CPI Explorer is not answering.",
+          hint,
+          "i" = paste0(
+            "The portal's areas are Kenya, Nairobi and \"Regions Except ",
+            "Nairobi\" (SDMX codes {.val KE}, {.val KE_110_NA}, ",
+            "{.val OTHER_URB}), not this source's region ids."
+          )
+        ),
+        class = "knbs_error_source_unavailable",
+        parent = cnd,
+        call = call
+      )
+    }
+  )
+}
+
 #' The source's region list, standardised
 #'
 #' @return A tibble with `geo_code` (the source's region id, as character),
@@ -132,7 +198,7 @@ source_fetch.knbs_source_cpiexplorer <- function(source, query, ...) {
     )
   }
 
-  regions <- cpix_regions(source)
+  regions <- cpix_hint_on_outage(cpix_regions(source), def$indicator_id)
   filters <- query$filters
 
   # F-24: the region set is decided and validated here, before any data
@@ -178,13 +244,16 @@ source_fetch.knbs_source_cpiexplorer <- function(source, query, ...) {
   } else {
     seq(bounds$from, by = "-13 months", length.out = 2)[[2]]
   }
-  payload <- cpix_get(source, "explorer/data/", list(
-    `region_id[]` = wanted$geo_code,
-    start_date = format(request_from, "%Y-%m-%d"),
-    end_date = format(bounds$to, "%Y-%m-%d"),
-    data_type = "cpi",
-    frequency = "monthly"
-  ))
+  payload <- cpix_hint_on_outage(
+    cpix_get(source, "explorer/data/", list(
+      `region_id[]` = wanted$geo_code,
+      start_date = format(request_from, "%Y-%m-%d"),
+      end_date = format(bounds$to, "%Y-%m-%d"),
+      data_type = "cpi",
+      frequency = "monthly"
+    )),
+    def$indicator_id
+  )
 
   out <- standardise_cpix_series(
     payload,

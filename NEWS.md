@@ -1,5 +1,68 @@
 # knbsdata (development version)
 
+## Rough edges: a silent row loss, readable columns, totals and parts
+
+A live review on 2026-10-05 turned up places where correct data was still
+easy to misuse, or where it was not correct at all.
+
+* **A Statistical Abstract row was being dropped silently.** The "Tree,
+  crop and plant resources yielding repeat products" row of Tables 2.7a and
+  2.7c reads 7866, 8269, 8922, … — four-digit cells the extractor took for a
+  repeated year header and skipped, so capital formation's parts no longer
+  added up to its Total. A header is now recognised only as a run of
+  consecutive years, and a repeat only as the same years in the same
+  columns. The row is pinned in the registry so it cannot drop out again.
+
+* **Totals and their parts are told apart.** The Abstract prints "GDP at
+  market prices", "All industries", each industry and its sub-industries
+  in one column, so summing a year counted GDP several times over. Tables
+  2.2–2.7d now carry `parent`, the row each item is a component of (`NA`
+  for headline totals and memo items): `filter(parent == "All industries")`
+  gives the industries and nothing else. The structure is curated in the
+  extraction registry and verified on every read — every named row must be
+  present, and in the level and share tables the parts must add up to their
+  parent in every year within what rounding explains. Had this existed, it
+  would have caught the dropped row above. Imports enter GDP with a
+  negative sign, and `knbs_metadata()` says so. The accounts tables (2.1,
+  2.8, 2.9) are linked by identities, not parts and totals, and carry none.
+
+* **Readable dimension columns — a breaking change.** Indicator dimensions
+  were `<id>`/`<id>_label` pairs named by the source's internal ids
+  (`p18_vs1`, `NA_INDIC`). Every source now follows the `geo_name`/
+  `geo_code` pattern: `<name>` holds the labels and `<name>_code` the codes.
+  Census tables use curated names — `marital_status`, `age`, `religion`,
+  `household_head_sex` and the rest of the 29 dimensions the 2019 tables
+  carry — because the API's own labels are long and sometimes misspelt. Data
+  Portal flows use their SDMX id in lower case (`na_indic`), since the
+  portal labels ten different dimensions just "Indicator". A Sex
+  dimension is `sex`, lower-cased, everywhere. Code that read `p18_vs1 ==
+  "T"` now reads `marital_status == "Total"` (or `marital_status_code ==
+  "T"`); `table == "T3"` on Gross County Product becomes
+  `table_code == "T3"`.
+
+* **Census ages that add up.** The age table mixes single years with
+  five-year groups and a total. New `age_type` (`"total"`, `"single_year"`,
+  `"age_group"`, `"other"`) lets a pyramid keep one level; the groups are
+  checked on every read to add up to the total and the single years to
+  their group, which held exactly across all 393 areas when verified.
+
+* **The Data Portal stopped declaring its geography (audit F-37).** By
+  October the hub sent an empty geo role where it named `REF_AREA` in
+  August, so `geo_code` vanished and geography filters were refused. The
+  SDMX reference-area concept now stands in when the role is empty, as
+  `TIME_PERIOD` already did for time.
+
+* **A CPI Explorer outage points somewhere useful (audit F-38).** The
+  Explorer's data service answered HTTP 500 on 2026-10-05. Its errors now
+  name the Data Portal series that stands in, and how closely: the portal's
+  `DF_CPI_R` index matched the Explorer to two decimals, but its inflation
+  rates (`DF_CPI_YR`, `DF_CPI_MR`) are KNBS's published, rounded figures and
+  differed — May 2026 year on year was 6.9 there against 6.68 here. Nothing
+  is substituted silently.
+
+The cache's parser and schema versions move to 2, so results cached in the
+old shape are re-fetched rather than served.
+
 ## The tidyverse contract, locked in tests
 
 Every data-carrying result has always been a vctrs-backed tidy tibble; the

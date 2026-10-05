@@ -91,12 +91,21 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
   }
   region <- seq.int(first_title + 1L, block_end)
 
-  # The header row puts years (with their status marks) in columns 2 onward.
+  # The header row puts years (with their status marks) in columns 2 onward,
+  # as a run of consecutive years. Four-digit cells alone are not enough: a
+  # data row of four-digit values (7866, 8269, 8922, ... in Table 2.7a) also
+  # matches the year pattern, and taking it for a header silently dropped it.
   year_hits <- lapply(region, function(r) {
     row <- trimws(as.character(unlist(cells[r, -1])))
     which(!is.na(row) & grepl(abstract_year_re(), row)) + 1L
   })
-  header_at <- vapply(year_hits, length, integer(1)) >= 3L
+  hit_years <- lapply(seq_along(region), function(i) {
+    cols <- year_hits[[i]]
+    as.integer(substr(trimws(as.character(unlist(cells[region[[i]], cols]))), 1, 4))
+  })
+  header_at <- vapply(hit_years, function(y) {
+    length(y) >= 3L && all(diff(y) == 1L)
+  }, logical(1))
   if (!any(header_at)) {
     knbs_abort(
       c(
@@ -128,7 +137,13 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
   line <- 0L
 
   data_region <- region[region > header_row]
-  later_headers <- region[header_at]
+  # A repeated header (where the print layout breaks a page) repeats the same
+  # years in the same columns; nothing else is skipped as one.
+  repeats_header <- vapply(seq_along(region), function(i) {
+    header_at[[i]] && identical(year_hits[[i]], year_cols) &&
+      identical(hit_years[[i]], years)
+  }, logical(1))
+  later_headers <- region[repeats_header]
   for (r in data_region) {
     if (is_title[[r]] || r %in% later_headers) {
       next
@@ -267,7 +282,94 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
   }
 
   abstract_run_checks(long, spec, call = call)
+  long <- abstract_apply_hierarchy(long, spec, call = call)
   list(table = long, title = title)
+}
+
+#' Attach and verify a table's curated parts-and-totals structure
+#'
+#' Adds `parent` beside the item column: the row each item is a component
+#' of, `NA` for headline totals and memo items. Every row the structure names
+#' must be present, and where the spec says the parts add up, they must, in
+#' every year, within what rounding to the printed precision can explain.
+#' Either failure means the workbook no longer matches its curation.
+#'
+#' @noRd
+abstract_apply_hierarchy <- function(long, spec, call = rlang::caller_env()) {
+  hierarchy <- spec$hierarchy
+  if (is.null(hierarchy)) {
+    return(long)
+  }
+  item_col <- spec$item_column
+  entries <- hierarchy$parents
+
+  named <- unique(unlist(lapply(entries, function(e) c(e$parent, e$components))))
+  absent <- setdiff(named, long[[item_col]])
+  if (length(absent) > 0L) {
+    knbs_abort(
+      c(
+        paste0(
+          "{.val {spec$table_id}} is missing {cli::qty(length(absent))}row{?s} ",
+          "its curated structure names: {.val {absent}}."
+        ),
+        "i" = "The workbook's layout has changed; please report it."
+      ),
+      class = "knbs_error_schema_changed",
+      call = call
+    )
+  }
+
+  parent_of <- character(0)
+  for (e in entries) {
+    parent_of[as.character(e$components)] <- as.character(e$parent)
+  }
+
+  if (isTRUE(hierarchy$sums)) {
+    for (e in entries) {
+      abstract_check_parts(long, item_col, e, as.numeric(hierarchy$rounding),
+                           spec$table_id, call = call)
+    }
+  }
+
+  tibble::add_column(long, parent = unname(parent_of[long[[item_col]]]),
+                     .after = item_col)
+}
+
+#' Check that one parent's parts add up to it in every year
+#'
+#' Each part and the total are rounded to the printed precision, so they can
+#' disagree by at most (parts + 1) / 2 rounding units. A year with a missing
+#' figure among them cannot be checked and is skipped.
+#'
+#' @noRd
+abstract_check_parts <- function(long, item_col, entry, rounding, table_id,
+                                 call = rlang::caller_env()) {
+  components <- as.character(entry$components)
+  signs <- ifelse(components %in% as.character(entry$subtract %||% character(0)),
+                  -1, 1)
+  tolerance <- rounding * (length(components) + 1) / 2
+
+  for (p in sort(unique(long$period))) {
+    year <- long[long$period == p, ]
+    total <- year$value[year[[item_col]] == entry$parent]
+    parts <- year$value[match(components, year[[item_col]])]
+    if (length(total) != 1L || is.na(total) || anyNA(parts)) {
+      next
+    }
+    gap <- total - sum(signs * parts)
+    if (abs(gap) > tolerance + 1e-9) {
+      knbs_abort(
+        c(
+          "The parts of {.val {entry$parent}} in {.val {table_id}} do not add up to it in {p}.",
+          "x" = "They are off by {format(gap, big.mark = ',')}; rounding explains at most {tolerance}.",
+          "i" = "The workbook has changed since curation; please report it so the registry can be re-verified."
+        ),
+        class = "knbs_error_validation_failed",
+        call = call
+      )
+    }
+  }
+  invisible(NULL)
 }
 
 #' Verify the extraction against the spec's curated expectations

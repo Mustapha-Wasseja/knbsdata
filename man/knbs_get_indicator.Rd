@@ -71,7 +71,20 @@ asking for them returns zero rows because that is the source's answer.
 For the CPI family the default is the national series; ask for
 \code{geo_level = "region"} or name \code{geo_code}s for more. The CPI portal states
 no licence and no index base period; \code{\link[=knbs_metadata]{knbs_metadata()}} on the result says
-so.
+so. If the CPI Explorer is down, the error names the KNBS Data Portal
+series that stands in for the one asked for, and how closely: the portal's
+index has matched it, its rounded inflation rates have not always.
+
+Every other dimension of a table becomes a pair of columns, \verb{<name>}
+holding the source's labels and \verb{<name>_code} its codes, the way
+\code{geo_name} and \code{geo_code} pair up. Census tables use short curated names
+(\code{marital_status}, \code{age}, \code{religion}, ...); Data Portal flows use their
+SDMX dimension id in lower case (\code{na_indic}, \code{commodity}); Open Data for
+Africa datasets use the portal's dimension id (\code{table}, \code{indicator}). A
+Sex dimension is always \code{sex}, in lower case. The census age table mixes
+single years with five-year groups, so it carries \code{age_type}
+(\code{"total"}, \code{"single_year"}, \code{"age_group"}, \code{"other"}): keep one type
+before summing.
 }
 \examples{
 \dontrun{

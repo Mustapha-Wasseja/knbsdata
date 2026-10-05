@@ -74,7 +74,12 @@ test_that("knbs_get_indicator() returns tidy observations", {
     names(pop),
     c("indicator_id", "indicator_name", "period", "value",
       "geo_code", "geo_name", "geo_level", "sex",
-      "p18_vs1", "p18_vs1_label", "release_date", "source_id")
+      "marital_status", "marital_status_code", "release_date", "source_id")
+  )
+  # The curated name carries the source's labels; its codes sit beside them.
+  expect_true("Never Married" %in% pop$marital_status)
+  expect_identical(
+    unique(pop$marital_status[pop$marital_status_code == "T"]), "Total"
   )
   # The reference year comes from the source statement, not from a guess.
   expect_true(all(pop$period == 2019L))
@@ -199,4 +204,71 @@ test_that("health reports the census API like any other source", {
     knbs_abort("gone", class = "knbs_error_source_unavailable")
   }))
   expect_identical(source_health(indicators_source())$status, "unavailable")
+})
+
+test_that("census dimensions take curated names, or keep their source id", {
+  parsed <- parse_jsonstat(census_payload(
+    "p17_vs1", "Religion", c("T", "1"), c("Total", "Catholic"),
+    c(T = 5, `1` = 5)
+  ))
+  out <- standardise_census_obs(parsed, "POPCEN0003", "knbs_indicators")
+  expect_true(all(c("religion", "religion_code") %in% names(out)))
+  expect_false(any(c("p17_vs1", "p17_vs1_label") %in% names(out)))
+
+  # A dimension nobody has curated keeps its source id: never a guessed name.
+  parsed <- parse_jsonstat(census_payload(
+    "zz9_vs1", "Something new and long-winded", c("T", "1"), c("Total", "Yes"),
+    c(T = 5, `1` = 5)
+  ))
+  out <- standardise_census_obs(parsed, "NEWCEN001", "knbs_indicators")
+  expect_true(all(c("zz9_vs1", "zz9_vs1_code") %in% names(out)))
+})
+
+test_that("census ages say which rows are groups and which single years", {
+  parsed <- parse_jsonstat(census_age_payload())
+  ages <- standardise_census_obs(parsed, "POPCEN0002", "knbs_indicators")
+
+  expect_true(all(c("age", "age_code", "age_type") %in% names(ages)))
+  type_of <- function(code) unique(ages$age_type[ages$age_code == code])
+  expect_identical(type_of("T"), "total")
+  expect_identical(type_of("0"), "single_year")
+  expect_identical(type_of("0-1"), "age_group")
+  expect_identical(type_of("100-120"), "age_group")
+  expect_identical(type_of("   "), "other")
+
+  # The groups make a pyramid that adds up to the total, without double
+  # counting the single years.
+  kenya <- ages[ages$geo_code == "00" & ages$sex == "total", ]
+  expect_identical(
+    sum(kenya$value[kenya$age_type == "age_group"]),
+    kenya$value[kenya$age_type == "total"]
+  )
+})
+
+test_that("census ages that no longer add up are refused, gaps are not", {
+  payload <- census_age_payload()
+  # The single year "0" in the first cell, bumped: its group no longer holds.
+  payload$value[[5]] <- payload$value[[5]] + 1
+  expect_error(
+    standardise_census_obs(parse_jsonstat(payload), "POPCEN0002", "knbs_indicators"),
+    class = "knbs_error_validation_failed"
+  )
+
+  # A missing figure leaves its cell unchecked rather than judged.
+  payload <- census_age_payload()
+  payload$value[[5]] <- NULL
+  payload$value <- append(payload$value, list(NULL), after = 4L)
+  expect_no_error(
+    standardise_census_obs(parse_jsonstat(payload), "POPCEN0002", "knbs_indicators")
+  )
+})
+
+test_that("dimension column names are snake_case and never take a core name", {
+  expect_identical(
+    dimension_column_names(c("NA_INDIC", "Unit of Measure", "value", "geo",
+                             "a b", "a-b")),
+    c("na_indic", "unit_of_measure", "dim_value", "dim_geo", "a_b", "a_b_1")
+  )
+  expect_identical(dimension_code_columns(character(0)), character(0))
+  expect_identical(dimension_code_columns("age"), "age_code")
 })
