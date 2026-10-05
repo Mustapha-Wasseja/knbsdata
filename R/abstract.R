@@ -12,9 +12,14 @@
 #' [knbs_abstract_table()] can return it as clean tidy observations, or refuse
 #' with a clear error if the workbook has changed.
 #'
-#' Curated so far: Chapter 2 (National Accounts) of the 2025 edition — the
-#' production accounts, GDP by activity at current and constant prices,
-#' expenditure on GDP, capital formation, national income and saving.
+#' Curated so far, from the 2025 edition: all fifteen tables of Chapter 2
+#' (National Accounts) — the production accounts, GDP by activity at current
+#' and constant prices, expenditure on GDP, capital formation, national
+#' income and saving — and 33 tables from twelve more chapters: wage
+#' employment, insurance and savings, exports, crop sales and prices,
+#' forests and wildlife, electricity and fuel, producer prices and
+#' industrial production, construction, tourism, transport, education
+#' enrolment, and registered births and deaths. Six are county tables.
 #'
 #' @return A `knbs_catalogue` tibble with columns `table_id`, `title`,
 #'   `chapter`, `unit`, `sheet` and `workbook`.
@@ -95,6 +100,15 @@ knbs_abstract_tables <- function() {
 #' says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
 #' identities rather than parts and totals, and have no `parent` column.
 #'
+#' County tables (construction by county, school enrolment, registered
+#' births and deaths) carry `geo_code`, each row's census frame code, so
+#' they join [knbs_geographies()], the census tables and anything passed
+#' through [knbs_county_code()]; their total row is `"00"`. Such a table is
+#' refused if its rows no longer account for the 47 counties exactly once.
+#' Tables that print a unit per row (production of selected commodities)
+#' carry it in a `unit` column. The sheets' footnotes and source lines are
+#' in [knbs_metadata()]'s notes.
+#'
 #' The extraction is deliberately strict: if the workbook's layout, sections
 #' or pinned reference values no longer match what was verified at curation
 #' time, the function stops with `knbs_error_schema_changed` or
@@ -131,6 +145,8 @@ knbs_abstract_table <- function(table,
     fetched <- abstract_fetch_workbook(src, workbook, refresh = refresh)
     cells <- abstract_read_sheet(fetched$path, spec$sheet)
     extracted <- extract_abstract_table(cells, spec)
+    extracted$table <- abstract_add_counties(extracted$table, spec,
+                                             cache = cache, refresh = refresh)
     list(extracted = extracted, fetched = fetched)
   }
 
@@ -184,6 +200,13 @@ knbs_abstract_table <- function(table,
                  "repeats some row labels within a section.")
         },
         abstract_hierarchy_notes(spec),
+        # The sheet's footnotes and source line, curated with the recipe:
+        # stripping a footnote mark from a label must not lose its meaning.
+        as.character(unlist(spec$notes %||% character(0))),
+        if (isTRUE(spec$county_items)) {
+          paste0("geo_code is each county row's census frame code (2019); ",
+                 "the total row is \"00\".")
+        },
         paste0("Curated extraction: layout anchors and pinned reference ",
                "values are verified on every read, and a changed workbook ",
                "is refused rather than re-interpreted.")
@@ -226,6 +249,56 @@ abstract_registry <- function(call = rlang::caller_env()) {
     )
   }
   registry
+}
+
+#' Give a county table the census codes of its rows
+#'
+#' For a table whose recipe says its rows are counties: each county row gets
+#' its census frame code through the same matching as [knbs_county_code()],
+#' and the recipe's named total rows get `"00"`. The table is refused unless
+#' every row is accounted for and every one of the 47 counties appears
+#' exactly once - a county table that has lost, doubled or renamed a county
+#' beyond recognition no longer matches its curation.
+#'
+#' @noRd
+abstract_add_counties <- function(table, spec, cache = TRUE, refresh = FALSE,
+                                  call = rlang::caller_env()) {
+  if (!isTRUE(spec$county_items)) {
+    return(table)
+  }
+  item_col <- spec$item_column
+  items <- unique(table[[item_col]])
+  totals <- as.character(spec$total_items %||% character(0))
+  rows <- setdiff(items, totals)
+  matched <- county_match(rows, vintage = 2019L,
+                          cache = cache, refresh = refresh, call = call)
+  # Judged label by label: "Mombasa" and "Mombasa County" share a matching
+  # key, and two rows for one county is exactly what must not pass.
+  at <- match(county_input_key(rows), matched$key_input)
+  by <- matched$matched_by[at]
+  is_county <- by %in% "name"
+  stray <- rows[!is_county]
+  counties <- matched$geo_code[at][is_county]
+  missing_codes <- setdiff(sprintf("%02d", 1:47), counties)
+  if (length(stray) > 0L || anyDuplicated(counties) > 0L || length(missing_codes) > 0L) {
+    knbs_abort(
+      c(
+        "The county rows of {.val {spec$table_id}} no longer match the 47 counties.",
+        if (length(stray) > 0L) c("x" = "Not a county: {.val {stray}}."),
+        if (anyDuplicated(counties) > 0L) {
+          c("x" = "Counted twice: {.val {unique(counties[duplicated(counties)])}}.")
+        },
+        if (length(missing_codes) > 0L) c("x" = "Missing county codes: {.val {missing_codes}}."),
+        "i" = "The workbook has changed since curation; please report it."
+      ),
+      class = "knbs_error_schema_changed",
+      call = call
+    )
+  }
+  code_of <- c(stats::setNames(matched$geo_code[at], rows),
+               stats::setNames(rep("00", length(totals)), totals))
+  tibble::add_column(table, geo_code = unname(code_of[table[[item_col]]]),
+                     .after = item_col)
 }
 
 #' Provenance notes describing a table's parts-and-totals structure
@@ -280,6 +353,14 @@ abstract_hierarchy_valid <- function(spec) {
   if (h$sums && !(is.numeric(h$rounding) && length(h$rounding) == 1L &&
                     !is.na(h$rounding) && h$rounding > 0)) {
     return(FALSE)
+  }
+  # A total over every other row stands alone; listing parts besides it
+  # would make the structure ambiguous.
+  others <- vapply(h$parents, function(e) isTRUE(e$all_others), logical(1))
+  if (any(others)) {
+    e <- h$parents[[1]]
+    return(length(h$parents) == 1L && is.character(e$parent) &&
+             length(e$parent) == 1L && is.null(e$components) && is.null(e$subtract))
   }
   entries_ok <- all(vapply(h$parents, function(e) {
     is.list(e) && is.character(e$parent) && length(e$parent) == 1L &&

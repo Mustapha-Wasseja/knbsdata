@@ -1,5 +1,39 @@
 # knbsdata (development version)
 
+## Twelve more Statistical Abstract chapters
+
+`knbs_abstract_table()` now serves 48 tables of the 2025 Statistical
+Abstract, up from Chapter 2's fifteen: 33 more from Chapters 3–16 — wage
+employment by sector; the Post Office Savings Bank and insurance business;
+principal export commodities; crop sales and producer prices; forest
+plantations and wildlife; electricity connections and fuel sales; producer
+price indices and production of selected commodities; construction output
+by county and cement; visitor arrivals, departures and hotel occupancy;
+railway earnings, vehicle registration and inspection, Mombasa port and
+aircraft; school enrolment, by county too; and registered births and
+deaths by county. Each has a curated recipe, totals checked against their
+parts where the table has them, and pinned figures (audit F-39).
+
+* **County tables carry census codes.** Six tables are by county; their
+  rows get `geo_code`, the census frame code, through the county matching
+  of `knbs_county_code()` (the total row is `"00"`), so registered births
+  join the census population in one step. A county table is refused if
+  its rows stop accounting for the 47 counties exactly once.
+* **Per-row units** come through as a `unit` column where a sheet prints
+  them (sugar in tonnes, soft drinks in thousands of litres).
+* **Footnotes keep their meaning.** Marks printed against labels
+  ("Coffee1,2") are removed, and what they said — auction prices, revised
+  years, what a category includes — is in `knbs_metadata()`'s notes, with
+  the source each sheet credits.
+* **A layout trap is now refused.** Table 3.11 puts Male | Female | Total
+  under each year; the engine skipped that unlabelled second header row and
+  would have read each year's Male column as the year's value. Any such
+  row now stops extraction with `knbs_error_schema_changed`.
+
+A survey of all 267 tables in the chapter workbooks found 38 in the layout
+the engine reads; the 33 curated are those, less four tables split across
+two sheets and Table 3.11.
+
 ## What KNBS has released lately
 
 New `knbs_releases()` lists what KNBS has put on its website, newest first:

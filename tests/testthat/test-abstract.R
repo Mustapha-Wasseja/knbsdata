@@ -10,13 +10,14 @@ test_that("the catalogue lists every curated table", {
     catalogue,
     c("table_id", "title", "chapter", "unit", "sheet", "workbook")
   )
-  expect_identical(nrow(catalogue), 15L)
-  expect_setequal(
-    catalogue$table_id,
-    c("2.1", "2.2", "2.3", "2.4", "2.5", "2.6a", "2.6b", "2.6c", "2.6d",
-      "2.7a", "2.7b", "2.7c", "2.7d", "2.8", "2.9")
-  )
-  expect_identical(unique(catalogue$chapter), "Chapter 2: National Accounts")
+  expect_identical(nrow(catalogue), 48L)
+  expect_true(all(c("2.1", "2.2", "2.6a", "2.9", "3.3a", "7.6", "10.10",
+                    "11.4b", "13.17b", "15.4a", "16.11", "16.13") %in%
+                    catalogue$table_id))
+  expect_false(anyDuplicated(catalogue$table_id) > 0L)
+  expect_identical(length(unique(catalogue$chapter)), 13L)
+  expect_identical(unique(catalogue$chapter[catalogue$table_id == "2.2"]),
+                   "Chapter 2: National Accounts")
 })
 
 test_that("every curated table extracts cleanly from the real workbook", {
@@ -367,4 +368,96 @@ test_that("a malformed structure fails the registry check", {
   sectioned <- abstract_spec("2.8")
   sectioned$hierarchy <- spec$hierarchy
   expect_false(abstract_hierarchy_valid(sectioned))
+})
+
+test_that("county tables carry the census codes of their rows", {
+  local_cache()
+  local_abstract_workbook()
+  births <- knbs_abstract_table("16.11")
+
+  expect_identical(names(births)[[match("county", names(births)) + 1L]], "geo_code")
+  code_of <- function(county) unique(births$geo_code[births$county == county])
+  expect_identical(code_of("KENYA"), "00")
+  expect_identical(code_of("Homabay"), "43")
+  expect_identical(code_of("Nairobi City"), "47")
+  expect_setequal(unique(births$geo_code), c("00", sprintf("%02d", 1:47)))
+  # The counties add up to KENYA, every year.
+  expect_identical(unique(births$parent[births$county == "Mombasa"]), "KENYA")
+  expect_match(paste(knbs_metadata(births)$notes, collapse = " "), "census frame code")
+
+  construction <- knbs_abstract_table("11.4b")
+  # The sheet writes Taita-Taveta with an en dash.
+  taita <- paste0("Taita", intToUtf8(0x2013), "Taveta")
+  expect_identical(unique(construction$geo_code[construction$county == taita]), "06")
+})
+
+test_that("a county table that no longer has its 47 counties is refused", {
+  local_counties()
+  spec <- abstract_spec("16.11")
+  cells <- abstract_fixture_cells(spec$sheet, abstract_chapters_fixture_path())
+  table <- extract_abstract_table(cells, spec)$table
+
+  renamed <- table
+  renamed$county[renamed$county == "Mombasa"] <- "Gotham"
+  expect_error(abstract_add_counties(renamed, spec), class = "knbs_error_schema_changed")
+  expect_error(abstract_add_counties(renamed, spec), regexp = "Gotham")
+
+  doubled <- table
+  doubled$county[doubled$county == "Kwale"] <- "Mombasa County"
+  expect_error(abstract_add_counties(doubled, spec), regexp = "Counted twice")
+})
+
+test_that("per-row units, footnote marks and curated notes come through", {
+  local_cache()
+  local_abstract_workbook()
+
+  production <- knbs_abstract_table("10.7")
+  expect_identical(names(production)[[match("commodity", names(production)) + 1L]], "unit")
+  expect_identical(unique(production$unit[production$commodity == "Sugar"]), "MT")
+  expect_identical(unique(production$unit[production$commodity == "Cement"]), "'000 MT")
+
+  prices <- knbs_abstract_table("7.6")
+  expect_true(all(c("Coffee", "Tea", "Rice paddy") %in% prices$crop))
+  expect_false(any(grepl("[0-9]$", prices$crop)))
+  expect_match(paste(knbs_metadata(prices)$notes, collapse = " "), "auction prices")
+
+  savings <- knbs_abstract_table("4.8")
+  expect_true("Balance due to depositors" %in% savings$item)
+})
+
+test_that("a second header row under the years is refused, not misread", {
+  # As in Table 3.11, where each year spans Male | Female | Total: reading on
+  # would take every year's Male column for the year's value.
+  cells <- tibble::tibble(
+    a = c("Table 9.9: Something by Sex", "Group", NA, "One", "Total"),
+    b = c(NA, "2020", "Male", "1", "3"),
+    c = c(NA, NA, "Female", "2", "4"),
+    d = c(NA, "2021", "Male", "5", "7"),
+    e = c(NA, NA, "Female", "6", "8"),
+    f = c(NA, "2022", "Male", "9", "11"),
+    g = c(NA, NA, "Female", "10", "12")
+  )
+  spec <- list(table_id = "9.9", sheet = "x", anchor = "Table 9.9", item_column = "group")
+  expect_error(extract_abstract_table(cells, spec), class = "knbs_error_schema_changed")
+  expect_error(extract_abstract_table(cells, spec), regexp = "second header row")
+})
+
+test_that("footnote digits are stripped only where they are footnotes", {
+  expect_identical(
+    abstract_strip_footnote_digits(c("Coffee1,2", "Teachers Training3,4 ,", "Giraffe2",
+                                     "100,000 and above", "10,000 - 14,999", "Six or more")),
+    c("Coffee", "Teachers Training", "Giraffe", "100,000 and above", "10,000 - 14,999",
+      "Six or more")
+  )
+})
+
+test_that("a total over every other row stands alone in its structure", {
+  spec <- abstract_spec("16.11")
+  expect_true(abstract_hierarchy_valid(spec))
+  crowded <- spec
+  crowded$hierarchy$parents[[2]] <- list(parent = "Mombasa", components = "Kwale")
+  expect_false(abstract_hierarchy_valid(crowded))
+  listed <- spec
+  listed$hierarchy$parents[[1]]$components <- "Kwale"
+  expect_false(abstract_hierarchy_valid(listed))
 })

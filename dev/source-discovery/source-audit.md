@@ -627,6 +627,35 @@ in May and June, so substituting one for the other silently would change
 the numbers. The adapter's outage errors now name the portal series and
 state this difference; nothing is substituted automatically.
 
+**F-39 — The other Abstract chapters: 267 tables, 33 curated.** Surveyed
+2026-10-06: the media library holds the 2025 Statistical Abstract as
+eighteen chapter workbooks (uploaded 2026-01-18; Chapter 12 twice), and
+their sheets hold 267 tables. Run with a generic recipe, 38 extract as
+items in rows by years across; the rest need curated section labels or
+use layouts the engine does not read (years down the rows, county
+columns, multi-sheet tables). Close reading of the 38 turned up three
+traps, each now handled:
+
+- *A second header row.* Table 3.11 prints Male | Female | Total under
+  each year. The engine skipped the unlabelled row and read every year's
+  Male column as the year's value. Such a row now refuses extraction.
+- *Tables split across sheets.* Tables 3.4, 3.5, 3.7 and 3.8 continue on
+  a "cont" sheet whose Total covers both halves; the generic run found
+  only the continuation. Left out.
+- *Per-row units and attached footnote marks.* Tables 10.7, 10.8 and
+  10.10 print a unit per row in their second column (MT, '000 litres,
+  metres), and many labels carry footnote digits with no space
+  ("Coffee1,2", "Primary Schools1"). Recipes now carry a unit column and
+  strip such marks, keeping each footnote's text as a note.
+
+The 33 curated tables' totals were checked against their parts year by
+year: exact or within rounding everywhere, except two printed
+discrepancies kept as notes (Table 15.4a's 2022 county rows sum to 6 more
+than its Total; Table 15.6's 2018 rows to 2 more). The six county tables
+match all 47 counties, through spellings such as "Taita–Taveta" (en dash)
+and "Homabay". All 48 curated tables extract from freshly downloaded
+workbooks.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -798,3 +827,4 @@ Copy this block for each new candidate source.
 | 2026-10-05 | knbs_publications | F-36 update: four-digit data values in Tables 2.7a/2.7c taken for a repeated year header; one row silently dropped | Header must be consecutive years and a repeat must match it; curated parts-and-totals structure verified on every read; row pinned |
 | 2026-10-05 | knbs_opendata | F-37 every dataflow now sends an empty `role.geo` (August payloads named `REF_AREA`); hub dimension labels unusable as column names | `REF_AREA` stands in when the role is empty; columns named from lower-cased SDMX ids |
 | 2026-10-05 | knbs_cpi | F-38 Explorer API answering HTTP 500; portal `DF_CPI_R` index matches it to two decimals, portal inflation rates (`DF_CPI_YR`, `DF_CPI_MR`) differ beyond rounding | Outage errors name the portal series and the difference; no silent substitution |
+| 2026-10-06 | knbs_publications | F-39 the 2025 Abstract's chapter workbooks hold 267 tables; 38 fit the engine's layout; traps: a second header row (3.11), tables split across sheets (3.4-3.8), per-row units and attached footnote marks | 33 curated with totals checked; the second-header layout now refused; unit column, footnote stripping and county codes added to recipes |

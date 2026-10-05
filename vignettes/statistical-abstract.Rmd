@@ -39,10 +39,27 @@ all of it. If KNBS reshuffles a sheet or revises a pinned figure, you get
 `knbs_error_schema_changed` or `knbs_error_validation_failed` with an
 explanation — never silently re-arranged numbers.
 
-Curated so far: **Chapter 2, National Accounts** — fifteen tables covering
-the production accounts, GDP by activity at current and constant prices,
-expenditure on GDP, capital formation, national income, and saving. The
-registry is the extension point for further chapters.
+Curated so far, 48 tables across 13 chapters:
+
+- **Chapter 2, National Accounts** — all fifteen tables: the production
+  accounts, GDP by activity at current and constant prices, expenditure on
+  GDP, capital formation, national income and saving.
+- **Chapters 3–16** — 33 more: wage employment by sector (3); the Post
+  Office Savings Bank and insurance business (4); principal export
+  commodities (6); crop sales and producer prices (7); forest plantations
+  and wildlife (8); electricity connections and fuel sales (9); producer
+  price indices and production of selected commodities (10); construction
+  output by county and cement (11); visitor arrivals, departures and hotel
+  occupancy (12); railway earnings, vehicle registration and inspection,
+  Mombasa port and aircraft (13); school enrolment, including by county
+  (15); and registered births and deaths by county (16).
+
+Not every table can be curated this way. A survey of all 267 tables in
+the chapter workbooks found 38 in the layout the engine reads — items in
+rows, years across — and five of those were left out: four run across two
+sheets, and one puts Male, Female and Total under each year, which the
+engine now refuses rather than misreading. The registry is the extension
+point for the rest.
 
 ## Listing and fetching
 
@@ -95,6 +112,53 @@ saving <- knbs_abstract_table("disposable income")   # resolves to 2.9
 - Units are stated in `knbs_metadata()`, not repeated on every row; a
   mixed-unit table (2.8 carries KSh million aggregates *and* per-capita
   KSh) says so there.
+
+## County tables join everything else
+
+The county tables carry `geo_code`, the census frame code of each row, so
+they join the census, `knbs_geographies()` and anything passed through
+`knbs_county_code()`. The total row is `"00"`. Registered births per 1,000
+people by county, from the Abstract's Table 16.11 and the 2019 census:
+
+```{r, eval = FALSE}
+library(dplyr)
+
+births <- knbs_abstract_table("16.11") |>          # by county of occurrence
+  filter(period == 2019L, geo_code != "00")
+pop <- knbs_get_indicator("POPCEN0002", geo_level = "county") |>
+  filter(sex == "total", age_type == "total")
+
+births |>
+  inner_join(pop, by = "geo_code", suffix = c("_births", "_pop")) |>
+  mutate(births_per_1000 = 1000 * value_births / value_pop) |>
+  arrange(desc(births_per_1000))
+#> Kericho 37.0, Busia 34.4, Nairobi City 33.4, ... Mandera 14.3, Wajir 8.2
+```
+
+All 47 counties join. Read the result as registration, not fertility: the
+table counts births *registered*, by the county where they *occurred*, so
+it reflects civil-registration coverage and where hospitals are as much
+as birth rates.
+
+A county table is refused, rather than served, if its rows stop accounting
+for the 47 counties exactly once — a county lost, doubled, or renamed past
+recognition.
+
+## Units, footnotes and sources
+
+Where a sheet prints a unit per row — Table 10.7's sugar in tonnes, soft
+drinks in thousands of litres — it comes through as a `unit` column.
+Footnote marks printed against labels ("Coffee1,2") are removed from the
+label, and what the footnote said is kept in `knbs_metadata()`'s notes,
+along with the source the sheet credits:
+
+```{r, eval = FALSE}
+knbs_metadata(knbs_abstract_table("7.6"))$notes
+#> ... "Coffee and tea are auction prices; coffee refers to coffee beans
+#>      and tea to black tea." "Rice paddy prices for 2020 and 2021 are
+#>      revised." "Source as printed: Marketing Boards, Millers and
+#>      Ginneries." ...
+```
 
 ## Into the tidyverse
 

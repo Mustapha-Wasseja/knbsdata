@@ -46,6 +46,15 @@ within rounding. Imports enter GDP with a negative sign, and the metadata
 says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
 identities rather than parts and totals, and have no \code{parent} column.
 
+County tables (construction by county, school enrolment, registered
+births and deaths) carry \code{geo_code}, each row's census frame code, so
+they join \code{\link[=knbs_geographies]{knbs_geographies()}}, the census tables and anything passed
+through \code{\link[=knbs_county_code]{knbs_county_code()}}; their total row is \code{"00"}. Such a table is
+refused if its rows no longer account for the 47 counties exactly once.
+Tables that print a unit per row (production of selected commodities)
+carry it in a \code{unit} column. The sheets' footnotes and source lines are
+in \code{\link[=knbs_metadata]{knbs_metadata()}}'s notes.
+
 The extraction is deliberately strict: if the workbook's layout, sections
 or pinned reference values no longer match what was verified at curation
 time, the function stops with \code{knbs_error_schema_changed} or

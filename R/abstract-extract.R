@@ -37,6 +37,20 @@ abstract_clean_label <- function(x) {
   trimws(x)
 }
 
+#' Drop footnote digits printed against a label's last word
+#'
+#' Some chapters print footnote marks without a space: "Coffee1,2",
+#' "Teachers Training3,4 ,", "Total Estimated Consumption1". Only digits
+#' (and comma lists of them) attached directly to a letter or closing
+#' bracket at the very end are dropped, so "100,000 and above" and
+#' "10,000 - 14,999" are untouched. Applied only where a table's recipe
+#' says its labels carry such marks.
+#'
+#' @noRd
+abstract_strip_footnote_digits <- function(x) {
+  trimws(sub("(?<=[A-Za-z)])[0-9]+( ?, ?[0-9]+)*( ?,)?$", "", x, perl = TRUE))
+}
+
 #' Numeric cell coercion with the abstract's missing-value markers
 #' @noRd
 abstract_cell <- function(x) {
@@ -133,6 +147,7 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
   out_group <- character(0)
   out_item <- character(0)
   out_line <- integer(0)
+  out_unit <- character(0)
   out_value <- list()
   line <- 0L
 
@@ -164,12 +179,35 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
           call = call
         )
       }
+      # An unlabelled row of words across the year columns is a second header
+      # row - "Male | Female | Total" under each year - and every year's
+      # first sub-column would otherwise be read as that year's value. A unit
+      # note in one corner is not; half the year columns is the line.
+      words <- !is.na(row_vals) & nzchar(trimws(row_vals)) &
+        !trimws(row_vals) %in% abstract_missing_markers()
+      if (sum(words) * 2L >= length(year_cols)) {
+        knbs_abort(
+          c(
+            "Sheet {.val {spec$sheet}} has a second header row under its years ({.val {row_vals[words][[1]]}}, ...).",
+            "i" = "Sub-columns per year are not a layout this extraction reads."
+          ),
+          class = "knbs_error_schema_changed",
+          call = call
+        )
+      }
       next
     }
     if (abstract_skip_label(label_raw)) {
       next
     }
     label <- abstract_clean_label(label_raw)
+    if (isTRUE(spec$footnote_digits)) {
+      label <- abstract_strip_footnote_digits(label)
+    }
+    relabel <- spec$relabel %||% list()
+    if (label %in% names(relabel)) {
+      label <- as.character(relabel[[label]])
+    }
 
     if (sectioned && label %in% groups) {
       if (has_values) {
@@ -225,6 +263,10 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
     out_item <- c(out_item, label)
     out_line <- c(out_line, line)
     out_value[[line]] <- values
+    if (!is.null(spec$unit_column)) {
+      unit <- trimws(as.character(cells[[as.integer(spec$unit_column)]][[r]]))
+      out_unit <- c(out_unit, if (is.na(unit) || !nzchar(unit)) NA_character_ else unit)
+    }
   }
 
   if (sectioned && length(setdiff(groups, seen_groups)) > 0L) {
@@ -254,6 +296,11 @@ extract_abstract_table <- function(cells, spec, call = rlang::caller_env()) {
     long[[spec$group_column]] <- rep(out_group, each = n_years)
   }
   long[[spec$item_column]] <- rep(out_item, each = n_years)
+  if (!is.null(spec$unit_column)) {
+    # The sheet prints a unit per row (MT, '000 litres, metres): it travels
+    # with each row, not in the table-level metadata.
+    long$unit <- rep(out_unit, each = n_years)
+  }
   if (isTRUE(spec$line_numbers)) {
     long$line <- rep(out_line, each = n_years)
   }
@@ -301,7 +348,14 @@ abstract_apply_hierarchy <- function(long, spec, call = rlang::caller_env()) {
     return(long)
   }
   item_col <- spec$item_column
-  entries <- hierarchy$parents
+  # `all_others: true` - a total over every other row, as in the county
+  # tables - stands for listing all 47 counties by hand.
+  entries <- lapply(hierarchy$parents, function(e) {
+    if (isTRUE(e$all_others)) {
+      e$components <- setdiff(unique(long[[item_col]]), e$parent)
+    }
+    e
+  })
 
   named <- unique(unlist(lapply(entries, function(e) c(e$parent, e$components))))
   absent <- setdiff(named, long[[item_col]])

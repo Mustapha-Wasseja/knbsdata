@@ -8,10 +8,20 @@
 # it on every read - a workbook whose layout or figures have drifted is
 # refused with a classed error, never silently re-interpreted.
 #
-# Curated so far: Chapter 2 (National Accounts) of the 2025 edition, tables
-# 2.1-2.9. The legacy annex sheets (Tables 30-35, the pre-revision 2012-2016
-# series) and the other seventeen chapters are candidates for later
-# curation; the registry is the extension point.
+# Curated so far, from the 2025 edition: Chapter 2 (National Accounts),
+# tables 2.1-2.9, and 33 tables from Chapters 3-16. A survey of all 267
+# tables in the chapter workbooks (2026-10-06) found 38 in the layout this
+# engine reads - items in rows, years across - of which five were left out:
+# Tables 3.4, 3.5, 3.7 and 3.8 run across two sheets, and Table 3.11 puts
+# Male | Female | Total under each year. The rest need sections, other
+# layouts or both. The legacy annex sheets (Tables 30-35) are uncurated too;
+# the registry is the extension point.
+#
+# Optional keys beyond those below: `footnote_digits` strips footnote marks
+# printed against a label ("Coffee1,2"); `relabel` maps a printed label to
+# its clean form; `unit_column` names the column holding a per-row unit;
+# `county_items` and `total_items` mark a county table and its total rows,
+# which then carry census codes; `notes` keeps the sheet's footnotes.
 #
 # A table whose rows mix totals with their parts carries a `hierarchy`: each
 # `parents` entry names a row and the rows it is made of, with `subtract`
@@ -32,6 +42,68 @@ workbooks:
     chapter: "Chapter 2: National Accounts"
     publication_id: "16372"
     file_name: NA-Statistical-Abstract_2025-1.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  # Chapter workbooks curated 2026-10-06; chapter names as the library
+  # titles them.
+  - workbook_id: ch3
+    chapter: "Chapter 3: Labour, Retail Prices & Consumer Expenditure"
+    publication_id: "16374"
+    file_name: Chapter-3-Labour-Retail-Prices-Consumer-Expenditure.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch4
+    chapter: "Chapter 4: Money, Banking & Finance"
+    publication_id: "16375"
+    file_name: Chapter-4-Money-Banking-Finance.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch6
+    chapter: "Chapter 6: International Trade & Balance of Payments"
+    publication_id: "16377"
+    file_name: Chapter-6-International-Trade-Balance-of-Payments.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch7
+    chapter: "Chapter 7: Agriculture"
+    publication_id: "16378"
+    file_name: Chapter-7-Agriculture.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch8
+    chapter: "Chapter 8: Environment & Natural Resources"
+    publication_id: "16379"
+    file_name: Chapter-8-Environment-Natural-Resources.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch9
+    chapter: "Chapter 9: Energy"
+    publication_id: "16380"
+    file_name: Chapter-9-Energy.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch10
+    chapter: "Chapter 10: Manufacturing"
+    publication_id: "16381"
+    file_name: 2025-Chapter-10-Manufacturing.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch11
+    chapter: "Chapter 11: Construction"
+    publication_id: "16382"
+    file_name: Chapter-11-Construction.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch12
+    chapter: "Chapter 12: Migration & Tourism"
+    publication_id: "16383"
+    file_name: Chapter-12-Migration-Tourism.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch13
+    chapter: "Chapter 13: Transportation and Storage"
+    publication_id: "16385"
+    file_name: Chapter-13-Transportation-and-Storage.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch15
+    chapter: "Chapter 15: Education & Training"
+    publication_id: "16387"
+    file_name: Chapter-15-Education-Training.xlsx
+    index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
+  - workbook_id: ch16
+    chapter: "Chapter 16: Health & Vital"
+    publication_id: "16388"
+    file_name: Chapter-16-Health-Vital.xlsx
     index_page: https://www.knbs.or.ke/reports/2025-statistical-abstract/
 
 tables:
@@ -499,3 +571,797 @@ tables:
           item: Gross national disposable income
           period: 2015
           value: 7143543
+
+  # Chapters 3-16 of the 2025 edition, curated 2026-10-06 ---------------------
+  # Each table below extracted from its workbook as printed, had its totals
+  # checked against its parts year by year, and had two figures pinned. The
+  # sheets' footnotes and source lines are kept as notes, because stripping a
+  # footnote mark from a label must not lose what it said.
+
+  - table_id: "3.3a"
+    workbook_id: ch3
+    sheet: "TAB 3.3 a&b "
+    anchor: "Table 3.3a"
+    title: "Wage Employment by Sector, 2020 - 2024"
+    item_column: sector
+    unit: Number of employees
+    notes:
+      - "Source as printed: Kenya National Bureau of Statistics."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Private agriculture and forestry
+          period: 2020
+          value: 280644
+        - item: Total
+          period: 2020
+          value: 2742629
+
+  - table_id: "4.8"
+    workbook_id: ch4
+    sheet: "Tab 4.8"
+    anchor: "Table 4.8"
+    title: "Kenya Post Office Saving Bank, 2016 - 2024"
+    item_column: item
+    unit: KSh million
+    footnote_digits: true
+    relabel:
+      "Balance1 due to depositors": "Balance due to depositors"
+    notes:
+      - "Balance due to depositors includes interest credited to depositors' accounts."
+      - "Source as printed: Kenya Post Office Savings Bank."
+    checks:
+      through: 2024
+      pins:
+        - item: Deposits
+          period: 2016
+          value: 50636
+        - item: Total Assets/ Liabilities
+          period: 2020
+          value: 27540
+
+  - table_id: "4.12a"
+    workbook_id: ch4
+    sheet: "4.12 ab&cd"
+    anchor: "Table 4.12(a)"
+    title: "Trend in Some Key Insurance Business Indicators, 2015 - 2024"
+    item_column: indicator
+    unit: KSh million
+    notes:
+      - "Source as printed: Insurance Regulatory Authority."
+    checks:
+      through: 2024
+      pins:
+        - item: Gross Premium Income
+          period: 2015
+          value: 174039.2
+        - item: Gross Premium Income
+          period: 2024
+          value: 334816.1
+
+  - table_id: "4.12b"
+    workbook_id: ch4
+    sheet: "4.12 ab&cd"
+    anchor: "Table 4.12(b)"
+    title: "Key Performance Indicators for Long-Term Insurance Business, 2015 - 2024"
+    item_column: indicator
+    unit: KSh million
+    notes:
+      - "Source as printed: Insurance Regulatory Authority."
+    checks:
+      through: 2024
+      pins:
+        - item: Gross Direct Premium
+          period: 2015
+          value: 62020.7
+        - item: Life Fund C/F
+          period: 2020
+          value: 437386.4
+
+  - table_id: "6.8"
+    workbook_id: ch6
+    sheet: "TAB 6.8"
+    anchor: "Table 6.8"
+    title: "Principal Commodities, Percentage of Total Value, 2015 - 2024"
+    item_column: commodity
+    unit: Per cent of total value
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Coffee, not roasted
+          period: 2015
+          value: 4.1
+        - item: Total
+          period: 2020
+          value: 100
+
+  - table_id: "7.5"
+    workbook_id: ch7
+    sheet: "TAB 7.5 & 7.6 "
+    anchor: "Table 7.5"
+    title: "Sale of Selected Crops to Marketing Boards, Millers and Ginneries, 2015-2024"
+    item_column: crop
+    unit: "'000 tonnes"
+    footnote_digits: true
+    notes:
+      - "Coffee refers to coffee beans and tea to black tea."
+      - "Source as printed: Marketing Boards, Regulatory Boards and Millers."
+    checks:
+      through: 2024
+      pins:
+        - item: Wheat
+          period: 2015
+          value: 227.3
+        - item: Tea
+          period: 2020
+          value: 569.5
+
+  - table_id: "7.6"
+    workbook_id: ch7
+    sheet: "TAB 7.5 & 7.6 "
+    anchor: "Table 7.6"
+    title: "Average Prices for Agricultural Products, 2015-2024"
+    item_column: crop
+    unit: KSh per 100 kg
+    footnote_digits: true
+    notes:
+      - "Coffee and tea are auction prices; coffee refers to coffee beans and tea to black tea."
+      - "Rice paddy prices for 2020 and 2021 are revised."
+      - "Source as printed: Marketing Boards, Millers and Ginneries."
+    checks:
+      through: 2024
+      pins:
+        - item: Wheat
+          period: 2015
+          value: 3561.6
+        - item: Tea
+          period: 2020
+          value: 21414.4
+
+  - table_id: "8.2"
+    workbook_id: ch8
+    sheet: "Table 8.2"
+    anchor: "Table 8.2"
+    title: "Government Forest Plantation Stocking, 2019 - 2024"
+    item_column: item
+    unit: "'000 hectares"
+    footnote_digits: true
+    notes:
+      - "The previous year's stocked plantation area is the opening stock at the beginning of the year."
+      - "Source as printed: Kenya Forest Service."
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Gross Stocked Plantation Area
+          components: [Previous Year Stocked Plantation Area, New Area Planted]
+        - parent: Total Reduction
+          components: [Area Clear Felled, Planting failures/fire damages]
+        - parent: Net Stocked Plantation Area
+          components: [Gross Stocked Plantation Area, Total Reduction]
+          subtract: [Total Reduction]
+    checks:
+      through: 2024
+      pins:
+        - item: Previous Year Stocked Plantation Area
+          period: 2019
+          value: 137
+        - item: Net Stocked Plantation Area
+          period: 2020
+          value: 142.9
+
+  - table_id: "8.5a"
+    workbook_id: ch8
+    sheet: "Table 8.5(a)"
+    anchor: "Table 8.5 (a)"
+    title: "Wildlife Population Estimates in Kenya Rangelands, 2018 - 2024"
+    item_column: species
+    unit: "'000 animals"
+    footnote_digits: true
+    notes:
+      - "Estimates are derived from aerial sample surveys."
+      - "Giraffe includes the Masai and Reticulated Giraffes; Kudu includes the Greater and Lesser Kudus."
+      - "Source as printed: Directorate of Resource Surveys and Remote Sensing."
+    checks:
+      through: 2024
+      pins:
+        - item: Buffalo
+          period: 2018
+          value: 19.6
+        - item: Wildebeest
+          period: 2020
+          value: 225
+
+  - table_id: "9.5"
+    workbook_id: ch9
+    sheet: "Tab 9.4 &9.5"
+    anchor: "Table 9.5"
+    title: "Customers Connected to Electricity by Region as at 30th June, 2015 - 2024"
+    item_column: region
+    unit: Number of customers
+    notes:
+      - "REP Customers are those connected under the Rural Electrification Programme."
+      - "Source as printed: Kenya Power and Lighting Co. Ltd."
+    checks:
+      through: 2024
+      pins:
+        - item: Nairobi
+          period: 2015
+          value: 1334390
+        - item: REP Customers
+          period: 2020
+          value: 1502943
+
+  - table_id: "9.7"
+    workbook_id: ch9
+    sheet: "TAB 9.7"
+    anchor: "Table 9.7"
+    title: "Fuel Sales, 2015-2024"
+    item_column: fuel
+    unit: "'000 tonnes"
+    notes:
+      - "Source as printed: Ministry of Petroleum and Mining/Energy Petroleum Regulatory Authority."
+    checks:
+      through: 2024
+      pins:
+        - item: Liquified Petroleum Gas
+          period: 2015
+          value: 148.6
+        - item: Fuel oil
+          period: 2020
+          value: 273.9
+
+  - table_id: "10.2"
+    workbook_id: ch10
+    sheet: "Table 10.2"
+    anchor: "Table 10.2"
+    title: "Producer Price Indices, 2017-2024"
+    item_column: industry
+    unit: "Index, March 2019 = 100 (the Overall Percentage Change row is per cent)"
+    notes:
+      - "The sheet's sector weights and its 2024/23 change column are not extracted."
+    checks:
+      through: 2024
+      pins:
+        - item: Mining of metal ores
+          period: 2015
+          value: 131.7
+        - item: Overall Percentage Change
+          period: 2020
+          value: 0.3
+
+  - table_id: "10.7"
+    workbook_id: ch10
+    sheet: "Table 10.7"
+    anchor: "Table 10.7"
+    title: "Production of Selected Commodities, 2015-2024"
+    item_column: commodity
+    unit_column: 2
+    unit: "Varies by commodity: see the unit column"
+    checks:
+      through: 2024
+      pins:
+        - item: Sugar
+          period: 2015
+          value: 635674
+        - item: Cement
+          period: 2020
+          value: 7474
+
+  - table_id: "10.8"
+    workbook_id: ch10
+    sheet: "Table 10.8"
+    anchor: "Table 10.8"
+    title: "Consumption of Selected Commodities, 2015-2024"
+    item_column: commodity
+    unit_column: 2
+    unit: "Varies by commodity: see the unit column"
+    notes:
+      - "Consumption includes stocks."
+    checks:
+      through: 2024
+      pins:
+        - item: Sugar
+          period: 2015
+          value: 882974
+        - item: Cement
+          period: 2020
+          value: 7376
+
+  - table_id: "10.10"
+    workbook_id: ch10
+    sheet: "Table 10.10"
+    anchor: "Table 10.10"
+    title: "Production of Selected Industrial Commodities, 2015-2024"
+    item_column: commodity
+    unit_column: 2
+    unit: "Varies by commodity: see the unit column"
+    checks:
+      through: 2024
+      pins:
+        - item: Cotton Woven Fabrics
+          period: 2015
+          value: 11666039
+        - item: Assembled Vehicles
+          period: 2020
+          value: 7725
+
+  - table_id: "11.4a"
+    workbook_id: ch11
+    sheet: "tab 11.3 (b) & 11.4a"
+    anchor: "Table 11.4a"
+    title: "Reported Number of New Residential Buildings by Number of Habitable Rooms in Nairobi City, 2019 - 2024"
+    item_column: habitable_rooms
+    unit: Number of buildings
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: One
+          period: 2019
+          value: 3940
+        - item: Total
+          period: 2020
+          value: 11859
+
+  - table_id: "11.4b"
+    workbook_id: ch11
+    sheet: "tab 11.4b"
+    anchor: "Table 11.4b"
+    title: "Value of Workdone on Construction of Buildings by County, 2020-2024"
+    item_column: county
+    county_items: true
+    total_items: [Total]
+    unit: KSh million
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Mombasa
+          period: 2020
+          value: 60515.5
+        - item: Total
+          period: 2020
+          value: 708617.3
+
+  - table_id: "11.4c"
+    workbook_id: ch11
+    sheet: "tab 11.4c"
+    anchor: "Table 11.4c"
+    title: "Value of Construction Output by County, 2020-2024"
+    item_column: county
+    county_items: true
+    total_items: [Total]
+    unit: KSh million
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Mombasa
+          period: 2020
+          value: 138654.9
+        - item: Total
+          period: 2020
+          value: 1623605.1
+
+  - table_id: "11.7"
+    workbook_id: ch11
+    sheet: "tab 11.7 & 11.8(a)"
+    anchor: "Table 11.7"
+    title: "Production and Consumption of Cement, 2019 - 2024"
+    item_column: item
+    unit: "'000 tonnes"
+    footnote_digits: true
+    notes:
+      - "Total estimated consumption includes stocks."
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total Exports
+          components: [To Uganda and Tanzania, To Other countries]
+        - parent: Total Estimated Consumption
+          components: [Production, Total Exports, Imports]
+          subtract: [Total Exports]
+    checks:
+      through: 2024
+      pins:
+        - item: Production
+          period: 2019
+          value: 6163
+        - item: Total Estimated Consumption
+          period: 2020
+          value: 7375.6
+
+  - table_id: "12.1"
+    workbook_id: ch12
+    sheet: "TAB 1 - 3"
+    anchor: "Table 12.1"
+    title: "Reported Visitor Arrivals by Purpose, 2015 - 2024"
+    item_column: purpose
+    unit: Number of visitors
+    notes:
+      - "Source as printed: Directorate of Immigration Services."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Holiday/ Business Visitors
+          period: 2015
+          value: 1239439
+        - item: Total
+          period: 2020
+          value: 579560
+
+  - table_id: "12.2"
+    workbook_id: ch12
+    sheet: "TAB 1 - 3"
+    anchor: "Table 12.2"
+    title: "Reported Visitor Departures by Purpose, 2015 - 2024"
+    item_column: purpose
+    unit: Number of visitors
+    notes:
+      - "Source as printed: Directorate of Immigration Services."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Holiday/Business Visitors
+          period: 2015
+          value: 1153143
+        - item: Total
+          period: 2020
+          value: 565036
+
+  - table_id: "12.13"
+    workbook_id: ch12
+    sheet: "TAB 13"
+    anchor: "Table 12.13"
+    title: "Hotel Bed Occupancy, 2019-2024"
+    item_column: item
+    unit: "Thousands (the Bed Occupancy Rate row is per cent)"
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total Beds Occupants
+          components:
+            - Permanent Occupants
+            - Kenya Residents
+            - Residents of Tanzania and Uganda
+            - Other Foreign Residents
+    checks:
+      through: 2024
+      pins:
+        - item: Permanent Occupants
+          period: 2019
+          value: 99
+        - item: Bed Occupancy Rate (per cent)
+          period: 2020
+          value: 17.8
+
+  - table_id: "13.3"
+    workbook_id: ch13
+    sheet: "TAB 13.1-13.3"
+    anchor: "Table 13.3"
+    title: "Earnings from Railway Traffic, 2015 - 2024"
+    item_column: traffic
+    unit: KSh million
+    notes:
+      - "Source as printed: Kenya Railways Corporation."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Passenger Traffic
+          period: 2015
+          value: 98
+        - item: Total
+          period: 2020
+          value: 12553
+
+  - table_id: "13.8"
+    workbook_id: ch13
+    sheet: "TAB 13.7-13.10"
+    anchor: "Table 13.8"
+    title: "New Registration of Vehicles, 2015 - 2024"
+    item_column: vehicle_type
+    unit: Number of vehicles
+    footnote_digits: true
+    notes:
+      - "Other motor vehicles include road construction vehicles and farm tractors."
+      - "Source as printed: Kenya Revenue Authority/National Transport and Safety Authority."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Motor and Auto cycles
+          period: 2015
+          value: 134645
+        - item: Total
+          period: 2020
+          value: 346729
+
+  - table_id: "13.9"
+    workbook_id: ch13
+    sheet: "TAB 13.7-13.10"
+    anchor: "Table 13.9"
+    title: "Inspection of Motor Vehicles by Body Type, 2019 - 2024"
+    item_column: vehicle_type
+    unit: Number of vehicles
+    footnote_digits: true
+    notes:
+      - "Source as printed: National Transport and Safety Authority."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Motor Cycles
+          period: 2019
+          value: 75
+        - item: Total
+          period: 2020
+          value: 230615
+
+  - table_id: "13.17b"
+    workbook_id: ch13
+    sheet: "TAB 13.17b"
+    anchor: "Table 13.17b"
+    title: "Mombasa Port Performance Indicators, 2020-2024"
+    item_column: indicator
+    unit: "Varies by indicator: days, gross moves per ship per hour, or per cent"
+    notes:
+      - "Source as printed: Kenya Ports Authority."
+    checks:
+      through: 2024
+      pins:
+        - item: Average Port Days for all Vessels
+          period: 2020
+          value: 3.7
+        - item: Avg Berth Occupancy at General Cargo Terminal (%)
+          period: 2020
+          value: 64
+
+  - table_id: "13.18"
+    workbook_id: ch13
+    sheet: "TAB13.18-13.19"
+    anchor: "Table 13.18"
+    title: "Aircraft Registered in Kenya, 2017 - 2024"
+    item_column: item
+    unit: Number of aircraft
+    notes:
+      - "Source as printed: Kenya Civil Aviation Authority."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Absolute Increase
+          components: [New Aircrafts, de-Registered]
+          subtract: [de-Registered]
+    checks:
+      through: 2024
+      pins:
+        - item: Aircraft Registered
+          period: 2017
+          value: 1459
+        - item: Absolute Increase
+          period: 2020
+          value: 30
+
+  - table_id: "15.2"
+    workbook_id: ch15
+    sheet: "TAB 15.1_15.3"
+    anchor: "Table 15.2"
+    title: "Primary and Secondary Schools Enrolment, Teacher Trainees and TVET Students by Type of Schools and Colleges, 2018 - 2024"
+    item_column: institution_type
+    unit: Number enrolled
+    footnote_digits: true
+    notes:
+      - "Primary school enrolment for 2023 excludes grade 7, and for 2024 grades 7 and 8."
+      - "Junior school enrolment for 2023 is grade 7 only, and for 2024 grades 7 and 8; junior schools did not exist from 2018 to 2022."
+      - "Secondary school and teacher-training numbers for 2022 and 2023 were revised after the 2024 Economic Survey."
+      - "Teachers training includes both primary and secondary teachers' colleges."
+      - "Source as printed: Ministry of Education/Kenya National Examinations Council/TVET Authority/Kenya National Bureau of Statistics."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Primary Schools
+          period: 2018
+          value: 10542500
+        - item: Total
+          period: 2020
+          value: 14159641
+
+  - table_id: "15.4a"
+    workbook_id: ch15
+    sheet: "TAB 15.4a"
+    anchor: "Table 15.4a"
+    title: "Primary School Enrolment by County, 2019 - 2024"
+    item_column: county
+    county_items: true
+    total_items: [Total]
+    unit: Number of pupils enrolled
+    notes:
+      - "Enrolment for 2023 excludes grade 7, and for 2024 grades 7 and 8."
+      - "In 2022 the county rows sum to 6 more than the printed Total."
+      - "Source as printed: Ministry of Education, Kenya National Examinations Council, Kenya National Bureau of Statistics."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: Total
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Mombasa
+          period: 2019
+          value: 155337
+        - item: Total
+          period: 2020
+          value: 10170065
+
+  - table_id: "15.6"
+    workbook_id: ch15
+    sheet: "TAB 15.6"
+    anchor: "Table 15.6"
+    title: "Secondary Schools Enrolment by County, 2018 - 2024"
+    item_column: county
+    county_items: true
+    total_items: [TOTAL]
+    unit: Number of students enrolled
+    notes:
+      - "In 2018 the county rows sum to 2 more than the printed TOTAL."
+      - "Source as printed: Ministry of Education."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: TOTAL
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: Mombasa
+          period: 2018
+          value: 36976
+        - item: TOTAL
+          period: 2020
+          value: 3520433
+
+  - table_id: "16.11"
+    workbook_id: ch16
+    sheet: "16.11"
+    anchor: "Table 16.11"
+    title: "Registered Births by County of Occurrence, 2015-2024"
+    item_column: county
+    county_items: true
+    total_items: [KENYA]
+    unit: Number of registered births
+    notes:
+      - "Source as printed: Civil Registration Services."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: KENYA
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: KENYA
+          period: 2015
+          value: 950224
+        - item: Nairobi City
+          period: 2020
+          value: 137252
+
+  - table_id: "16.12"
+    workbook_id: ch16
+    sheet: "16.12"
+    anchor: "Table 16.12"
+    title: "Registered Deaths by County of Occurrence, 2015-2024"
+    item_column: county
+    county_items: true
+    total_items: [KENYA]
+    unit: Number of registered deaths
+    notes:
+      - "Source as printed: Civil Registration Services."
+    hierarchy:
+      sums: true
+      rounding: 1
+      parents:
+        - parent: KENYA
+          all_others: true
+    checks:
+      through: 2024
+      pins:
+        - item: KENYA
+          period: 2015
+          value: 200205
+        - item: Nairobi City
+          period: 2020
+          value: 21667
+
+  - table_id: "16.13"
+    workbook_id: ch16
+    sheet: "16.13"
+    anchor: "Table 16.13"
+    title: "Proportion (Per cent) of Registered Births by Marital Status of Mother, 2016 - 2024"
+    item_column: marital_status
+    unit: "Per cent of registered births (the Total (Number) row is a count)"
+    notes:
+      - "Source as printed: Civil Registration Services."
+    hierarchy:
+      sums: true
+      rounding: 0.1
+      parents:
+        - parent: Total (per cent)
+          components: [Married, Single, Divorced, Widowed, Unknown/ Not Stated]
+    checks:
+      through: 2024
+      pins:
+        - item: Total (Number)
+          period: 2016
+          value: 948351
+        - item: Total (per cent)
+          period: 2020
+          value: 100

@@ -20,9 +20,14 @@ section labels, unit and pinned reference values — so that
 \code{\link[=knbs_abstract_table]{knbs_abstract_table()}} can return it as clean tidy observations, or refuse
 with a clear error if the workbook has changed.
 
-Curated so far: Chapter 2 (National Accounts) of the 2025 edition — the
-production accounts, GDP by activity at current and constant prices,
-expenditure on GDP, capital formation, national income and saving.
+Curated so far, from the 2025 edition: all fifteen tables of Chapter 2
+(National Accounts) — the production accounts, GDP by activity at current
+and constant prices, expenditure on GDP, capital formation, national
+income and saving — and 33 tables from twelve more chapters: wage
+employment, insurance and savings, exports, crop sales and prices,
+forests and wildlife, electricity and fuel, producer prices and
+industrial production, construction, tourism, transport, education
+enrolment, and registered births and deaths. Six are county tables.
 }
 \examples{
 knbs_abstract_tables()

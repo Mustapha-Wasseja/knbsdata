@@ -48,10 +48,13 @@ the economy, and Gross County Product.**
   current prices) plus 200 more datasets from KNBS, the Central Bank of
   Kenya and partner agencies — with republisher provenance stated on
   every result.
-- **Statistical Abstract tables as tidy data**: the 2025 edition’s
-  National Accounts chapter — production accounts, GDP, expenditure,
-  capital formation, income and saving — extracted from the official
-  workbooks by hand-verified recipes that are re-checked on every read.
+- **Statistical Abstract tables as tidy data**: 48 tables of the 2025
+  edition across 13 chapters — the whole National Accounts chapter, and
+  wage employment, prices, trade, agriculture, energy, manufacturing,
+  construction, tourism, transport, education, and registered births and
+  deaths — extracted from the official workbooks by hand-verified
+  recipes that are re-checked on every read. County tables carry census
+  codes, so they join everything else.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
   explicit vintage — the join keys the census tables themselves use —
