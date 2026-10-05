@@ -1,5 +1,11 @@
 # knbsdata (development version)
 
+## Fixes
+
+* Citations dated a retrieval in UTC, so anything retrieved between
+  midnight and 03:00 in Nairobi was cited as retrieved the day before.
+  The plain, BibTeX and RIS citations now use the local date.
+
 ## Files for Excel, Stata and SPSS, provenance included
 
 New `knbs_write()` saves a result for colleagues who do not use R, and the

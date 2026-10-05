@@ -97,9 +97,25 @@ cite_year <- function(meta) {
   format(Sys.Date(), "%Y")
 }
 
+#' The calendar date of a retrieval, in the user's own time zone
+#'
+#' as.Date() reads a time in UTC, so a retrieval in the first three hours of
+#' a Nairobi day (UTC+3) was cited as the day before. Formatting with an
+#' explicit `tz = ""` reads it in local time, the time the user saw, even
+#' when the time itself is labelled UTC.
+#'
+#' @noRd
+retrieval_date <- function(x) {
+  x <- x %||% Sys.time()
+  if (inherits(x, "POSIXt")) {
+    return(as.Date(format(x, "%Y-%m-%d", tz = "")))
+  }
+  as.Date(x)
+}
+
 cite_retrieval <- function(meta) {
   paste0(
-    "Retrieved ", format(as.Date(meta$retrieved_at %||% Sys.time()), "%d %B %Y"),
+    "Retrieved ", format(retrieval_date(meta$retrieved_at), "%d %B %Y"),
     " using knbsdata version ", meta$package_version %||%
       as.character(utils::packageVersion("knbsdata")), "."
   )
@@ -141,7 +157,7 @@ cite_bibtex <- function(meta, include_retrieval_date) {
     note = meta$citation
   )
   if (include_retrieval_date) {
-    fields <- c(fields, urldate = format(as.Date(meta$retrieved_at %||% Sys.time()), "%Y-%m-%d"))
+    fields <- c(fields, urldate = format(retrieval_date(meta$retrieved_at), "%Y-%m-%d"))
   }
   fields <- fields[!vapply(fields, function(v) is.null(v) || is.na(v), logical(1))]
   c(
@@ -163,7 +179,7 @@ cite_ris <- function(meta, include_retrieval_date) {
   if (!is.null(meta$citation)) lines <- c(lines, paste0("N1  - ", meta$citation))
   if (include_retrieval_date) {
     lines <- c(lines, paste0("Y2  - ",
-                             format(as.Date(meta$retrieved_at %||% Sys.time()), "%Y/%m/%d")))
+                             format(retrieval_date(meta$retrieved_at), "%Y/%m/%d")))
   }
   c(lines, "ER  - ")
 }

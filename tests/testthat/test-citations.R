@@ -102,3 +102,19 @@ test_that("citations print as text", {
   expect_s3_class(citation, "knbs_citation")
   expect_output(print(citation), "X")
 })
+
+test_that("a retrieval is dated in the user's own time zone", {
+  # 22:30 UTC on 5 October is 01:30 on 6 October in Nairobi. Citations read
+  # the time in UTC and dated such a retrieval a day early.
+  withr::local_timezone("Africa/Nairobi")
+  meta <- new_knbs_metadata(
+    title = "X",
+    retrieved_at = as.POSIXct("2026-10-05 22:30:00", tz = "UTC")
+  )
+  expect_match(format(knbs_cite(meta)), "Retrieved 06 October 2026", fixed = TRUE)
+  expect_true(any(grepl("urldate = {2026-10-06}",
+                        format(knbs_cite(meta, style = "bibtex")), fixed = TRUE)))
+  expect_true(any(grepl("Y2  - 2026/10/06",
+                        format(knbs_cite(meta, style = "ris")), fixed = TRUE)))
+  expect_identical(retrieval_date(as.Date("2026-01-02")), as.Date("2026-01-02"))
+})
