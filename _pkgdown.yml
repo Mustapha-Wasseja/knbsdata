@@ -79,10 +79,12 @@ reference:
 - title: Provenance
   desc: >
     Every object the package returns carries where it came from, when it was
-    retrieved and how to cite it.
+    retrieved and how to cite it — and keeps it when written to Excel, CSV,
+    Stata or SPSS.
   contents:
   - knbs_metadata
   - knbs_cite
+  - knbs_write
 
 - title: Configuration
   desc: Session options controlling caching, timeouts and retries.

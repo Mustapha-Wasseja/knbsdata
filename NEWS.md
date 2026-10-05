@@ -1,5 +1,28 @@
 # knbsdata (development version)
 
+## Files for Excel, Stata and SPSS, provenance included
+
+New `knbs_write()` saves a result for colleagues who do not use R, and the
+provenance goes with it. The format follows the extension:
+
+* `.xlsx` — a `data` sheet and an `about` sheet: title, producer, source
+  and URL, release date, reference period, unit, licence, retrieval time,
+  package version, the source's notes, and a ready-made citation.
+* `.csv`, `.dta` (Stata, the title as dataset label) and `.sav` (SPSS) —
+  with a `<file>.metadata.json` sidecar, the one publication downloads
+  already write.
+* `.rds` — the object whole, metadata inside.
+
+Codes stay text in every format (`"01"`, never 1). Stata's 32-character
+limit shortens longer names, keeping their `_code` or `_type` ending and
+uniqueness, with the full name as the variable label and every rename
+recorded. List columns are written as JSON text and named in the
+provenance. A table derived with `summarise()` or a pivot is plain data:
+pass `metadata = knbs_metadata(original)` and its file carries the
+source's provenance; without it the file is written with a warning and
+says no provenance was attached. An existing file is never replaced
+unless `overwrite = TRUE`. writexl and haven join Suggests.
+
 ## County names, matched across sources
 
 County names are not spelled alike even inside KNBS: the census writes

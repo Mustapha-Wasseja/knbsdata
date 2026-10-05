@@ -185,6 +185,14 @@ knbs_county_code(c("Murang'a", "MURANGA", "Nairobi City County", "47"))
 #> [1] "21" "21" "47" "47"
 ```
 
+Hand the data to colleagues in Excel, Stata or SPSS without losing where
+it came from:
+
+``` r
+knbs_write(gdp, "gdp-by-activity.xlsx")  # data sheet + "about" sheet with source and citation
+knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.metadata.json beside it
+```
+
 ## Access conditions
 
 `knbsdata` will not circumvent registration requirements, licence
