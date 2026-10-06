@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/Mustapha-Wasseja/knbsdata/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Mustapha-Wasseja/knbsdata/actions/workflows/R-CMD-check.yaml)
+[![R-universe](https://mustapha-wasseja.r-universe.dev/badges/knbsdata)](https://mustapha-wasseja.r-universe.dev/knbsdata)
 <!-- badges: end -->
 
 `knbsdata` is an R client and standardisation layer for discovering,
@@ -86,6 +87,18 @@ Not implemented:
 [`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md).
 
 ## Installation
+
+Ready-built for Windows, macOS and Linux from R-universe, so no compiler or
+Rtools is needed:
+
+```{r, eval = FALSE}
+install.packages(
+  "knbsdata",
+  repos = c("https://mustapha-wasseja.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+Or the development version from GitHub:
 
 ```{r, eval = FALSE}
 # install.packages("pak")
