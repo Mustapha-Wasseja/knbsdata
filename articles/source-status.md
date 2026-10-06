@@ -33,13 +33,13 @@ knbs_status()
 #> # A tibble: 7 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-05 21:29:03
-#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-05 21:29:03
-#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
-#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-05 21:29:03
-#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
-#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-05 21:29:03
-#> 7 fake_source  search_s… unver…          NA               NA 2026-10-05 21:29:03
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-06 08:55:41
+#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-06 08:55:41
+#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
+#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-06 08:55:41
+#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
+#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
+#> 7 fake_source  search_s… unver…          NA               NA 2026-10-06 08:55:41
 #> # ℹ 1 more variable: message <chr>
 ```
 
@@ -236,7 +236,8 @@ names and parent codes, read from the census service’s own Territory
 dimension. What it does not serve, because nothing has been verified:
 other vintages, crosswalks between coding systems, boundary geometries
 (`knbs_boundaries()` does not exist) and statistical classifications.
-`knbs_search()` across sources also does not exist yet.
+[`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+across sources also does not exist yet.
 
 ### Variable documentation is uneven
 

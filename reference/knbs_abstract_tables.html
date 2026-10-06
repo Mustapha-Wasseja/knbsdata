@@ -6,18 +6,28 @@ each one has a hand-verified extraction recipe — sheet, layout anchors,
 section labels, unit and pinned reference values — so that
 knbs_abstract_table() can return it as clean tidy observations, or refuse
 with a clear error if the workbook has changed.
-Curated so far: Chapter 2 (National Accounts) of the 2025 edition — the
-production accounts, GDP by activity at current and constant prices,
-expenditure on GDP, capital formation, national income and saving."><meta property="og:description" content="
+Curated so far, from the 2025 edition: all fifteen tables of Chapter 2
+(National Accounts) — the production accounts, GDP by activity at current
+and constant prices, expenditure on GDP, capital formation, national
+income and saving — and 33 tables from twelve more chapters: wage
+employment, insurance and savings, exports, crop sales and prices,
+forests and wildlife, electricity and fuel, producer prices and
+industrial production, construction, tourism, transport, education
+enrolment, and registered births and deaths. Six are county tables."><meta property="og:description" content="
 The Statistical Abstract publishes its chapter tables as Excel workbooks on
 the KNBS website. This function lists the tables the package has curated:
 each one has a hand-verified extraction recipe — sheet, layout anchors,
 section labels, unit and pinned reference values — so that
 knbs_abstract_table() can return it as clean tidy observations, or refuse
 with a clear error if the workbook has changed.
-Curated so far: Chapter 2 (National Accounts) of the 2025 edition — the
-production accounts, GDP by activity at current and constant prices,
-expenditure on GDP, capital formation, national income and saving."></head><body>
+Curated so far, from the 2025 edition: all fifteen tables of Chapter 2
+(National Accounts) — the production accounts, GDP by activity at current
+and constant prices, expenditure on GDP, capital formation, national
+income and saving — and 33 tables from twelve more chapters: wage
+employment, insurance and savings, exports, crop sales and prices,
+forests and wildlife, electricity and fuel, producer prices and
+industrial production, construction, tourism, transport, education
+enrolment, and registered births and deaths. Six are county tables."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -68,9 +78,14 @@ each one has a hand-verified extraction recipe — sheet, layout anchors,
 section labels, unit and pinned reference values — so that
 <code><a href="knbs_abstract_table.html">knbs_abstract_table()</a></code> can return it as clean tidy observations, or refuse
 with a clear error if the workbook has changed.</p>
-<p>Curated so far: Chapter 2 (National Accounts) of the 2025 edition — the
-production accounts, GDP by activity at current and constant prices,
-expenditure on GDP, capital formation, national income and saving.</p>
+<p>Curated so far, from the 2025 edition: all fifteen tables of Chapter 2
+(National Accounts) — the production accounts, GDP by activity at current
+and constant prices, expenditure on GDP, capital formation, national
+income and saving — and 33 tables from twelve more chapters: wage
+employment, insurance and savings, exports, crop sales and prices,
+forests and wildlife, electricity and fuel, producer prices and
+industrial production, construction, tourism, transport, education
+enrolment, and registered births and deaths. Six are county tables.</p>
     </div>
 
     <div class="section level2">
@@ -93,10 +108,10 @@ expenditure on GDP, capital formation, national income and saving.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">knbs_abstract_tables</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;knbs_catalogue&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Title: 2025 Statistical Abstract: curated tables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 48</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Source: Kenya National Bureau of Statistics</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 48 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    table_id title                                   chapter unit  sheet workbook</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2.1      Annual Production Accounts by Industry… Chapte… KSh … Tabl… NA-Stat…</span>
@@ -109,11 +124,7 @@ expenditure on GDP, capital formation, national income and saving.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2.6c     Expenditure on the Gross Domestic Prod… Chapte… KSh … Tabl… NA-Stat…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2.6d     Growth in Expenditure on the Gross Dom… Chapte… per … Tabl… NA-Stat…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2.7a     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> 2.7b     Share of Gross Fixed Capital Formation… Chapte… per … Tabl… NA-Stat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> 2.7c     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> 2.7d     Growth in Gross Fixed Capital Formatio… Chapte… per … Tabl… NA-Stat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> 2.8      Gross Domestic Product and Gross Natio… Chapte… KSh … Tabl… NA-Stat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> 2.9      National Disposable Income and Saving,… Chapte… KSh … Tabl… NA-Stat…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 38 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

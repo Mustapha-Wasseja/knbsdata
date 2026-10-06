@@ -95,6 +95,23 @@ carry their section as an extra column named for what it is —
 <code>industry</code> or <code>account</code>. A row the source prints without figures (such as
 "Less: Subsidies" in the production accounts) is kept with <code>NA</code> values,
 because that is what the source shows.</p>
+<p>Tables that print totals beside their parts (GDP by activity, expenditure
+on GDP, capital formation) carry a <code>parent</code> column naming the row each item
+is a component of: industries have <code>"All industries"</code> (or <code>"All industries at basic prices"</code>) as their parent, sub-industries have their industry, and
+headline totals and memo items have <code>NA</code>. Summing rows that share a parent
+never double counts; summing the whole table does. For level and share
+tables the parts are checked to add up to their parent in every year,
+within rounding. Imports enter GDP with a negative sign, and the metadata
+says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
+identities rather than parts and totals, and have no <code>parent</code> column.</p>
+<p>County tables (construction by county, school enrolment, registered
+births and deaths) carry <code>geo_code</code>, each row's census frame code, so
+they join <code><a href="knbs_geographies.html">knbs_geographies()</a></code>, the census tables and anything passed
+through <code><a href="knbs_county_code.html">knbs_county_code()</a></code>; their total row is <code>"00"</code>. Such a table is
+refused if its rows no longer account for the 47 counties exactly once.
+Tables that print a unit per row (production of selected commodities)
+carry it in a <code>unit</code> column. The sheets' footnotes and source lines are
+in <code><a href="knbs_metadata.html">knbs_metadata()</a></code>'s notes.</p>
 <p>The extraction is deliberately strict: if the workbook's layout, sections
 or pinned reference values no longer match what was verified at curation
 time, the function stops with <code>knbs_error_schema_changed</code> or

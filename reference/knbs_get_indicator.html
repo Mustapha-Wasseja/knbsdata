@@ -135,7 +135,19 @@ asking for them returns zero rows because that is the source's answer.</p>
 <p>For the CPI family the default is the national series; ask for
 <code>geo_level = "region"</code> or name <code>geo_code</code>s for more. The CPI portal states
 no licence and no index base period; <code><a href="knbs_metadata.html">knbs_metadata()</a></code> on the result says
-so.</p>
+so. If the CPI Explorer is down, the error names the KNBS Data Portal
+series that stands in for the one asked for, and how closely: the portal's
+index has matched it, its rounded inflation rates have not always.</p>
+<p>Every other dimension of a table becomes a pair of columns, <code>&lt;name&gt;</code>
+holding the source's labels and <code>&lt;name&gt;_code</code> its codes, the way
+<code>geo_name</code> and <code>geo_code</code> pair up. Census tables use short curated names
+(<code>marital_status</code>, <code>age</code>, <code>religion</code>, ...); Data Portal flows use their
+SDMX dimension id in lower case (<code>na_indic</code>, <code>commodity</code>); Open Data for
+Africa datasets use the portal's dimension id (<code>table</code>, <code>indicator</code>). A
+Sex dimension is always <code>sex</code>, in lower case. The census age table mixes
+single years with five-year groups, so it carries <code>age_type</code>
+(<code>"total"</code>, <code>"single_year"</code>, <code>"age_group"</code>, <code>"other"</code>): keep one type
+before summing.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

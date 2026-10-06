@@ -52,7 +52,7 @@ County population against the reference, giving each county its share:
 ``` r
 
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
+totals <- pop[pop$sex == "total" & pop$marital_status == "Total",
               c("geo_code", "geo_name", "value")]
 
 geo <- knbs_geographies(level = "county")
@@ -75,7 +75,7 @@ all 47 counties, annual 2013–2020.
 ``` r
 
 gcp <- knbs_get_indicator("jhbzkjc")
-latest <- gcp[gcp$table == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
+latest <- gcp[gcp$table_code == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
 head(latest[order(-latest$value), c("geo_name", "value")])
 ```
 
@@ -84,8 +84,68 @@ Two cautions, both stated in
 this is the **2021 edition** — newer GCP years exist only as PDF reports
 (`knbs_publications("gross county product")`) — and its geography codes
 are the **portal’s own region codes**, not census territories. To relate
-GCP to census-coded data, join **by county name**, deliberately and
-visibly, not by code.
+GCP to census-coded data, translate its county names into census codes
+with
+[`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md),
+as below, rather than joining on its region codes.
+
+## Matching county names across sources
+
+County names are not spelled alike even within KNBS: the census writes
+“Murang’a”, “Tharaka-Nithi” and “Nairobi City”, the Data Portal
+“MURANGA”, “THARAKA NITHI” and “NAIROBI”, under codes of its own
+(`KE_200_MU`). Treasury, Controller of Budget and survey data add their
+own variants.
+[`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
+turns any of them into the census codes:
+
+``` r
+
+knbs_county_code(c("Murang'a", "MURANGA", "Nairobi City County",
+                   "taita/taveta", "Homabay", "47"))
+#> [1] "21" "21" "47" "06" "43" "47"
+```
+
+Matching sets aside case, punctuation, spacing, apostrophes and the
+words “County”, “City” and “Government”; numbers 1 to 47 are county
+numbers; “Kenya” is `"00"`. Nothing else is matched — there is no list
+of alternative names to guess from — so a misspelling becomes `NA` with
+a warning that names it and suggests the nearest official name:
+
+``` r
+
+knbs_county_code("Kakamenga")
+#> Warning: 1 value matched no county and became `NA`:
+#> • "Kakamenga" (did you mean "Kakamega"?)
+
+knbs_match_counties(c("Kakamenga", "Uasin-Gishu", "07"))   # how each matched
+```
+
+That makes cross-source joins one line. The rural share of each county’s
+population, from the Data Portal’s rural table and the census:
+
+``` r
+
+library(dplyr)
+
+rural <- knbs_get_indicator("DF_POP_CENSUS_RUR", source = "knbs_opendata") |>
+  filter(indic_phc_code == "POP_TOT", sex == "total", geo_code != "KE") |>
+  mutate(county_code = knbs_county_code(geo_name))     # "MURANGA" -> "21"
+
+total <- knbs_get_indicator("POPCEN0002", geo_level = "county") |>
+  filter(sex == "total", age_type == "total")
+
+rural |>
+  inner_join(total, by = c(county_code = "geo_code"),
+             suffix = c("_rural", "_total")) |>
+  mutate(rural_share = value_rural / value_total) |>
+  arrange(desc(rural_share))
+#> Bomet 0.97, Kitui 0.96, Elgeyo/Marakwet 0.96, ... Kiambu 0.30;
+#> Nairobi City and Mombasa NA: the portal reports no rural population there.
+```
+
+All 48 names the portal uses (47 counties and KENYA) match, to 48
+distinct codes.
 
 ## What is deliberately absent
 

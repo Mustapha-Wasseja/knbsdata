@@ -33,10 +33,14 @@ Every dataflow keeps its SDMX id (`DF_NAT_GDPCP`, `DF_BOP_A`,
 with their statistical domain as `topic`. Annual flows carry
 integer-year periods; monthly and quarterly ones carry first-of-period
 `Date`s, so `start` and `end` behave as everywhere else. Dimensions vary
-per flow and keep their SDMX ids as `<dim>`/`<dim>_label` column pairs,
-except single-category dimensions (“Prices = Current prices”, “Unit =
-Kenya Shillings”), which are facts about the whole dataflow and fold
-into
+per flow; each becomes a pair of columns named by its SDMX id in lower
+case — `na_indic` holding the labels (“Accommodation and food service
+activities”) and `na_indic_code` the codes — and a Sex dimension becomes
+`sex`, lower-cased as in the census tables. The ids name the columns,
+not the portal’s labels, because the portal labels ten different
+dimensions just “Indicator”. Single-category dimensions (“Prices =
+Current prices”, “Unit = Kenya Shillings”) are facts about the whole
+dataflow and fold into
 [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
 notes instead of constant columns.
 
@@ -60,7 +64,7 @@ opaque slugs, so name search is the natural way in:
 
 knbs_indicators(source = "opendataforafrica", search = "county product")
 gcp <- knbs_get_indicator("jhbzkjc")
-gcp[gcp$table == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
+gcp[gcp$table_code == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
 ```
 
 Three behaviours to know:
@@ -196,10 +200,22 @@ The result has one row per cell:
   says which (`"national"`, `"county"`, `"subcounty"`).
 - **Sex**, where the table has it, using the source’s own categories
   (the 2019 census enumerated intersex as well as female and male).
-- **Every other dimension** keeps its source id: a code column named for
-  the dimension (for example `p18_vs1`) and a matching `<id>_label`
-  column (“Marital Status”). The dimension names are in
-  `knbs_metadata(pop)$notes`.
+- **Every other dimension** becomes a pair of columns under a short,
+  readable name: `marital_status` holding the source’s labels (“Never
+  Married”, “Total”) and `marital_status_code` its codes (`"1"`, `"T"`).
+  The census API names its dimensions by questionnaire variable
+  (`p18_vs1`) and labels them in long prose, so the names are curated,
+  one per dimension the 2019 tables carry: `age`, `religion`,
+  `schooling_status`, `internet_use`, `household_head_sex` and so on. A
+  dimension added later that has no curated name keeps its source id.
+  The source’s own dimension labels are in `knbs_metadata(pop)$notes`.
+- **Age** mixes single years (`"0"` to `"99"`) with five-year groups
+  (`"0-4"` … `"95-99"`, `"100-120"`) and a total, so summing every row
+  counts people twice. `age_type` says which is which — `"total"`,
+  `"single_year"`, `"age_group"` or `"other"` — and the groups are
+  checked, on every read, to add up to the total and the single years to
+  their group. `filter(age_type == "age_group")` gives a population
+  pyramid that adds up.
 
 ### Filtering geography
 
@@ -220,7 +236,7 @@ County population aged 12+, both sexes, all marital statuses:
 ``` r
 
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
+totals <- pop[pop$sex == "total" & pop$marital_status == "Total",
               c("geo_code", "geo_name", "value")]
 totals[order(-totals$value), ]
 ```

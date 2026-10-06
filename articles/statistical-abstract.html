@@ -96,11 +96,30 @@ or revises a pinned figure, you get
 <code>knbs_error_schema_changed</code> or
 <code>knbs_error_validation_failed</code> with an explanation — never
 silently re-arranged numbers.</p>
-<p>Curated so far: <strong>Chapter 2, National Accounts</strong> —
-fifteen tables covering the production accounts, GDP by activity at
-current and constant prices, expenditure on GDP, capital formation,
-national income, and saving. The registry is the extension point for
-further chapters.</p>
+<p>Curated so far, 48 tables across 13 chapters:</p>
+<ul>
+<li>
+<strong>Chapter 2, National Accounts</strong> — all fifteen tables:
+the production accounts, GDP by activity at current and constant prices,
+expenditure on GDP, capital formation, national income and saving.</li>
+<li>
+<strong>Chapters 3–16</strong> — 33 more: wage employment by sector
+(3); the Post Office Savings Bank and insurance business (4); principal
+export commodities (6); crop sales and producer prices (7); forest
+plantations and wildlife (8); electricity connections and fuel sales
+(9); producer price indices and production of selected commodities (10);
+construction output by county and cement (11); visitor arrivals,
+departures and hotel occupancy (12); railway earnings, vehicle
+registration and inspection, Mombasa port and aircraft (13); school
+enrolment, including by county (15); and registered births and deaths by
+county (16).</li>
+</ul>
+<p>Not every table can be curated this way. A survey of all 267 tables
+in the chapter workbooks found 38 in the layout the engine reads — items
+in rows, years across — and five of those were left out: four run across
+two sheets, and one puts Male, Female and Total under each year, which
+the engine now refuses rather than misreading. The registry is the
+extension point for the rest.</p>
 </div>
 <div class="section level2">
 <h2 id="listing-and-fetching">Listing and fetching<a class="anchor" aria-label="anchor" href="#listing-and-fetching"></a>
@@ -109,10 +128,10 @@ further chapters.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_abstract_tables.html">knbs_abstract_tables</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">&lt;knbs_catalogue&gt;</span></span></span>
 <span><span class="co">#&gt; Title: 2025 Statistical Abstract: curated tables</span></span>
-<span><span class="co">#&gt; Rows: 15</span></span>
+<span><span class="co">#&gt; Rows: 48</span></span>
 <span><span class="co">#&gt; Source: Kenya National Bureau of Statistics</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 15 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 48 × 6</span></span></span>
 <span><span class="co">#&gt;    table_id title                                   chapter unit  sheet workbook</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 2.1      Annual Production Accounts by Industry… Chapte… KSh … Tabl… NA-Stat…</span></span>
@@ -125,11 +144,7 @@ further chapters.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 2.6c     Expenditure on the Gross Domestic Prod… Chapte… KSh … Tabl… NA-Stat…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 2.6d     Growth in Expenditure on the Gross Dom… Chapte… per … Tabl… NA-Stat…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 2.7a     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> 2.7b     Share of Gross Fixed Capital Formation… Chapte… per … Tabl… NA-Stat…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> 2.7c     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> 2.7d     Growth in Gross Fixed Capital Formatio… Chapte… per … Tabl… NA-Stat…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> 2.8      Gross Domestic Product and Gross Natio… Chapte… KSh … Tabl… NA-Stat…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> 2.9      National Disposable Income and Saving,… Chapte… KSh … Tabl… NA-Stat…</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 38 more rows</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span>     <span class="co"># GDP by activity, current prices</span></span>
 <span><span class="va">gdp</span><span class="op">[</span><span class="va">gdp</span><span class="op">$</span><span class="va">industry</span> <span class="op">==</span> <span class="st">"GDP at market prices"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"period"</span>, <span class="st">"status"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
@@ -165,10 +180,66 @@ consumption, value added, compensation.</li>
 <li>A row the source prints without figures — “Less: Subsidies” in the
 production accounts — is kept with <code>NA</code> values, because that
 is what the source shows.</li>
+<li>The tables print totals beside their parts: “GDP at market prices”,
+then “All industries”, then each industry, then sub-industries such as
+“Growing of crops”. <code>parent</code> names the row each item is a
+component of — industries have <code>"All industries"</code>,
+sub-industries their industry, headline totals and memo items
+<code>NA</code> — so summing within one parent never double counts,
+while summing a whole year does. The parts are checked to add up to
+their parent, within rounding, on every read. Imports enter GDP with a
+negative sign, and <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code> says so. The accounts
+tables (2.1, 2.8, 2.9) are linked by accounting identities instead and
+have no <code>parent</code>.</li>
 <li>Units are stated in <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code>, not repeated on
 every row; a mixed-unit table (2.8 carries KSh million aggregates
 <em>and</em> per-capita KSh) says so there.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="county-tables-join-everything-else">County tables join everything else<a class="anchor" aria-label="anchor" href="#county-tables-join-everything-else"></a>
+</h2>
+<p>The county tables carry <code>geo_code</code>, the census frame code
+of each row, so they join the census, <code><a href="../reference/knbs_geographies.html">knbs_geographies()</a></code>
+and anything passed through <code><a href="../reference/knbs_county_code.html">knbs_county_code()</a></code>. The total
+row is <code>"00"</code>. Registered births per 1,000 people by county,
+from the Abstract’s Table 16.11 and the 2019 census:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">births</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"16.11"</span><span class="op">)</span> <span class="op">|&gt;</span>          <span class="co"># by county of occurrence</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2019L</span>, <span class="va">geo_code</span> <span class="op">!=</span> <span class="st">"00"</span><span class="op">)</span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0002"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"total"</span>, <span class="va">age_type</span> <span class="op">==</span> <span class="st">"total"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">births</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">pop</span>, by <span class="op">=</span> <span class="st">"geo_code"</span>, suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"_births"</span>, <span class="st">"_pop"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>births_per_1000 <span class="op">=</span> <span class="fl">1000</span> <span class="op">*</span> <span class="va">value_births</span> <span class="op">/</span> <span class="va">value_pop</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">births_per_1000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Kericho 37.0, Busia 34.4, Nairobi City 33.4, ... Mandera 14.3, Wajir 8.2</span></span></code></pre></div>
+<p>All 47 counties join. Read the result as registration, not fertility:
+the table counts births <em>registered</em>, by the county where they
+<em>occurred</em>, so it reflects civil-registration coverage and where
+hospitals are as much as birth rates.</p>
+<p>A county table is refused, rather than served, if its rows stop
+accounting for the 47 counties exactly once — a county lost, doubled, or
+renamed past recognition.</p>
+</div>
+<div class="section level2">
+<h2 id="units-footnotes-and-sources">Units, footnotes and sources<a class="anchor" aria-label="anchor" href="#units-footnotes-and-sources"></a>
+</h2>
+<p>Where a sheet prints a unit per row — Table 10.7’s sugar in tonnes,
+soft drinks in thousands of litres — it comes through as a
+<code>unit</code> column. Footnote marks printed against labels
+(“Coffee1,2”) are removed from the label, and what the footnote said is
+kept in <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code>’s notes, along with the source the
+sheet credits:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_metadata.html">knbs_metadata</a></span><span class="op">(</span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"7.6"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">notes</span></span>
+<span><span class="co">#&gt; ... "Coffee and tea are auction prices; coffee refers to coffee beans</span></span>
+<span><span class="co">#&gt;      and tea to black tea." "Rice paddy prices for 2020 and 2021 are</span></span>
+<span><span class="co">#&gt;      revised." "Source as printed: Marketing Boards, Millers and</span></span>
+<span><span class="co">#&gt;      Ginneries." ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="into-the-tidyverse">Into the tidyverse<a class="anchor" aria-label="anchor" href="#into-the-tidyverse"></a>
@@ -178,15 +249,21 @@ keep the provenance: filter it, rank it, transform it, and
 <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code> still answers on the result. Aggregations
 and reshapes return plain tibbles, because a derived table is your data,
 not the source’s.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># The largest industries in 2024, straight off the table</span></span>
+<span><span class="co"># The largest industries in 2024. Keeping one level of the table - the</span></span>
+<span><span class="co"># parts of "All industries" - leaves out the totals and the sub-industries</span></span>
+<span><span class="co"># that would otherwise crowd the ranking.</span></span>
 <span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2024</span>, <span class="va">industry</span> <span class="op">!=</span> <span class="st">"GDP at market prices"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2024</span>, <span class="va">parent</span> <span class="op">==</span> <span class="st">"All industries"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">value</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">industry</span>, <span class="va">value</span>, <span class="va">status</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The breakdown of one industry</span></span>
+<span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2024</span>, <span class="va">parent</span> <span class="op">==</span> <span class="st">"Agriculture, forestry and fishing"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Recreate the printed-table look: industries by year, wide</span></span>
 <span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.4"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -213,7 +290,7 @@ wrapper with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.htm
 <div class="section level2">
 <h2 id="provenance-travels">Provenance travels<a class="anchor" aria-label="anchor" href="#provenance-travels"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_metadata.html">knbs_metadata</a></span><span class="op">(</span><span class="va">gdp</span><span class="op">)</span></span>
 <span><span class="va">meta</span><span class="op">$</span><span class="va">source_url</span>   <span class="co"># the workbook on knbs.or.ke</span></span>
 <span><span class="va">meta</span><span class="op">$</span><span class="va">notes</span>        <span class="co"># edition, sheet, workbook SHA-256, flag legend</span></span>
@@ -234,8 +311,10 @@ downloads through <code><a href="../reference/knbs_download_publication.html">kn
 <li>
 <strong>Not a modelling of the tables’ arithmetic.</strong>
 Aggregate rows (“GDP at market prices”, “Total”) are rows like any
-other, as printed; nothing is summed, derived or reconciled for
-you.</li>
+other, as printed; nothing is summed, derived or reconciled for you.
+<code>parent</code> records how the printed rows nest, and the check
+that parts add up guards the extraction — it never adjusts a
+figure.</li>
 <li>
 <strong>Not immune to source revisions — by design.</strong> A
 changed workbook stops extraction until the registry is re-verified

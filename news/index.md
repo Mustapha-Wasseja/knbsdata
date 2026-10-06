@@ -2,6 +2,256 @@
 
 ## knbsdata (development version)
 
+### Twelve more Statistical Abstract chapters
+
+[`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
+now serves 48 tables of the 2025 Statistical Abstract, up from Chapter
+2’s fifteen: 33 more from Chapters 3–16 — wage employment by sector; the
+Post Office Savings Bank and insurance business; principal export
+commodities; crop sales and producer prices; forest plantations and
+wildlife; electricity connections and fuel sales; producer price indices
+and production of selected commodities; construction output by county
+and cement; visitor arrivals, departures and hotel occupancy; railway
+earnings, vehicle registration and inspection, Mombasa port and
+aircraft; school enrolment, by county too; and registered births and
+deaths by county. Each has a curated recipe, totals checked against
+their parts where the table has them, and pinned figures (audit F-39).
+
+- **County tables carry census codes.** Six tables are by county; their
+  rows get `geo_code`, the census frame code, through the county
+  matching of
+  [`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
+  (the total row is `"00"`), so registered births join the census
+  population in one step. A county table is refused if its rows stop
+  accounting for the 47 counties exactly once.
+- **Per-row units** come through as a `unit` column where a sheet prints
+  them (sugar in tonnes, soft drinks in thousands of litres).
+- **Footnotes keep their meaning.** Marks printed against labels
+  (“Coffee1,2”) are removed, and what they said — auction prices,
+  revised years, what a category includes — is in
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)’s
+  notes, with the source each sheet credits.
+- **A layout trap is now refused.** Table 3.11 puts Male \| Female \|
+  Total under each year; the engine skipped that unlabelled second
+  header row and would have read each year’s Male column as the year’s
+  value. Any such row now stops extraction with
+  `knbs_error_schema_changed`.
+
+A survey of all 267 tables in the chapter workbooks found 38 in the
+layout the engine reads; the 33 curated are those, less four tables
+split across two sheets and Table 3.11.
+
+### What KNBS has released lately
+
+New
+[`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
+lists what KNBS has put on its website, newest first: the last 30 days
+by default, any window with `since` and `until`, or one series’ whole
+history with `series = "cpi"`. Each row carries its release `series`,
+the `period` it covers and the call that downloads it.
+
+- Series are KNBS’s regular releases, read from titles by a curated list
+  ([`knbs_release_series()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_release_series.md)):
+  the monthly CPI and inflation release and Leading Economic Indicators;
+  quarterly GDP, balance of payments and trade, producer,
+  construction-input and residential property price indices, and labour
+  force reports; the Economic Survey, Facts and Figures, national and
+  county Statistical Abstracts, Gross County Product and the Advance
+  Release Calendar. Patterns allow for the library’s own spellings
+  (“Proprety”, “Leading Economic Indicators- March 2026”).
+- `period` is the month (`"2026-09"`) or quarter (`"2026-Q2"`) a title
+  names, `NA` otherwise. It matters because the date is the upload date:
+  years of older releases were uploaded together when the library was
+  set up in mid-2023.
+- Tenders, adverts, vacancies and other notices — 23 of 2026’s first 151
+  uploads — are left out unless `notices = TRUE`.
+
+Live: the last 30 days give the September 2026 CPI release and July’s
+Leading Economic Indicators; the CPI series holds 255 distinct months.
+
+### Fixes
+
+- Citations dated a retrieval in UTC, so anything retrieved between
+  midnight and 03:00 in Nairobi was cited as retrieved the day before.
+  The plain, BibTeX and RIS citations now use the local date.
+
+### Files for Excel, Stata and SPSS, provenance included
+
+New
+[`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md)
+saves a result for colleagues who do not use R, and the provenance goes
+with it. The format follows the extension:
+
+- `.xlsx` — a `data` sheet and an `about` sheet: title, producer, source
+  and URL, release date, reference period, unit, licence, retrieval
+  time, package version, the source’s notes, and a ready-made citation.
+- `.csv`, `.dta` (Stata, the title as dataset label) and `.sav` (SPSS) —
+  with a `<file>.metadata.json` sidecar, the one publication downloads
+  already write.
+- `.rds` — the object whole, metadata inside.
+
+Codes stay text in every format (`"01"`, never 1). Stata’s 32-character
+limit shortens longer names, keeping their `_code` or `_type` ending and
+uniqueness, with the full name as the variable label and every rename
+recorded. List columns are written as JSON text and named in the
+provenance. A table derived with
+[`summarise()`](https://dplyr.tidyverse.org/reference/summarise.html) or
+a pivot is plain data: pass `metadata = knbs_metadata(original)` and its
+file carries the source’s provenance; without it the file is written
+with a warning and says no provenance was attached. An existing file is
+never replaced unless `overwrite = TRUE`. writexl and haven join
+Suggests.
+
+### County names, matched across sources
+
+County names are not spelled alike even inside KNBS: the census writes
+“Murang’a”, “Tharaka-Nithi” and “Nairobi City”, the Data Portal
+“MURANGA”, “THARAKA NITHI” and “NAIROBI”, each under its own codes. New
+[`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
+turns county names — or numbers — written any way into the census
+frame’s two-digit codes, ready for
+[`mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) and a
+join; new
+[`knbs_match_counties()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_match_counties.md)
+shows how each value matched.
+
+- A name matches once case, punctuation, spacing and apostrophes are set
+  aside and “County”, “City”, “Government”, “of” and “the” are dropped:
+  “Taita/Taveta”, “Taita Taveta” and “TAITA-TAVETA COUNTY” are all
+  `"06"`. Numbers 1–47 are county numbers; “Kenya” and “National” are
+  `"00"`.
+- Nothing else is matched — no list of alternative names exists to guess
+  from. A misspelling becomes `NA` with one `knbs_warning_unmatched`
+  warning naming it and, where one official name is close, suggesting it
+  (“Kakamenga” → did you mean “Kakamega”?).
+- Verified live: all 48 names the Data Portal’s county tables use match,
+  to 48 distinct codes, and its rural-population table joins the census
+  on all 47 counties. The county-data vignette works the example
+  through.
+
+### One search across everything
+
+New
+[`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+answers “where does this live?” in one call. It searches the indicator
+catalogues of every verified source, the survey archive, the
+publications library and the curated Abstract tables, and returns one
+ranked table — each row with `get`, the exact call that retrieves it:
+`knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")`,
+`knbs_abstract_table("2.2")`, `knbs_survey_metadata(...)`,
+`knbs_download_publication(...)`.
+
+- Matching is the package’s own, over each catalogue in full, so it
+  means the same everywhere: every word must appear in a title, id or
+  topic. Words match by stem — the library’s own search is literal, and
+  for “consumer price index” returns 2 documents while KNBS publishes a
+  “Consumer Price Indices and Inflation Rates” release every month; this
+  finds them all — and four-letter prefixes match longer words. CPI,
+  GDP, GCP, GVA, PPI, BOP, KDHS, KIHBS and LEI are understood both ways.
+- Ranking is by tier — exact id, exact title, the query as a phrase,
+  every word in the title, a match elsewhere — then data before
+  documents and newer before older, so the CPI series leads a CPI search
+  and the latest monthly release follows it.
+- Catalogues are cached for a day. The first search of the day lists the
+  whole publications library (about 16 requests); later ones take a
+  second or two. An unreachable catalogue is a warning naming it; the
+  error comes only when nothing answers.
+
+### Rough edges: a silent row loss, readable columns, totals and parts
+
+A live review on 2026-10-05 turned up places where correct data was
+still easy to misuse, or where it was not correct at all.
+
+- **A Statistical Abstract row was being dropped silently.** The “Tree,
+  crop and plant resources yielding repeat products” row of Tables 2.7a
+  and 2.7c reads 7866, 8269, 8922, … — four-digit cells the extractor
+  took for a repeated year header and skipped, so capital formation’s
+  parts no longer added up to its Total. A header is now recognised only
+  as a run of consecutive years, and a repeat only as the same years in
+  the same columns. The row is pinned in the registry so it cannot drop
+  out again.
+
+- **Totals and their parts are told apart.** The Abstract prints “GDP at
+  market prices”, “All industries”, each industry and its sub-industries
+  in one column, so summing a year counted GDP several times over.
+  Tables 2.2–2.7d now carry `parent`, the row each item is a component
+  of (`NA` for headline totals and memo items):
+  `filter(parent == "All industries")` gives the industries and nothing
+  else. The structure is curated in the extraction registry and verified
+  on every read — every named row must be present, and in the level and
+  share tables the parts must add up to their parent in every year
+  within what rounding explains. Had this existed, it would have caught
+  the dropped row above. Imports enter GDP with a negative sign, and
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  says so. The accounts tables (2.1, 2.8, 2.9) are linked by identities,
+  not parts and totals, and carry none.
+
+- **Readable dimension columns — a breaking change.** Indicator
+  dimensions were `<id>`/`<id>_label` pairs named by the source’s
+  internal ids (`p18_vs1`, `NA_INDIC`). Every source now follows the
+  `geo_name`/ `geo_code` pattern: `<name>` holds the labels and
+  `<name>_code` the codes. Census tables use curated names —
+  `marital_status`, `age`, `religion`, `household_head_sex` and the rest
+  of the 29 dimensions the 2019 tables carry — because the API’s own
+  labels are long and sometimes misspelt. Data Portal flows use their
+  SDMX id in lower case (`na_indic`), since the portal labels ten
+  different dimensions just “Indicator”. A Sex dimension is `sex`,
+  lower-cased, everywhere. Code that read `p18_vs1 == "T"` now reads
+  `marital_status == "Total"` (or `marital_status_code == "T"`);
+  `table == "T3"` on Gross County Product becomes `table_code == "T3"`.
+
+- **Census ages that add up.** The age table mixes single years with
+  five-year groups and a total. New `age_type` (`"total"`,
+  `"single_year"`, `"age_group"`, `"other"`) lets a pyramid keep one
+  level; the groups are checked on every read to add up to the total and
+  the single years to their group, which held exactly across all 393
+  areas when verified.
+
+- **The Data Portal stopped declaring its geography (audit F-37).** By
+  October the hub sent an empty geo role where it named `REF_AREA` in
+  August, so `geo_code` vanished and geography filters were refused. The
+  SDMX reference-area concept now stands in when the role is empty, as
+  `TIME_PERIOD` already did for time.
+
+- **A CPI Explorer outage points somewhere useful (audit F-38).** The
+  Explorer’s data service answered HTTP 500 on 2026-10-05. Its errors
+  now name the Data Portal series that stands in, and how closely: the
+  portal’s `DF_CPI_R` index matched the Explorer to two decimals, but
+  its inflation rates (`DF_CPI_YR`, `DF_CPI_MR`) are KNBS’s published,
+  rounded figures and differed — May 2026 year on year was 6.9 there
+  against 6.68 here. Nothing is substituted silently.
+
+The cache moves to parser version 3 and schema version 2 (with the two
+source quirks below), so results cached in an older shape are re-fetched
+rather than served.
+
+### Two source quirks kept out of results
+
+Both found by live testing on 2026-10-05.
+
+- **Survey years of 0.** KeNADA stores `year_start` and `year_end` as
+  `"0"` for the 53 of its 131 studies catalogued without a reference
+  year, and its year filter returns all of them for any year:
+  `knbs_search_surveys(year = 2022)` came back with 54 rows, 53 of them
+  dated `"0"` — the 2013 FinAccess National Survey among them. A year of
+  0 now standardises to `NA`, in `reference_years` and in
+  [`knbs_survey_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_metadata.md)’s
+  `reference_period`. A `year` filter is applied again client-side,
+  matching a study whose years overlap the range; a study with no
+  recorded year cannot match, so it is excluded, and a
+  `knbs_warning_missing_metadata` warning says how many and names them
+  in its `excluded` field. Years are never inferred from titles or ids.
+  When the source matches more studies than one page holds, every match
+  is fetched before filtering, so `limit` cannot shorten the count.
+- **Census table titles.** The census API labels every table “Census
+  2019 - Population by sex and marital status” (POPCEN0002, POPCEN0003
+  and POPCEN0004 all carry it), whatever the table holds.
+  `indicator_name` and the metadata title now come from the dataset list
+  — POPCEN0002 is “Population by Single and Grouped Ages, Sex and sub
+  County” — and the source’s own label is recorded in
+  `knbs_metadata()$notes`. Where the dataset list gives no name, the
+  label stands and the notes say so.
+
 ### The tidyverse contract, locked in tests
 
 Every data-carrying result has always been a vctrs-backed tidy tibble;

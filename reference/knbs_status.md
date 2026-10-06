@@ -68,13 +68,13 @@ knbs_status()
 #> # A tibble: 7 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-05 21:28:56
-#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-05 21:28:56
-#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-05 21:28:56
-#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-05 21:28:56
-#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-05 21:28:56
-#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-05 21:28:56
-#> 7 fake_source  search_s… unver…          NA               NA 2026-10-05 21:28:56
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-06 08:55:31
+#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-06 08:55:31
+#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-06 08:55:31
+#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-06 08:55:31
+#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-06 08:55:31
+#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-06 08:55:31
+#> 7 fake_source  search_s… unver…          NA               NA 2026-10-06 08:55:31
 #> # ℹ 1 more variable: message <chr>
 
 if (FALSE) { # \dontrun{

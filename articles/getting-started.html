@@ -186,7 +186,7 @@ out.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span> <span class="op">|&gt;</span>                    <span class="co"># Gross County Product</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">table</span> <span class="op">==</span> <span class="st">"T3"</span>, <span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">table_code</span> <span class="op">==</span> <span class="st">"T3"</span>, <span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">value</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span> <span class="op">|&gt;</span>                       <span class="co"># years across, like print</span></span>
@@ -197,7 +197,24 @@ out.</p>
 <div class="section level2">
 <h2 id="a-first-session">A first session<a class="anchor" aria-label="anchor" href="#a-first-session"></a>
 </h2>
+<p>Not sure where something lives? Search everything at once —
+indicators, Statistical Abstract tables, surveys and publications — and
+each result comes with the call that retrieves it:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span>
+<span><span class="va">hits</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"resource_type"</span>, <span class="st">"resource_id"</span>, <span class="st">"title"</span>, <span class="st">"get"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;   resource_type resource_id   title                            get</span></span>
+<span><span class="co">#&gt; 1 indicator     CPI_ALL_ITEMS Consumer Price Index, all items  knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")</span></span>
+<span><span class="co">#&gt; 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052")</span></span>
+<span><span class="co">#&gt; ...</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">hits</span><span class="op">$</span><span class="va">get</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>   <span class="co"># or copy the call</span></span></code></pre></div>
+<p>Words match by stem (“index” finds “Indices”), and CPI, GDP, GCP,
+KDHS and a few other acronyms are understood both ways. The first search
+of the day lists the publications library, which takes a few seconds;
+after that searches are instant.</p>
+<p>Or go to one catalogue directly:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Find something</span></span>
 <span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_search_surveys.html">knbs_search_surveys</a></span><span class="op">(</span><span class="st">"household budget"</span><span class="op">)</span></span>
 <span></span>
@@ -214,7 +231,7 @@ out.</p>
 <span><span class="fu"><a href="../reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">meta</span><span class="op">)</span></span></code></pre></div>
 <p>Publications work the same way, and these files <em>can</em> be
 downloaded — they are served openly by the KNBS website:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pubs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_publications.html">knbs_publications</a></span><span class="op">(</span><span class="st">"economic survey"</span>, year <span class="op">=</span> <span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_download_publication.html">knbs_download_publication</a></span><span class="op">(</span><span class="va">pubs</span><span class="op">$</span><span class="va">publication_id</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"data/publications"</span><span class="op">)</span></span></code></pre></div>
 <p>The download is verified (a web page arriving where a document was
@@ -223,7 +240,7 @@ expected is refused), checksummed with SHA-256, and given a
 <p>Indicators come back as tidy observations — consumer prices, the
 national accounts, Gross County Product, and census tables with
 geography down to sub-county:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span><span class="op">)</span>            <span class="co"># GDP by activity, SDMX</span></span>
 <span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_PF_CG_REV"</span><span class="op">)</span>                   <span class="co"># county govt revenue</span></span>
@@ -240,7 +257,7 @@ geography down to sub-county:</p>
 </h2>
 <p>Options are ordinary R options under the <code>knbsdata.</code>
 prefix:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_options.html">knbs_options</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $cache</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -259,7 +276,7 @@ prefix:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $quiet</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_options.html">knbs_options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">60</span>, retries <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -269,7 +286,7 @@ prefix:</p>
 operation, the normalised query and the package’s parser version — so
 upgrading the package invalidates anything a new parser would read
 differently.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_cache_info.html">knbs_cache_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_search_surveys.html">knbs_search_surveys</a></span><span class="op">(</span><span class="st">"household budget"</span>, refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># ignore the cache</span></span>
 <span><span class="fu"><a href="../reference/knbs_cache_clear.html">knbs_cache_clear</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

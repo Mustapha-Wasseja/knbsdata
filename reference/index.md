@@ -1,5 +1,13 @@
 # Package index
 
+## Search
+
+One search across every catalogue the package reads, each result with
+the call that retrieves it.
+
+- [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+  **\[experimental\]** : Search everything the package can retrieve
+
 ## Surveys
 
 Discovering studies and their documentation. Metadata only: no supported
@@ -25,6 +33,10 @@ verified, checksummed downloads.
   **\[experimental\]** : Search official KNBS publications
 - [`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)
   **\[experimental\]** : Download a publication and verify what arrived
+- [`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
+  **\[experimental\]** : What KNBS has released lately
+- [`knbs_release_series()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_release_series.md)
+  **\[experimental\]** : KNBS's regular release series
 
 ## Statistical Abstract tables
 
@@ -53,10 +65,16 @@ retail prices of the CPI basket commodities.
 ## Geography
 
 The coded territorial hierarchy of the 2019 census frame — the join keys
-the census tables themselves use.
+the census tables themselves use — and official county codes for county
+names written any way.
 
 - [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md)
   **\[experimental\]** : Kenya's geographic reference codes
+- [`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
+  **\[experimental\]** : Official county codes for county names written
+  any way
+- [`knbs_match_counties()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_match_counties.md)
+  **\[experimental\]** : See how county names were matched
 
 ## Sources
 
@@ -71,12 +89,15 @@ has been verified.
 ## Provenance
 
 Every object the package returns carries where it came from, when it was
-retrieved and how to cite it.
+retrieved and how to cite it — and keeps it when written to Excel, CSV,
+Stata or SPSS.
 
 - [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
   : Inspect the provenance of a knbsdata object
 - [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
   : Cite a knbsdata object
+- [`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md)
+  **\[experimental\]** : Write KNBS data to a file, with its provenance
 
 ## Configuration
 

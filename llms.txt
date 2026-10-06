@@ -14,6 +14,10 @@ cite it correctly.
 **Implemented: surveys, publications, and indicators — census, prices,
 the economy, and Gross County Product.**
 
+- **One search across everything**:
+  [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+  ranks indicators, Abstract tables, surveys and publications together,
+  and hands back the call that retrieves each one.
 - **Surveys**, against the Kenya National Data Archive: search studies,
   read their full documentation, search their variables, and list their
   data files — with provenance and citations attached throughout.
@@ -35,13 +39,20 @@ the economy, and Gross County Product.**
   current prices) plus 200 more datasets from KNBS, the Central Bank of
   Kenya and partner agencies — with republisher provenance stated on
   every result.
-- **Statistical Abstract tables as tidy data**: the 2025 edition’s
-  National Accounts chapter — production accounts, GDP, expenditure,
-  capital formation, income and saving — extracted from the official
-  workbooks by hand-verified recipes that are re-checked on every read.
+- **Statistical Abstract tables as tidy data**: 48 tables of the 2025
+  edition across 13 chapters — the whole National Accounts chapter, and
+  wage employment, prices, trade, agriculture, energy, manufacturing,
+  construction, tourism, transport, education, and registered births and
+  deaths — extracted from the official workbooks by hand-verified
+  recipes that are re-checked on every read. County tables carry census
+  codes, so they join everything else.
 - **Geographic reference codes**: Kenya, its 47 counties and their
   sub-counties in the 2019 census frame, with names, parent codes and an
-  explicit vintage — the join keys the census tables themselves use.
+  explicit vintage — the join keys the census tables themselves use —
+  and
+  [`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md),
+  which turns county names spelled any way (census, Data Portal,
+  Treasury, your own spreadsheet) into those codes.
 
 Not implemented:
 
@@ -64,6 +75,19 @@ states all of this in full. Findings are in
 [`dev/source-discovery/source-audit.md`](https://Mustapha-Wasseja.github.io/knbsdata/dev/source-discovery/source-audit.md).
 
 ## Installation
+
+Ready-built for Windows, macOS and Linux from R-universe, so no compiler
+or Rtools is needed:
+
+``` r
+
+install.packages(
+  "knbsdata",
+  repos = c("https://mustapha-wasseja.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+Or the development version from GitHub:
 
 ``` r
 
@@ -108,6 +132,20 @@ knbs_status()[, c("source_id", "status", "message")]
 #> 7 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
+Search everything at once — indicators, Statistical Abstract tables,
+surveys and publications. Each result carries the call that retrieves it
+(live requests, not run here):
+
+``` r
+
+hits <- knbs_search("consumer price index")
+hits$get[[1]]
+#> [1] "knbs_get_indicator(\"CPI_ALL_ITEMS\", source = \"knbs_cpi\")"
+
+knbs_search("gdp", type = c("indicator", "table"))
+knbs_search("kdhs", type = "survey")
+```
+
 Surveys (these contact the archive, so they are not run here):
 
 ``` r
@@ -135,6 +173,10 @@ pubs <- knbs_publications("economic survey", year = 2026)
 
 # Download one: verified, checksummed, with a provenance sidecar
 knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+
+# What has KNBS released lately? Series and period read from each title
+knbs_releases()                      # last 30 days, tenders and adverts left out
+knbs_releases(series = "cpi")[1, ]   # the latest CPI release
 ```
 
 Indicators (live requests, not run here):
@@ -158,15 +200,19 @@ knbs_cite(pop)
 
 # The matching reference codes, for joins
 knbs_geographies(level = "county")
+
+# County names written any way, as census codes - for joining anyone's data
+knbs_county_code(c("Murang'a", "MURANGA", "Nairobi City County", "47"))
+#> [1] "21" "21" "47" "47"
 ```
 
-## What it will look like
-
-Specified but not yet implemented:
+Hand the data to colleagues in Excel, Stata or SPSS without losing where
+it came from:
 
 ``` r
 
-knbs_search("consumer price index")
+knbs_write(gdp, "gdp-by-activity.xlsx")  # data sheet + "about" sheet with source and citation
+knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.metadata.json beside it
 ```
 
 ## Access conditions
@@ -207,6 +253,14 @@ definitions, revisions, access conditions and official releases.
 
 # Package index
 
+## Search
+
+One search across every catalogue the package reads, each result with
+the call that retrieves it.
+
+- [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+  **\[experimental\]** : Search everything the package can retrieve
+
 ## Surveys
 
 Discovering studies and their documentation. Metadata only: no supported
@@ -232,6 +286,10 @@ verified, checksummed downloads.
   **\[experimental\]** : Search official KNBS publications
 - [`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)
   **\[experimental\]** : Download a publication and verify what arrived
+- [`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
+  **\[experimental\]** : What KNBS has released lately
+- [`knbs_release_series()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_release_series.md)
+  **\[experimental\]** : KNBS's regular release series
 
 ## Statistical Abstract tables
 
@@ -260,10 +318,16 @@ retail prices of the CPI basket commodities.
 ## Geography
 
 The coded territorial hierarchy of the 2019 census frame — the join keys
-the census tables themselves use.
+the census tables themselves use — and official county codes for county
+names written any way.
 
 - [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md)
   **\[experimental\]** : Kenya's geographic reference codes
+- [`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
+  **\[experimental\]** : Official county codes for county names written
+  any way
+- [`knbs_match_counties()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_match_counties.md)
+  **\[experimental\]** : See how county names were matched
 
 ## Sources
 
@@ -278,12 +342,15 @@ has been verified.
 ## Provenance
 
 Every object the package returns carries where it came from, when it was
-retrieved and how to cite it.
+retrieved and how to cite it — and keeps it when written to Excel, CSV,
+Stata or SPSS.
 
 - [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
   : Inspect the provenance of a knbsdata object
 - [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
   : Cite a knbsdata object
+- [`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md)
+  **\[experimental\]** : Write KNBS data to a file, with its provenance
 
 ## Configuration
 

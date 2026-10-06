@@ -76,7 +76,10 @@ row per study.</p>
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
 <dd><p>A single year, or <code>c(from, to)</code> for a range. Matched against the
-study's reference years.</p></dd>
+study's reference years; a study spanning several years matches if any of
+them falls in the range. Studies the source records no reference year for
+cannot match, so they are excluded with a <code>knbs_warning_missing_metadata</code>
+warning that says how many, and names them in its <code>excluded</code> field.</p></dd>
 
 
 <dt id="arg-producer">producer<a class="anchor" aria-label="anchor" href="#arg-producer"></a></dt>

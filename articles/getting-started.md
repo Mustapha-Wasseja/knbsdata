@@ -126,7 +126,7 @@ library(dplyr)
 library(tidyr)
 
 knbs_get_indicator("jhbzkjc") |>                    # Gross County Product
-  filter(table == "T3", period == 2020) |>
+  filter(table_code == "T3", period == 2020) |>
   slice_max(value, n = 5)
 
 knbs_abstract_table("2.2") |>                       # years across, like print
@@ -135,6 +135,29 @@ knbs_abstract_table("2.2") |>                       # years across, like print
 ```
 
 ## A first session
+
+Not sure where something lives? Search everything at once — indicators,
+Statistical Abstract tables, surveys and publications — and each result
+comes with the call that retrieves it:
+
+``` r
+
+hits <- knbs_search("consumer price index")
+hits[, c("resource_type", "resource_id", "title", "get")]
+#>   resource_type resource_id   title                            get
+#> 1 indicator     CPI_ALL_ITEMS Consumer Price Index, all items  knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")
+#> 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052")
+#> ...
+
+eval(parse(text = hits$get[[1]]))   # or copy the call
+```
+
+Words match by stem (“index” finds “Indices”), and CPI, GDP, GCP, KDHS
+and a few other acronyms are understood both ways. The first search of
+the day lists the publications library, which takes a few seconds; after
+that searches are instant.
+
+Or go to one catalogue directly:
 
 ``` r
 

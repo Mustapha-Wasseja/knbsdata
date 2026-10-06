@@ -31,10 +31,28 @@ pinned figure, you get `knbs_error_schema_changed` or
 `knbs_error_validation_failed` with an explanation — never silently
 re-arranged numbers.
 
-Curated so far: **Chapter 2, National Accounts** — fifteen tables
-covering the production accounts, GDP by activity at current and
-constant prices, expenditure on GDP, capital formation, national income,
-and saving. The registry is the extension point for further chapters.
+Curated so far, 48 tables across 13 chapters:
+
+- **Chapter 2, National Accounts** — all fifteen tables: the production
+  accounts, GDP by activity at current and constant prices, expenditure
+  on GDP, capital formation, national income and saving.
+- **Chapters 3–16** — 33 more: wage employment by sector (3); the Post
+  Office Savings Bank and insurance business (4); principal export
+  commodities (6); crop sales and producer prices (7); forest
+  plantations and wildlife (8); electricity connections and fuel sales
+  (9); producer price indices and production of selected commodities
+  (10); construction output by county and cement (11); visitor arrivals,
+  departures and hotel occupancy (12); railway earnings, vehicle
+  registration and inspection, Mombasa port and aircraft (13); school
+  enrolment, including by county (15); and registered births and deaths
+  by county (16).
+
+Not every table can be curated this way. A survey of all 267 tables in
+the chapter workbooks found 38 in the layout the engine reads — items in
+rows, years across — and five of those were left out: four run across
+two sheets, and one puts Male, Female and Total under each year, which
+the engine now refuses rather than misreading. The registry is the
+extension point for the rest.
 
 ## Listing and fetching
 
@@ -43,10 +61,10 @@ and saving. The registry is the extension point for further chapters.
 knbs_abstract_tables()
 #> <knbs_catalogue>
 #> Title: 2025 Statistical Abstract: curated tables
-#> Rows: 15
+#> Rows: 48
 #> Source: Kenya National Bureau of Statistics
 #> 
-#> # A tibble: 15 × 6
+#> # A tibble: 48 × 6
 #>    table_id title                                   chapter unit  sheet workbook
 #>    <chr>    <chr>                                   <chr>   <chr> <chr> <chr>   
 #>  1 2.1      Annual Production Accounts by Industry… Chapte… KSh … Tabl… NA-Stat…
@@ -59,11 +77,7 @@ knbs_abstract_tables()
 #>  8 2.6c     Expenditure on the Gross Domestic Prod… Chapte… KSh … Tabl… NA-Stat…
 #>  9 2.6d     Growth in Expenditure on the Gross Dom… Chapte… per … Tabl… NA-Stat…
 #> 10 2.7a     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…
-#> 11 2.7b     Share of Gross Fixed Capital Formation… Chapte… per … Tabl… NA-Stat…
-#> 12 2.7c     Gross Fixed Capital Formation, 2015 - … Chapte… KSh … Tabl… NA-Stat…
-#> 13 2.7d     Growth in Gross Fixed Capital Formatio… Chapte… per … Tabl… NA-Stat…
-#> 14 2.8      Gross Domestic Product and Gross Natio… Chapte… KSh … Tabl… NA-Stat…
-#> 15 2.9      National Disposable Income and Saving,… Chapte… KSh … Tabl… NA-Stat…
+#> # ℹ 38 more rows
 ```
 
 ``` r
@@ -101,10 +115,74 @@ saving <- knbs_abstract_table("disposable income")   # resolves to 2.9
 - A row the source prints without figures — “Less: Subsidies” in the
   production accounts — is kept with `NA` values, because that is what
   the source shows.
+- The tables print totals beside their parts: “GDP at market prices”,
+  then “All industries”, then each industry, then sub-industries such as
+  “Growing of crops”. `parent` names the row each item is a component of
+  — industries have `"All industries"`, sub-industries their industry,
+  headline totals and memo items `NA` — so summing within one parent
+  never double counts, while summing a whole year does. The parts are
+  checked to add up to their parent, within rounding, on every read.
+  Imports enter GDP with a negative sign, and
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  says so. The accounts tables (2.1, 2.8, 2.9) are linked by accounting
+  identities instead and have no `parent`.
 - Units are stated in
   [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md),
   not repeated on every row; a mixed-unit table (2.8 carries KSh million
   aggregates *and* per-capita KSh) says so there.
+
+## County tables join everything else
+
+The county tables carry `geo_code`, the census frame code of each row,
+so they join the census,
+[`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md)
+and anything passed through
+[`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md).
+The total row is `"00"`. Registered births per 1,000 people by county,
+from the Abstract’s Table 16.11 and the 2019 census:
+
+``` r
+
+library(dplyr)
+
+births <- knbs_abstract_table("16.11") |>          # by county of occurrence
+  filter(period == 2019L, geo_code != "00")
+pop <- knbs_get_indicator("POPCEN0002", geo_level = "county") |>
+  filter(sex == "total", age_type == "total")
+
+births |>
+  inner_join(pop, by = "geo_code", suffix = c("_births", "_pop")) |>
+  mutate(births_per_1000 = 1000 * value_births / value_pop) |>
+  arrange(desc(births_per_1000))
+#> Kericho 37.0, Busia 34.4, Nairobi City 33.4, ... Mandera 14.3, Wajir 8.2
+```
+
+All 47 counties join. Read the result as registration, not fertility:
+the table counts births *registered*, by the county where they
+*occurred*, so it reflects civil-registration coverage and where
+hospitals are as much as birth rates.
+
+A county table is refused, rather than served, if its rows stop
+accounting for the 47 counties exactly once — a county lost, doubled, or
+renamed past recognition.
+
+## Units, footnotes and sources
+
+Where a sheet prints a unit per row — Table 10.7’s sugar in tonnes, soft
+drinks in thousands of litres — it comes through as a `unit` column.
+Footnote marks printed against labels (“Coffee1,2”) are removed from the
+label, and what the footnote said is kept in
+[`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)’s
+notes, along with the source the sheet credits:
+
+``` r
+
+knbs_metadata(knbs_abstract_table("7.6"))$notes
+#> ... "Coffee and tea are auction prices; coffee refers to coffee beans
+#>      and tea to black tea." "Rice paddy prices for 2020 and 2021 are
+#>      revised." "Source as printed: Marketing Boards, Millers and
+#>      Ginneries." ...
+```
 
 ## Into the tidyverse
 
@@ -119,11 +197,17 @@ tibbles, because a derived table is your data, not the source’s.
 library(dplyr)
 library(tidyr)
 
-# The largest industries in 2024, straight off the table
+# The largest industries in 2024. Keeping one level of the table - the
+# parts of "All industries" - leaves out the totals and the sub-industries
+# that would otherwise crowd the ranking.
 knbs_abstract_table("2.2") |>
-  filter(period == 2024, industry != "GDP at market prices") |>
+  filter(period == 2024, parent == "All industries") |>
   slice_max(value, n = 5) |>
   select(industry, value, status)
+
+# The breakdown of one industry
+knbs_abstract_table("2.2") |>
+  filter(period == 2024, parent == "Agriculture, forestry and fishing")
 
 # Recreate the printed-table look: industries by year, wide
 knbs_abstract_table("2.4") |>
@@ -172,7 +256,9 @@ exactly which file the numbers came from.
   [`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md).
 - **Not a modelling of the tables’ arithmetic.** Aggregate rows (“GDP at
   market prices”, “Total”) are rows like any other, as printed; nothing
-  is summed, derived or reconciled for you.
+  is summed, derived or reconciled for you. `parent` records how the
+  printed rows nest, and the check that parts add up guards the
+  extraction — it never adjusts a figure.
 - **Not immune to source revisions — by design.** A changed workbook
   stops extraction until the registry is re-verified against it. That is
   the honest failure mode.

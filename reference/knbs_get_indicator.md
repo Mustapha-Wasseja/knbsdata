@@ -94,7 +94,21 @@ For the CPI family the default is the national series; ask for
 `geo_level = "region"` or name `geo_code`s for more. The CPI portal
 states no licence and no index base period;
 [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
-on the result says so.
+on the result says so. If the CPI Explorer is down, the error names the
+KNBS Data Portal series that stands in for the one asked for, and how
+closely: the portal's index has matched it, its rounded inflation rates
+have not always.
+
+Every other dimension of a table becomes a pair of columns, `<name>`
+holding the source's labels and `<name>_code` its codes, the way
+`geo_name` and `geo_code` pair up. Census tables use short curated names
+(`marital_status`, `age`, `religion`, ...); Data Portal flows use their
+SDMX dimension id in lower case (`na_indic`, `commodity`); Open Data for
+Africa datasets use the portal's dimension id (`table`, `indicator`). A
+Sex dimension is always `sex`, in lower case. The census age table mixes
+single years with five-year groups, so it carries `age_type` (`"total"`,
+`"single_year"`, `"age_group"`, `"other"`): keep one type before
+summing.
 
 ## See also
 

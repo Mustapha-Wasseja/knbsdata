@@ -29,7 +29,11 @@ knbs_search_surveys(
 - year:
 
   A single year, or `c(from, to)` for a range. Matched against the
-  study's reference years.
+  study's reference years; a study spanning several years matches if any
+  of them falls in the range. Studies the source records no reference
+  year for cannot match, so they are excluded with a
+  `knbs_warning_missing_metadata` warning that says how many, and names
+  them in its `excluded` field.
 
 - producer:
 
