@@ -99,7 +99,8 @@ knbs_indicators <- function(topic = NULL,
         paste0("Could not reach: ", paste(failures, collapse = ", "), "."),
         "i" = "The catalogue below is missing those indicators."
       ),
-      class = "knbs_warning_partial_failure"
+      class = "knbs_warning_partial_failure",
+      unreachable = failures
     )
   }
 
@@ -289,10 +290,23 @@ resolve_indicator_sources <- function(source, call = rlang::caller_env()) {
 #' The id as given if any catalogue knows it; otherwise a name search. One
 #' match is used, several are reported, none is a plain not-found.
 #'
+#' A source that could not be reached matters only when it could change the
+#' answer. An id found in a reachable catalogue resolves silently - warning
+#' that some other portal is down, on every call, was noise. A name search
+#' warns, since the unreachable catalogue might hold another match; a
+#' not-found names the unreachable source as a possible reason.
+#'
 #' @noRd
 resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
                               refresh = FALSE, call = rlang::caller_env()) {
-  catalogue <- knbs_indicators(source = source, cache = cache, refresh = refresh)
+  unreachable <- character(0)
+  catalogue <- withCallingHandlers(
+    knbs_indicators(source = source, cache = cache, refresh = refresh),
+    knbs_warning_partial_failure = function(cnd) {
+      unreachable <<- c(unreachable, as.character(cnd$unreachable))
+      rlang::cnd_muffle(cnd)
+    }
+  )
 
   exact <- catalogue[catalogue$indicator_id == indicator, ]
   if (nrow(exact) == 1L) {
@@ -316,9 +330,24 @@ resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
     knbs_abort(
       c(
         "No indicator matches {.val {indicator}}.",
+        if (length(unreachable) > 0L) {
+          c("!" = "Could not reach {.val {unreachable}}; it may be served there.")
+        },
         "i" = "List what exists with {.fn knbs_indicators}."
       ),
       class = "knbs_error_resource_not_found",
+      call = call,
+      unreachable = unreachable
+    )
+  }
+  if (length(unreachable) > 0L) {
+    knbs_warn(
+      c(
+        "Matched {.val {indicator}} by name without {.val {unreachable}}, which could not be reached.",
+        "i" = "A match there would be missing; use an exact {.field indicator_id} to be sure."
+      ),
+      class = "knbs_warning_partial_failure",
+      unreachable = unreachable,
       call = call
     )
   }

@@ -355,6 +355,9 @@ search_type_weight <- function(type) {
 #' The source ids a partial-failure warning names
 #' @noRd
 search_failed_sources <- function(cnd) {
+  if (length(cnd$unreachable) > 0L) {
+    return(as.character(cnd$unreachable))
+  }
   message <- conditionMessage(cnd)
   found <- regmatches(message, regexpr("Could not reach: [^.]+", message))
   if (length(found) == 0L) {

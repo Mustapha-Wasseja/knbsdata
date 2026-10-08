@@ -1,5 +1,16 @@
 # knbsdata (development version)
 
+## Quieter lookups
+
+`knbs_get_indicator()` resolves an indicator against every source's
+catalogue, and warned "Could not reach: …" on every call while any one
+portal was down — even for an indicator served by another source. It now
+stays silent when the id is found in a source that answered. A name search
+still warns, since the unreachable catalogue might hold another match, and a
+not-found error names the unreachable source as a possible reason. The
+README leads its live examples with the most dependable sources and says
+what an outage looks like.
+
 ## Twelve more Statistical Abstract chapters
 
 `knbs_abstract_table()` now serves 48 tables of the 2025 Statistical

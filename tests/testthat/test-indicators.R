@@ -349,3 +349,29 @@ test_that("dimension column names are snake_case and never take a core name", {
   expect_identical(dimension_code_columns(character(0)), character(0))
   expect_identical(dimension_code_columns("age"), "age_code")
 })
+
+test_that("an unreachable portal is mentioned only where it could matter", {
+  # The africa portal down, as it has been since 2026-10-05: every lookup used
+  # to warn about it, even for an indicator served by another source.
+  local_cache()
+  local_knbsapi()
+  local_knoema_api(list("." = function(path, query) {
+    knbs_abort("The source refused access to this resource.",
+               class = "knbs_error_access_restricted")
+  }))
+
+  # An exact id from a reachable source resolves silently.
+  expect_no_warning(pop <- knbs_get_indicator("POPCEN0001"))
+  expect_s3_class(pop, "knbs_indicator")
+
+  # A not-found says the unreachable portal may be where it lives.
+  expect_error(knbs_get_indicator("jhbzkjc"), class = "knbs_error_resource_not_found")
+  expect_error(knbs_get_indicator("jhbzkjc"), regexp = "opendataforafrica")
+
+  # A name match warns: the unreachable catalogue might hold another match.
+  expect_warning(knbs_get_indicator("Marital Status"),
+                 class = "knbs_warning_partial_failure")
+
+  # The catalogue itself still says what is missing.
+  expect_warning(knbs_indicators(), regexp = "opendataforafrica")
+})

@@ -179,19 +179,13 @@ knbs_releases()                      # last 30 days, tenders and adverts left ou
 knbs_releases(series = "cpi")[1, ]   # the latest CPI release
 ```
 
-Indicators (live requests, not run here):
+Indicators and tables (live requests, not run here):
 
 ``` r
-# Monthly CPI and inflation, from 2009
-cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
-knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
-
-# Gross County Product, all 47 counties, 2013-2020
-gcp <- knbs_get_indicator("jhbzkjc")
-
-# The Statistical Abstract's National Accounts tables, tidy
+# The Statistical Abstract's tables, tidy: GDP by activity, county births...
 knbs_abstract_tables()
 gdp <- knbs_abstract_table("2.2")
+births <- knbs_abstract_table("16.11")      # by county, with census codes
 
 # County populations from the 2019 census, leading-zero codes intact
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
@@ -203,7 +197,25 @@ knbs_geographies(level = "county")
 # County names written any way, as census codes - for joining anyone's data
 knbs_county_code(c("Murang'a", "MURANGA", "Nairobi City County", "47"))
 #> [1] "21" "21" "47" "47"
+
+# GDP, trade, county finance and more from the KNBS Data Portal (SDMX)
+gdp_flow <- knbs_get_indicator("DF_NAT_GDPCP", source = "knbs_opendata")
+
+# Monthly CPI and inflation, from 2009, from the CPI Explorer
+cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
+
+# Gross County Product, all 47 counties, 2013-2020, from Open Data for Africa
+gcp <- knbs_get_indicator("jhbzkjc")
 ```
+
+Each source is a separate KNBS (or partner) service, and any of them can
+be down for a while. `knbs_status(live = TRUE)` shows which are
+answering. A call to a source that is down fails with a clear
+`knbs_error_source_unavailable` rather than partial data, and where
+another source publishes the same series the error names it: during a
+CPI Explorer outage, for instance, it points to the Data Portal’s
+`DF_CPI_R` index.
 
 Hand the data to colleagues in Excel, Stata or SPSS without losing where
 it came from:
