@@ -24,7 +24,8 @@ indicator name to identify one unambiguously.}
 \code{"YYYY-MM"} month, or a date.}
 
 \item{geo_level}{Keep only these levels. Census tables: \code{"national"},
-\code{"county"}, \code{"subcounty"}. CPI series: \code{"national"}, \code{"region"}.}
+\code{"county"}, \code{"subcounty"}. CPI series: \code{"national"}, \code{"region"}. DHS
+Program indicators: \code{"national"}, \code{"region"}, \code{"county"}.}
 
 \item{geo_code}{Keep only these codes, as character, in the indicator's own
 geography.}
@@ -49,8 +50,9 @@ provenance; \code{\link[=knbs_cite]{knbs_cite()}} cites it.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Returns one row per observation for a census table or a consumer price
-series, depending on the indicator asked for.
+Returns one row per observation, in one schema whichever source serves
+the indicator: a census table, a consumer price series, a Data Portal
+dataflow, a republished dataset or a DHS Program survey indicator.
 }
 \details{
 The period convention follows the source's own frequency. Monthly series
@@ -75,6 +77,19 @@ so. If the CPI Explorer is down, the error names the KNBS Data Portal
 series that stands in for the one asked for, and how closely: the portal's
 index has matched it, its rounded inflation rates have not always.
 
+DHS Program indicators (\code{source = "dhs_program"}) come with a row for
+every survey that measured them, 1989 to 2022, with \code{period} the survey
+year and \code{survey} naming it ("2022 DHS", "2020 MIS"). \code{characteristic_type}
+and \code{characteristic} say which group a value describes: the \code{"Total"}, a
+background characteristic such as \code{"Wealth quintile"} or \code{"Residence"}
+(for Kenya as a whole), or a \code{"Region"}. Region rows are the former
+provinces, or malaria zones, at \code{geo_level} \code{"region"} with no code; from
+2014 the 47 counties are \code{geo_level} \code{"county"} with 2019 census codes,
+so they join the census tables. Where the DHS Program gives a value for
+more than one reference period, every value is kept and \code{preferred} marks
+the one it prefers: keep \code{preferred} rows for one value per survey and
+group.
+
 Every other dimension of a table becomes a pair of columns, \verb{<name>}
 holding the source's labels and \verb{<name>_code} its codes, the way
 \code{geo_name} and \code{geo_code} pair up. Census tables use short curated names
@@ -92,6 +107,7 @@ cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
+stunting <- knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county") # KDHS
 }
 }
 \seealso{

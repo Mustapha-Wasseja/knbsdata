@@ -48,6 +48,7 @@ only).
 | KeNADA — survey **metadata** | study search, study metadata, variables, data-file listings | **2** | `experimental` |
 | KeNADA — survey **microdata download** | the files themselves | **3** (metadata only) | operation not declared |
 | FinAccess — open **microdata** (F-40) | catalogued files, verified downloads | **2** | `experimental` |
+| DHS Program — KDHS **indicators** (F-42) | indicator listing, data, metadata | **2** | `experimental` |
 | KNBS publications | — | not assessed | `discovery` |
 | KNBS aggregate indicators | — | not assessed | `discovery` |
 | Geographic reference data | — | not assessed | `discovery` |
@@ -726,6 +727,51 @@ today.** Checked 2026-10-08:
   spreadsheet links answer 404, its data repository page is empty, and its
   dashboards are Power BI embeds, which are not automatable.
 
+**F-42 — The KDHS is published as indicators by the DHS Program's API.**
+Traced 2026-10-08. `api.dhsprogram.com/rest/dhs/`, the Indicator Data API
+(version 8.1), serves Kenya's nine DHS Program surveys: the KDHS of 1989,
+1993, 1998, 2003, 2008-09, 2014 and 2022, implemented by NCPD, CBS and KNBS,
+and the Malaria Indicator Surveys of 2015 and 2020, by the Ministry of
+Health with KNBS. Its listing holds 4,142 indicator records for Kenya, 4,115
+distinct ids, in one request; one indicator's values, for every survey and
+breakdown, take one more. Findings:
+
+- *robots.txt and the documentation disagree.* robots.txt reads
+  `User-agent: *`, `Allow: /`, `Disallow: /rest/dhs/` (and `/mcp`,
+  `/oauth/`, `/.well-known/`, `/readyz`). The documentation says the API
+  "provides open access to DHS indicator data for all users. You are free
+  to begin using the API to develop applications"; its terms ask only for
+  a stated citation, and an API key is optional, raising the page size.
+  Decided 2026-10-08 with the maintainer: the rule is read as addressed to
+  crawlers, the scope RFC 9309 gives robots rules. The file also bars the
+  API's own MCP endpoint, which exists only for programmatic clients. The
+  adapter makes only requests a user asked for, one indicator at a time,
+  under the package's User-Agent, throttled to two a second and cached; it
+  never walks the API. The README's access conditions say so.
+- *Unknown ids are not errors.* An unknown indicator or survey answers 200
+  with zero records.
+- *Ids are reused.* 27 ids are listed twice, some under two labels and some
+  under one. Where such an id serves two values for one survey and group,
+  as `WS_HNDW_H_UNW` does (17,409 and 10,850 households, 2014 total),
+  nothing in a record says which is which, and the indicator is refused.
+  Records repeated byte for byte are kept once.
+- *Counties nest under the provinces.* Region rows hold the former
+  provinces and, from 2014, the 47 counties, prefixed "..". LevelRank marks
+  the levels inconsistently (2014: provinces 1, counties 2; 2022: provinces
+  blank, counties 1), but within a survey the counties are always the
+  deeper level. Nairobi, a province and a county, is unprefixed: listed
+  twice in 2014, once per level; once in 2022, at the county level; and,
+  for an indicator published only by province, as one extra row at the
+  county level. All 47 county labels match census names.
+- *Small county sets are real.* Some indicators cover only the counties a
+  question applies to or the sample supports: malaria treatment, for
+  instance, is reported for eight lake-endemic counties.
+- *Alternative reference periods.* 18% of values in a 300-indicator sample
+  are alternatives the API does not mark preferred (antenatal care in 1989:
+  two, three and five years before the survey).
+- A live sweep of 300 random indicators standardised 298; the two refused
+  were id-reuse conflicts.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -900,3 +946,4 @@ Copy this block for each new candidate source.
 | 2026-10-06 | knbs_publications | F-39 the 2025 Abstract's chapter workbooks hold 267 tables; 38 fit the engine's layout; traps: a second header row (3.11), tables split across sheets (3.4-3.8), per-row units and attached footnote marks | 33 curated with totals checked; the second-header layout now refused; unit column, footnote stripping and county codes added to recipes |
 | 2026-10-08 | finaccess | F-40 the FinAccess portal links open, anonymised microdata for six household rounds (2006-2024) and two MSE Tracker waves on Google Drive; four portal labels wrong; no licence stated; the Dataverse copy of 2013 behind a guestbook | 21 files catalogued with name, size and SHA-256; downloads probed with a range request, then size- and checksum-verified; the guestbook copy listed, never fetched |
 | 2026-10-08 | portals page | F-41 KDHS Shiny portal errors, visualisations page 500, Open Data for Africa challenged again, NIPFN data links 404 | KDHS to come from the DHS Program API instead; the others left alone |
+| 2026-10-08 | dhs_program | F-42 the DHS Program's Indicator Data API serves the KDHS 1989-2022 and MIS 2015/2020 (4,115 indicators, counties from 2014); robots.txt bars /rest/dhs/ while the docs invite applications; ids reused; counties nested under provinces with inconsistent LevelRank | Adapter built: on-demand requests only, throttled and cached; census codes for counties; reused-id conflicts refused; robots reading recorded and the README's access conditions reworded |

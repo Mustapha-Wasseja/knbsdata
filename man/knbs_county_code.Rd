@@ -54,7 +54,10 @@ names each unmatched value and, where one official name is close, says
 which. \code{\link[=knbs_match_counties]{knbs_match_counties()}} shows how every value was matched.
 
 The official names are read from the census frame through
-\code{\link[=knbs_geographies]{knbs_geographies()}}, once, and cached.
+\code{\link[=knbs_geographies]{knbs_geographies()}}, once, and cached. If the census service cannot be
+reached, the 47 counties' statutory names and numbers built into the
+package are used instead; they are the census frame's own, and the
+package's tests hold them identical.
 }
 \examples{
 \dontrun{

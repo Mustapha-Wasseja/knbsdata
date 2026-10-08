@@ -166,6 +166,33 @@ are correspondingly heavier:
   gate and you get `knbs_error_access_restricted` — the package never
   solves or retries a challenge. Trying again later usually suffices.
 
+**Health and demography**, via the DHS Program's Indicator Data API
+(`api.dhsprogram.com`): the indicators of the Kenya Demographic and Health
+Surveys (1989–2022), which KNBS implements, and of the 2015 and 2020 Malaria
+Indicator Surveys — 4,115 of them, listed by `knbs_indicators()` with
+`source_id` `"dhs_program"` and fetched by id, for example
+`knbs_get_indicator("CN_NUTS_C_HA2")` (children stunted). Each comes for
+every survey that measured it, by background characteristic, by the former
+provinces, and from 2014 by county. KNBS's own KDHS portal is a dashboard
+with no data API, and answered with an error when checked. Properties to
+keep in mind:
+
+- **County rows carry census codes**; province and malaria-zone rows carry
+  none, since no census code exists for them.
+- **Several values can describe one group.** Where the DHS Program reports
+  more than one reference period, every value is kept and `preferred`
+  marks the one it prefers.
+- **A few ids are reused.** The API lists 27 indicator ids twice; where one
+  serves two different values for the same survey and group, the package
+  refuses it with `knbs_error_validation_failed` rather than choose.
+- **The terms ask for a citation**, which `knbs_cite()` gives in the form
+  the API specifies. No licence is stated.
+- **Its robots file bars `/rest/dhs/`**, the API itself, to every client,
+  while its documentation invites applications to use it. The package reads
+  the rule as addressed to crawlers: it asks only for what you request, one
+  indicator at a time, under its own name, throttled and cached, and never
+  walks the API.
+
 **Statistical Abstract tables**, via the KNBS website's chapter workbooks:
 `knbs_abstract_tables()` and `knbs_abstract_table()`. 48 tables of the 2025
 edition, across 13 chapters — the whole National Accounts chapter and 33

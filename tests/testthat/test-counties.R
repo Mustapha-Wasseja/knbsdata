@@ -77,3 +77,21 @@ test_that("the reference is the census frame, read through knbs_geographies()", 
   expect_identical(knbs_county_code(c("MOMBASA", "Nairobi")), c("01", "47"))
   expect_error(knbs_county_code("Mombasa", vintage = 2009L))
 })
+
+test_that("the statutory counties stand in when the census service is down", {
+  # The built-in list is the census frame's own, name for name.
+  expect_identical(county_statutory(), census_counties()) # nolint: object_usage_linter. Defined in helper-counties.R.
+
+  local_mocked_bindings(knbs_geographies = function(...) {
+    knbs_abort("Could not reach the census service.", class = "knbs_error_source_unavailable")
+  })
+  expect_identical(knbs_county_code(c("Mombasa", "Nairobi City County", "Taita Taveta")),
+                   c("01", "47", "06"))
+})
+
+test_that("a census service that answers wrongly is not papered over", {
+  local_mocked_bindings(knbs_geographies = function(...) {
+    knbs_abort("The source changed shape.", class = "knbs_error_schema_changed")
+  })
+  expect_error(knbs_county_code("Mombasa"), class = "knbs_error_schema_changed")
+})

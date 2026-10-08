@@ -260,6 +260,46 @@ sources:
         configuration, not a disguise. A challenge that returns anyway is
         an access gate, never something to solve or retry through.
 
+  - source_id: dhs_program
+    source_name: The DHS Program Indicator Data API (Kenya DHS and MIS)
+    owner: The DHS Program, ICF
+    source_type: indicator_portal
+    base_url: https://api.dhsprogram.com/rest/dhs
+    landing_page: https://api.dhsprogram.com/
+    adapter: dhs
+    operations:
+      - list_indicators
+      - get_indicator
+      - indicator_metadata
+    authentication: none
+    formats:
+      - json
+    stability: experimental
+    last_verified: 2026-10-08
+    terms_url: https://api.dhsprogram.com/#/terms.cfm
+    notes:
+      - Aggregate indicators from Kenya's nine DHS Program surveys - the Kenya
+        Demographic and Health Surveys 1989-2022, implemented by KNBS and
+        earlier agencies, and the 2015 and 2020 Malaria Indicator Surveys -
+        traced 2026-10-08 (audit F-42); tier 2. 4,142 indicators, with
+        values for the 47 counties from 2014.
+      - The KDHS portal (kdhsportal.knbs.or.ke) is a Shiny app with no data
+        API, and answered with an error (audit F-41); this is the published
+        route to the same indicators.
+      - Terms ask only that the API be cited, in a stated form; no licence
+        is stated. An API key is optional and only raises the page size.
+      - robots.txt disallows /rest/dhs/ to every user agent, while the
+        API's documentation offers it to "all users" for building
+        applications. The rule is read as addressed to crawlers. The
+        adapter requests only what a user asks for, one indicator at a
+        time, under the package's own User-Agent, throttled and cached; it
+        never walks the API.
+      - An unknown indicator id answers 200 with zero records, not a 404.
+        The indicator listing repeats 27 ids under two different labels.
+      - County rows are matched to 2019 census county codes; the former
+        provinces and malaria zones carry no code. Never join those
+        against knbs_geographies().
+
   # Internal fixture source used by tests (plan section 28, step 4). It never
   # touches the network and is not intended for users.
   - source_id: fake_source

@@ -33,7 +33,10 @@
 #' which. [knbs_match_counties()] shows how every value was matched.
 #'
 #' The official names are read from the census frame through
-#' [knbs_geographies()], once, and cached.
+#' [knbs_geographies()], once, and cached. If the census service cannot be
+#' reached, the 47 counties' statutory names and numbers built into the
+#' package are used instead; they are the census frame's own, and the
+#' package's tests hold them identical.
 #'
 #' @param x County names or numbers: a character, numeric or factor vector.
 #' @param vintage The census frame to match against. Only 2019 is available.
@@ -93,13 +96,50 @@ knbs_match_counties <- function(x, vintage = 2019L,
 #' The official counties of a census frame
 #'
 #' Read through knbs_geographies() so that the reference is the census
-#' frame's own, with the same vintage handling. Mocked in tests.
+#' frame's own, with the same vintage handling. When the census service
+#' cannot be reached, the 47 counties' statutory names and numbers stand in:
+#' the 2019 frame codes its counties by the Constitution's First Schedule,
+#' and a test holds the two lists identical. A source that answers wrongly
+#' still raises its own error; only unavailability falls back. Mocked in
+#' tests.
 #'
 #' @noRd
 county_reference <- function(vintage, cache, refresh) {
-  geo <- knbs_geographies(level = "county", vintage = vintage,
-                          cache = cache, refresh = refresh)
-  tibble::tibble(geo_code = geo$geo_code, geo_name = geo$geo_name)
+  tryCatch(
+    {
+      geo <- knbs_geographies(level = "county", vintage = vintage,
+                              cache = cache, refresh = refresh)
+      tibble::tibble(geo_code = geo$geo_code, geo_name = geo$geo_name)
+    },
+    knbs_error_source_unavailable = function(cnd) {
+      if (!identical(as.integer(vintage), 2019L)) {
+        rlang::cnd_signal(cnd)
+      }
+      county_statutory()
+    }
+  )
+}
+
+#' The 47 counties as the 2019 census frame names and numbers them
+#'
+#' Numbered by the First Schedule of the Constitution of Kenya, as the census
+#' frame codes them; spelled as the census API spells them.
+#'
+#' @noRd
+county_statutory <- function() {
+  tibble::tibble(
+    geo_code = sprintf("%02d", 1:47),
+    geo_name = c(
+      "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu", "Taita/Taveta",
+      "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo", "Meru",
+      "Tharaka-Nithi", "Embu", "Kitui", "Machakos", "Makueni", "Nyandarua",
+      "Nyeri", "Kirinyaga", "Murang'a", "Kiambu", "Turkana", "West Pokot",
+      "Samburu", "Trans Nzoia", "Uasin Gishu", "Elgeyo/Marakwet", "Nandi",
+      "Baringo", "Laikipia", "Nakuru", "Narok", "Kajiado", "Kericho", "Bomet",
+      "Kakamega", "Vihiga", "Bungoma", "Busia", "Siaya", "Kisumu", "Homa Bay",
+      "Migori", "Kisii", "Nyamira", "Nairobi City"
+    )
+  )
 }
 
 #' Reduce a county name to its matching key

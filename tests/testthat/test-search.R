@@ -64,6 +64,45 @@ test_that("open microdata is found by round, with the call that downloads and re
                    "hh2021")
 })
 
+test_that("-ing and -ed come off, but not where too little would remain", {
+  expect_identical(
+    search_stem(c("stunting", "stunted", "wasting", "married", "employed",
+                  "during", "spring", "exceed")),
+    c("stunt", "stunt", "wast", "marri", "employ", "during", "spring", "exceed")
+  )
+  words_of <- function(text) search_stem(search_words(text)[[1]])
+  expect_true(search_matches(search_terms("stunting"), words_of("Children stunted")))
+  expect_true(search_matches(search_terms("child wasting"), words_of("Children wasted")))
+})
+
+test_that("DHS indicators are found by their own words and as KDHS", {
+  local_cache()
+  local_search_apis()
+
+  hits <- knbs_search("stunting", type = "indicator")
+  expect_identical(hits$resource_id[[1]], "CN_NUTS_C_HA2")
+  expect_identical(hits$get[[1]],
+                   'knbs_get_indicator("CN_NUTS_C_HA2", source = "dhs_program")')
+  expect_identical(knbs_search("kdhs wasted", type = "indicator")$resource_id, "CN_NUTS_C_WH2")
+  expect_identical(knbs_search("demographic and health survey wasted", type = "indicator")$resource_id,
+                   "CN_NUTS_C_WH2")
+})
+
+test_that("the vectorised matcher agrees with the row-by-row one", {
+  texts <- c("Children stunted CN_NUTS_C_HA2 Child Nutrition dhs kdhs",
+             "Kenya-Consumer-Price-Indices-and-Inflation-Rates",
+             "Gross Domestic Product by activity", "Real GDP growth",
+             "Population by single and grouped ages", "Ages 12 to 49", "")
+  queries <- c("stunting", "cpi", "consumer price index", "gross domestic product",
+               "kdhs child", "age", "gdp growth", "12", "rates of inflation")
+  for (q in queries) {
+    terms <- search_terms(q)
+    one_by_one <- vapply(search_words(texts), function(w) search_matches(terms, search_stem(w)),
+                         logical(1))
+    expect_identical(search_matches_all(terms, search_stem_texts(texts)), one_by_one, info = q)
+  }
+})
+
 test_that("plurals, prefixes and acronyms match both ways", {
   stems <- search_stem(c("indices", "prices", "rates", "census", "analysis",
                          "economies", "taxes", "business"))

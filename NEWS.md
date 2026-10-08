@@ -1,5 +1,40 @@
 # knbsdata (development version)
 
+## Health and demography from the KDHS
+
+KNBS implements the Kenya Demographic and Health Surveys, and the DHS
+Program publishes their indicators through its Indicator Data API, now a
+source (`"dhs_program"`): 4,115 indicators from the KDHS of 1989 to 2022
+and the 2015 and 2020 Malaria Indicator Surveys, through the same
+`knbs_indicators()` and `knbs_get_indicator()` as every other source.
+
+* Each indicator comes for every survey that measured it, by background
+  characteristic (residence, wealth, education and others), by the former
+  provinces, and from 2014 for the 47 counties, with 2019 census county
+  codes so they join the census tables:
+  `knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county")`.
+* Where the DHS Program gives values for several reference periods, all are
+  kept and `preferred` marks its choice. An id the API reuses for two
+  indicators, serving two values for one survey and group, is refused
+  rather than guessed at (audit F-42).
+* `knbs_cite()` gives the citation the API's terms ask for, and no longer
+  repeats a URL that a source's own citation already names.
+* `knbs_search()` finds them. Search now reads -ing and -ed as endings, so
+  "stunting" matches "Children stunted", and "KDHS" finds the survey's
+  indicators. Scoring is vectorised, stemming each distinct word once, so
+  ranking the 6,000-odd rows it now searches takes about a second rather
+  than eight.
+* `knbs_county_code()` falls back on the 47 counties' statutory codes, the
+  census frame's own and held identical by the tests, when the census
+  service cannot be reached.
+* The API's robots file bars its own `/rest/dhs/` path to every client,
+  while its documentation invites applications to use it. The package reads
+  the rule as one for crawlers: it requests only what is asked for, one
+  indicator at a time, under its own name, throttled and cached. The README's
+  access conditions now say how robots rules are read, and the audit records
+  the reasoning.
+* The test suite now fails any test that would reach the network.
+
 ## Open survey microdata: FinAccess
 
 The FinAccess household survey, Kenya's survey of financial inclusion by the

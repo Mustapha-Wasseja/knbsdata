@@ -28,10 +28,10 @@ test_that("knbs_indicators() returns the themed catalogue", {
 
   # The default aggregates every verified indicator source.
   combined <- knbs_indicators()
-  expect_identical(nrow(combined), 40L)
+  expect_identical(nrow(combined), 46L)
   expect_setequal(
     unique(combined$source_id),
-    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica")
+    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica", "dhs_program")
   )
 })
 
@@ -59,7 +59,7 @@ test_that("a broken dataset list is a schema change, not a result", {
                  class = "knbs_warning_partial_failure")
   expect_setequal(
     unique(combined$source_id),
-    c("knbs_cpi", "knbs_opendata", "opendataforafrica")
+    c("knbs_cpi", "knbs_opendata", "opendataforafrica", "dhs_program")
   )
 })
 

@@ -142,7 +142,13 @@ cite_plain <- function(meta, include_retrieval_date) {
   }
 
   tail <- character(0)
-  if (!is.null(meta$source_url)) tail <- c(tail, paste0("Available at ", meta$source_url, "."))
+  # A supplied citation that already names the source's host says where it is.
+  host <- if (!is.null(meta$source_url)) sub("^[a-z]+://([^/]+).*$", "\\1", meta$source_url)
+  named <- !is.null(meta$citation) && !is.null(host) &&
+    grepl(host, meta$citation, fixed = TRUE)
+  if (!is.null(meta$source_url) && !named) {
+    tail <- c(tail, paste0("Available at ", meta$source_url, "."))
+  }
   if (include_retrieval_date) tail <- c(tail, cite_retrieval(meta))
   paste(c(head, tail), collapse = " ")
 }

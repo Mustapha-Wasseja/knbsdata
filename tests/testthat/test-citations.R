@@ -46,6 +46,15 @@ test_that("an unpunctuated source citation does not run into what follows", {
   expect_false(grepl("2020\\.\\.", format(knbs_cite(punctuated))))
 })
 
+test_that("a supplied citation that names the host is not followed by the URL again", {
+  # The DHS Program's required citation ends "Available from api.dhsprogram.com."
+  meta <- new_knbs_metadata(citation = dhs_citation(),
+                            source_url = "https://api.dhsprogram.com/")
+  text <- format(knbs_cite(meta))
+  expect_false(grepl("Available at", text, fixed = TRUE))
+  expect_match(text, "Available from api.dhsprogram.com. Retrieved", fixed = TRUE)
+})
+
 test_that("the retrieval date can be omitted", {
   meta <- new_knbs_metadata(title = "X", release_date = as.Date("2020-04-10"))
   expect_false(grepl("Retrieved", format(knbs_cite(meta, include_retrieval_date = FALSE))))

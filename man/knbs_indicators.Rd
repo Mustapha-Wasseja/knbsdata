@@ -35,8 +35,10 @@ A \code{knbs_catalogue} tibble with columns \code{indicator_id},
 Lists the indicators served by every verified indicator source: the 2019
 Population and Housing Census tables (CC BY 4.0), the monthly consumer
 price series from the KNBS CPI Explorer, the KNBS Data Portal's SDMX
-dataflows, and the datasets republished by Kenya Open Data for Africa.
-The \code{source_id} column says which source serves each row.
+dataflows, the datasets republished by Kenya Open Data for Africa, and
+the Kenya Demographic and Health Survey and Malaria Indicator Survey
+indicators published by the DHS Program. The \code{source_id} column says which
+source serves each row.
 }
 \details{
 \code{frequency} and \code{unit} are filled only where the source states them: the

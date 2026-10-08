@@ -32,14 +32,17 @@ vignette never depends on a live service.
 knbs_sources()
 ```
 
-Six sources are verified and usable: `kenada`, the Kenya National Data
-Archive (surveys); `knbs_publications`, the KNBS website's media library;
+Eight sources are verified and usable: `kenada`, the Kenya National Data
+Archive (surveys); `finaccess`, the FinAccess portal (open survey
+microdata); `knbs_publications`, the KNBS website's media library;
 `knbs_indicators`, the KNBS census data service (2019 census tables,
 CC BY 4.0); `knbs_cpi`, the CPI Explorer (monthly consumer prices from
 2009); `knbs_opendata`, the Data Portal (323 SDMX dataflows: GDP, trade,
-county finance and more); and `opendataforafrica`, the Knoema-operated
+county finance and more); `opendataforafrica`, the Knoema-operated
 republisher that fills gaps no first-party portal serves as data — Gross
-County Product above all. A source the audit has not verified stays at
+County Product above all; and `dhs_program`, the DHS Program's API for the
+Kenya Demographic and Health Survey indicators, by county from 2014. A
+source the audit has not verified stays at
 stability `discovery` and is never contacted — there is nothing there to
 call. The `source-status` vignette says exactly what is and is not covered,
 and why.

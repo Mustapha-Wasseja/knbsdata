@@ -8,8 +8,10 @@
 #' Lists the indicators served by every verified indicator source: the 2019
 #' Population and Housing Census tables (CC BY 4.0), the monthly consumer
 #' price series from the KNBS CPI Explorer, the KNBS Data Portal's SDMX
-#' dataflows, and the datasets republished by Kenya Open Data for Africa.
-#' The `source_id` column says which source serves each row.
+#' dataflows, the datasets republished by Kenya Open Data for Africa, and
+#' the Kenya Demographic and Health Survey and Malaria Indicator Survey
+#' indicators published by the DHS Program. The `source_id` column says which
+#' source serves each row.
 #'
 #' @details
 #' `frequency` and `unit` are filled only where the source states them: the
@@ -131,8 +133,9 @@ knbs_indicators <- function(topic = NULL,
 #' @description
 #' `r lifecycle::badge("experimental")`
 #'
-#' Returns one row per observation for a census table or a consumer price
-#' series, depending on the indicator asked for.
+#' Returns one row per observation, in one schema whichever source serves
+#' the indicator: a census table, a consumer price series, a Data Portal
+#' dataflow, a republished dataset or a DHS Program survey indicator.
 #'
 #' @details
 #' The period convention follows the source's own frequency. Monthly series
@@ -157,6 +160,19 @@ knbs_indicators <- function(topic = NULL,
 #' series that stands in for the one asked for, and how closely: the portal's
 #' index has matched it, its rounded inflation rates have not always.
 #'
+#' DHS Program indicators (`source = "dhs_program"`) come with a row for
+#' every survey that measured them, 1989 to 2022, with `period` the survey
+#' year and `survey` naming it ("2022 DHS", "2020 MIS"). `characteristic_type`
+#' and `characteristic` say which group a value describes: the `"Total"`, a
+#' background characteristic such as `"Wealth quintile"` or `"Residence"`
+#' (for Kenya as a whole), or a `"Region"`. Region rows are the former
+#' provinces, or malaria zones, at `geo_level` `"region"` with no code; from
+#' 2014 the 47 counties are `geo_level` `"county"` with 2019 census codes,
+#' so they join the census tables. Where the DHS Program gives a value for
+#' more than one reference period, every value is kept and `preferred` marks
+#' the one it prefers: keep `preferred` rows for one value per survey and
+#' group.
+#'
 #' Every other dimension of a table becomes a pair of columns, `<name>`
 #' holding the source's labels and `<name>_code` its codes, the way
 #' `geo_name` and `geo_code` pair up. Census tables use short curated names
@@ -173,7 +189,8 @@ knbs_indicators <- function(topic = NULL,
 #' @param start,end Keep only observations in this period range. A year, a
 #'   `"YYYY-MM"` month, or a date.
 #' @param geo_level Keep only these levels. Census tables: `"national"`,
-#'   `"county"`, `"subcounty"`. CPI series: `"national"`, `"region"`.
+#'   `"county"`, `"subcounty"`. CPI series: `"national"`, `"region"`. DHS
+#'   Program indicators: `"national"`, `"region"`, `"county"`.
 #' @param geo_code Keep only these codes, as character, in the indicator's own
 #'   geography.
 #' @param frequency Keep only series of this frequency: `"annual"`,
@@ -197,6 +214,7 @@ knbs_indicators <- function(topic = NULL,
 #' inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 #' pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 #' gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
+#' stunting <- knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county") # KDHS
 #' }
 #' @export
 knbs_get_indicator <- function(indicator,

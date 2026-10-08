@@ -204,9 +204,12 @@ search_acronyms <- function() {
 
 #' Reduce a word to a stem for matching
 #'
-#' Deliberately small: plural endings, plus irregular plurals that matter in
-#' statistical titles. Enough that "index" finds "Indices" and "prices" finds
-#' "Price", without the surprises of a full stemmer.
+#' Deliberately small: plural endings, irregular plurals that matter in
+#' statistical titles, and -ing and -ed. Enough that "index" finds
+#' "Indices", "prices" finds "Price" and "stunting" finds "Children
+#' stunted", without the surprises of a full stemmer. -ing and -ed come off
+#' only where at least four letters remain, and -ed not after another e, so
+#' "during", "spring" and "exceed" are left alone.
 #'
 #' @noRd
 search_stem <- function(words) {
@@ -223,6 +226,10 @@ search_stem <- function(words) {
   # Not -ss (business), -us (census) or -is (analysis).
   s <- rest & !ies & !es & grepl("[^sui]s$", out)
   out[s] <- sub("s$", "", out[s])
+  ing <- rest & grepl("^.{4,}ing$", out)
+  out[ing] <- sub("ing$", "", out[ing])
+  ed <- rest & !ing & grepl("^.{4,}[^e]ed$", out)
+  out[ed] <- sub("ed$", "", out[ed])
   out
 }
 
@@ -324,33 +331,63 @@ search_phrases <- function(terms) {
 search_score <- function(rows, query, terms) {
   q <- tolower(trimws(query))
   stop <- search_stop_words()
-  stems_of <- function(words) search_stem(words[!words %in% stop])
-  title_stems <- lapply(search_words(rows$title), stems_of)
-  all_stems <- lapply(search_words(rows$text), search_stem)
+  # Thousands of rows: every word is stemmed once, and each term is one
+  # regular expression over all rows, rather than a loop over rows.
+  title_text <- search_stem_texts(rows$title, drop = stop)
+  all_text <- search_stem_texts(rows$text)
   phrases <- paste0(" ", search_phrases(terms), " ")
-  query_stems <- paste(stems_of(search_words(query)[[1]]), collapse = " ")
+  query_words <- search_words(query)[[1]]
+  query_stems <- paste(search_stem(query_words[!query_words %in% stop]), collapse = " ")
 
-  score <- rep(NA_real_, nrow(rows))
-  for (i in seq_len(nrow(rows))) {
-    if (!search_matches(terms, all_stems[[i]])) {
-      next
-    }
-    title_text <- paste(title_stems[[i]], collapse = " ")
-    score[[i]] <- if (identical(tolower(rows$resource_id[[i]]), q)) {
-      1000
-    } else if (identical(title_text, query_stems)) {
-      500
-    } else if (any(vapply(phrases, grepl, logical(1),
-                          x = paste0(" ", title_text, " "), fixed = TRUE))) {
-      100
-    } else if (search_matches(terms, title_stems[[i]])) {
-      50
-    } else {
-      10
-    }
-  }
-  rows$score <- score
+  padded <- paste0(" ", title_text, " ")
+  in_phrase <- Reduce(`|`, lapply(phrases, function(p) grepl(p, padded, fixed = TRUE)))
+  id <- tolower(rows$resource_id)
+  score <- ifelse(!is.na(id) & id == q, 1000,
+           ifelse(title_text == query_stems, 500,
+           ifelse(in_phrase, 100,
+           ifelse(search_matches_all(terms, title_text), 50, 10))))
+  score[!search_matches_all(terms, all_text)] <- NA_real_
+  rows$score <- as.numeric(score)
   rows
+}
+
+#' Each text's stemmed words, space-joined
+#'
+#' @param drop Words to leave out before stemming.
+#' @noRd
+search_stem_texts <- function(texts, drop = character(0)) {
+  word_lists <- search_words(texts)
+  flat <- unlist(word_lists, use.names = FALSE)
+  row <- rep(seq_along(word_lists), lengths(word_lists))
+  keep <- !flat %in% drop
+  flat <- flat[keep]
+  row <- row[keep]
+  vocabulary <- unique(flat)
+  stems <- search_stem(vocabulary)[match(flat, vocabulary)]
+  groups <- split(stems, factor(row, levels = seq_along(texts)))
+  unname(vapply(groups, paste, character(1), collapse = " "))
+}
+
+#' Which space-joined stem texts satisfy every term
+#'
+#' The vectorised form of `search_matches()`, with the same rule: a stem of
+#' four letters or more matches a word it begins, a shorter one only a whole
+#' word. Stems are lower-case letters and digits, so they are safe in a
+#' pattern as they are.
+#'
+#' @noRd
+search_matches_all <- function(terms, texts) {
+  hits <- function(stem) {
+    pattern <- if (nchar(stem) >= 4L) {
+      paste0("(^| )", stem)
+    } else {
+      paste0("(^| )", stem, "( |$)")
+    }
+    grepl(pattern, texts, perl = TRUE)
+  }
+  Reduce(`&`, lapply(terms, function(alternatives) {
+    Reduce(`|`, lapply(alternatives, function(stems) Reduce(`&`, lapply(stems, hits))))
+  }))
 }
 
 #' Data before documents at equal relevance
@@ -410,8 +447,24 @@ search_rows_indicators <- function(cache, refresh) {
     source_id = cat_$source_id,
     get = sprintf('knbs_get_indicator("%s", source = "%s")',
                   cat_$indicator_id, cat_$source_id),
-    text = paste(cat_$indicator_name, cat_$indicator_id, cat_$topic)
+    text = paste(cat_$indicator_name, cat_$indicator_id, cat_$topic,
+                 search_source_words(cat_$source_id))
   )
+}
+
+#' Words naming the survey family a source's indicators come from
+#'
+#' A DHS indicator is labelled "Children stunted", never "Demographic and
+#' Health Survey", so a search for KDHS would otherwise miss all of them. The
+#' acronym alone suffices: the spelled-out query becomes it. Spelling the
+#' family out here would make every DHS indicator match "health" or "survey".
+#'
+#' @noRd
+search_source_words <- function(source_id) {
+  words <- c(dhs_program = "dhs kdhs")
+  out <- unname(words[source_id])
+  out[is.na(out)] <- ""
+  out
 }
 
 #' Every curated Statistical Abstract table

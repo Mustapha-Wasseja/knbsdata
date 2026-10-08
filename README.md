@@ -23,7 +23,8 @@ cite it correctly.
 ## Scope
 
 **Implemented: surveys and open microdata, publications, and indicators
-— census, prices, the economy, and Gross County Product.**
+— census, prices, the economy, Gross County Product, and health and
+demography from the KDHS.**
 
 - **One search across everything**: `knbs_search()` ranks indicators,
   Abstract tables, surveys, open microdata and publications together,
@@ -55,6 +56,12 @@ cite it correctly.
   current prices) plus 200 more datasets from KNBS, the Central Bank of
   Kenya and partner agencies — with republisher provenance stated on
   every result.
+- **Health and demography from the KDHS**, against the DHS Program’s
+  Indicator Data API: 4,000-odd indicators from the Kenya Demographic
+  and Health Surveys (1989–2022) and the Malaria Indicator Surveys —
+  stunting, fertility, vaccination, family planning, HIV, malaria — by
+  wealth, residence and education, and for the 47 counties from 2014,
+  with census county codes so they join the census tables.
 - **Statistical Abstract tables as tidy data**: 48 tables of the 2025
   edition across 13 chapters — the whole National Accounts chapter, and
   wage employment, prices, trade, agriculture, energy, manufacturing,
@@ -113,7 +120,7 @@ library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
 knbs_sources()
-#> # A tibble: 8 × 8
+#> # A tibble: 9 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
@@ -123,14 +130,15 @@ knbs_sources()
 #> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
 #> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
 #> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
+#> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
-#> # A tibble: 8 × 3
+#> # A tibble: 9 × 3
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
@@ -140,7 +148,8 @@ knbs_status()[, c("source_id", "status", "message")]
 #> 5 knbs_cpi          not_checked Set live = TRUE to contact the source.    
 #> 6 knbs_opendata     not_checked Set live = TRUE to contact the source.    
 #> 7 opendataforafrica not_checked Set live = TRUE to contact the source.    
-#> 8 fake_source       unverified  Endpoint not verified; nothing to contact.
+#> 8 dhs_program       not_checked Set live = TRUE to contact the source.    
+#> 9 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
 Search everything at once — indicators, Statistical Abstract tables,
@@ -231,6 +240,15 @@ knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 
 # Gross County Product, all 47 counties, 2013-2020, from Open Data for Africa
 gcp <- knbs_get_indicator("jhbzkjc")
+
+# Child stunting from the KDHS, every survey since 1993, counties from 2014
+stunting <- knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county")
+
+# ...joined to 2019 census populations by their shared county codes
+pop <- knbs_get_indicator("POPCEN0002", geo_level = "county")
+pop <- pop[pop$age_type == "total" & pop$sex == "total", c("geo_code", "value")]
+merge(stunting[stunting$period == 2022, ], pop, by = "geo_code",
+      suffixes = c("", "_population"))
 ```
 
 Each source is a separate KNBS (or partner) service, and any of them can
@@ -252,13 +270,19 @@ knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.dta.metadata.json b
 ## Access conditions
 
 `knbsdata` will not circumvent registration requirements, licence
-agreements, approval processes, authentication, rate limits or robots
-exclusions. Datasets that require authorised access are represented in
-the catalogue with their access conditions, but are not downloaded: the
-package points you at the official access process instead. Microdata are
-downloaded only where the producers publish them for anyone, as
-FinAccess does, and never bundled with the package; the terms the
-producers state travel with each file.
+agreements, approval processes, authentication or rate limits. It does
+not crawl: it requests only what you ask for, under its own name,
+throttled and cached. Robots exclusions are honoured as the rules for
+crawlers they are — where a site bars automated clients from one route
+and permits another, the package uses the permitted one; where a
+publisher’s robots file bars its own API while its documentation invites
+applications to use it, as the DHS Program’s does, the package follows
+the documentation, and the source audit records why. Datasets that
+require authorised access are represented in the catalogue with their
+access conditions, but are not downloaded: the package points you at the
+official access process instead. Microdata are downloaded only where the
+producers publish them for anyone, as FinAccess does, and never bundled
+with the package; the terms the producers state travel with each file.
 
 Retrieved data and publications remain subject to their producers’ terms
 and licences. The MIT licence in this repository covers the software

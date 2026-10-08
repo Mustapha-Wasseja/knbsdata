@@ -28,10 +28,10 @@ test_that("the aggregate catalogue spans every verified indicator source", {
   local_knbsapi()
   combined <- knbs_indicators()
 
-  expect_identical(nrow(combined), 40L)
+  expect_identical(nrow(combined), 46L)
   expect_setequal(
     unique(combined$source_id),
-    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica")
+    c("knbs_indicators", "knbs_cpi", "knbs_opendata", "opendataforafrica", "dhs_program")
   )
 })
 
