@@ -5,7 +5,7 @@
 # an id the listing repeats under two labels (CH_ARSS_C_NGO).
 
 dhs_fixture <- function(name) {
-  parse_json_file(test_path("fixtures", "dhs", name), source_id = "dhs_program")
+  parse_json_file(testthat::test_path("fixtures", "dhs", name), source_id = "dhs_program")
 }
 
 dhs_source <- function() knbs_source("dhs_program")
