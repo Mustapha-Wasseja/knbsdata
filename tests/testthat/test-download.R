@@ -121,7 +121,7 @@ test_that("a sidecar records where the file came from", {
   record <- knbs_download_file("https://example.invalid/Economic_Survey_2026.pdf",
                                dir, source_id = "test", quiet = TRUE)
 
-  sidecar <- file.path(dir, "Economic_Survey_2026.metadata.json")
+  sidecar <- file.path(dir, "Economic_Survey_2026.pdf.metadata.json")
   expect_true(file.exists(sidecar))
 
   written <- jsonlite::fromJSON(sidecar, simplifyVector = TRUE)

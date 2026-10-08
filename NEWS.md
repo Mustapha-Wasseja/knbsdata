@@ -1,5 +1,15 @@
 # knbsdata (development version)
 
+## One provenance record per file
+
+Provenance sidecars are now named after the whole file name:
+`pop.dta` gets `pop.dta.metadata.json`, where it used to get
+`pop.metadata.json`. The old name was shared by every file with the same
+stem, so `knbs_write()`-ing a table as `pop.csv` and `pop.dta` into one
+folder, or downloading a survey's Stata and SPSS copies side by side, left
+only the last file's record. Sidecars written by earlier versions keep their
+old names.
+
 ## Quieter lookups
 
 `knbs_get_indicator()` resolves an indicator against every source's

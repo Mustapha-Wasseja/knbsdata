@@ -204,20 +204,29 @@ pretty_number <- function(x) format(x, big.mark = ",", scientific = FALSE, trim 
 
 #' Write the provenance sidecar next to a downloaded file
 #'
-#' `Economic_Survey_2026.pdf` gets `Economic_Survey_2026.metadata.json`, so the
-#' file's origin survives being moved out of an R session (plan section 11.11).
+#' `Economic_Survey_2026.pdf` gets `Economic_Survey_2026.pdf.metadata.json`, so
+#' the file's origin survives being moved out of an R session (plan section
+#' 11.11). The sidecar is named after the whole file name, extension included:
+#' a survey published as `data.dta` and `data.sav` side by side keeps one
+#' record per file instead of the second overwriting the first.
 #'
 #' @noRd
 write_sidecar <- function(path, record) {
-  sidecar_path <- paste0(tools::file_path_sans_ext(path), ".metadata.json")
+  path_out <- sidecar_path(path)
   jsonlite::write_json(
     lapply(as.list(record), function(v) if (inherits(v, "POSIXt")) format(v, "%Y-%m-%dT%H:%M:%S%z") else v),
-    sidecar_path,
+    path_out,
     auto_unbox = TRUE,
     pretty = TRUE,
     null = "null"
   )
-  invisible(sidecar_path)
+  invisible(path_out)
+}
+
+#' Where a file's provenance sidecar lives
+#' @noRd
+sidecar_path <- function(path) {
+  paste0(path, ".metadata.json")
 }
 
 #' Write a manifest describing a set of downloads

@@ -187,7 +187,7 @@ test_that("downloading fetches the URL from the record and verifies it", {
                    "https://www.knbs.or.ke/wp-content/uploads/2026/04/2026-Economic-Survey.pdf")
   # The official filename is preserved.
   expect_true(file.exists(file.path(dir, "2026-Economic-Survey.pdf")))
-  expect_true(file.exists(file.path(dir, "2026-Economic-Survey.metadata.json")))
+  expect_true(file.exists(file.path(dir, "2026-Economic-Survey.pdf.metadata.json")))
   expect_match(record$sha256, "^[0-9a-f]{64}$")
   expect_identical(record$resource_id, "16624")
 })

@@ -222,7 +222,7 @@ it came from:
 
 ``` r
 knbs_write(gdp, "gdp-by-activity.xlsx")  # data sheet + "about" sheet with source and citation
-knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.metadata.json beside it
+knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.dta.metadata.json beside it
 ```
 
 ## Access conditions

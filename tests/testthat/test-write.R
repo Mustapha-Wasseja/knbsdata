@@ -35,7 +35,7 @@ test_that("CSV, Stata and SPSS files get a provenance sidecar", {
   for (ext in c("csv", "dta", "sav")) {
     path <- file.path(dir, paste0("pop.", ext))
     knbs_write(pop, path, quiet = TRUE)
-    sidecar <- file.path(dir, "pop.metadata.json")
+    sidecar <- file.path(dir, paste0("pop.", ext, ".metadata.json"))
     expect_true(file.exists(sidecar), info = ext)
     record <- jsonlite::read_json(sidecar)
     expect_identical(record$format, ext)
@@ -43,6 +43,11 @@ test_that("CSV, Stata and SPSS files get a provenance sidecar", {
     expect_match(record$citation, "Kenya National Bureau of Statistics")
     expect_identical(record$rows, nrow(pop))
   }
+  # The three files share a stem, not a record: each keeps its own sidecar.
+  formats <- vapply(c("csv", "dta", "sav"), function(ext) {
+    jsonlite::read_json(file.path(dir, paste0("pop.", ext, ".metadata.json")))$format
+  }, character(1), USE.NAMES = FALSE)
+  expect_identical(formats, c("csv", "dta", "sav"))
 
   csv <- readLines(file.path(dir, "pop.csv"))
   expect_true(any(grepl("\"0101\"", csv, fixed = TRUE)))
@@ -74,7 +79,7 @@ test_that("Stata names are shortened, paired and labelled with the original", {
   expect_true(all(nchar(names(back)) <= 32L))
   expect_identical(attr(back$disability_limits_economic_code, "label"),
                    "disability_limits_economic_activity_code")
-  record <- jsonlite::read_json(file.path(dirname(path), "wide.metadata.json"))
+  record <- jsonlite::read_json(file.path(dirname(path), "wide.dta.metadata.json"))
   expect_identical(record$renamed_columns$disability_limits_economic_activity_code,
                    "disability_limits_economic_code")
 })
@@ -96,7 +101,7 @@ test_that("a derived table records the provenance it is given", {
 
   expect_warning(knbs_write(totals, file.path(dir, "bare.csv"), quiet = TRUE),
                  class = "knbs_warning_missing_metadata")
-  bare <- jsonlite::read_json(file.path(dir, "bare.metadata.json"))
+  bare <- jsonlite::read_json(file.path(dir, "bare.csv.metadata.json"))
   expect_match(bare$provenance, "No provenance")
 
   expect_no_warning(knbs_write(totals, file.path(dir, "derived.xlsx"),
