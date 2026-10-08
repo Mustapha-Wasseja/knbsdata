@@ -1,10 +1,10 @@
 ﻿# Safe downloading ------------------------------------------------------------
 #
 # Source-independent machinery for retrieving a file and proving what was
-# retrieved (plan sections 15.6, 11.9, 11.11 and 16.6). No adapter uses it yet:
-# KeNADA gates its microdata, and the publications source could not be audited.
-# It is written and tested separately so that when a source does permit a
-# download, the download itself is not the risky part.
+# retrieved (plan sections 15.6, 11.9, 11.11 and 16.6). Publications and the
+# FinAccess survey files download through it; KeNADA gates its microdata, so
+# nothing is fetched from there. It is written and tested separately so that
+# when a source permits a download, the download itself is not the risky part.
 #
 # The rules, in order:
 #
@@ -19,20 +19,108 @@
 #' Fetch a URL to a temporary file
 #'
 #' The only part of the download path that touches the network, kept separate so
-#' that everything around it can be tested without one.
+#' that everything around it can be tested without one. The body streams to
+#' disk rather than through memory, and a large file is not held to the
+#' request timeout, which a 300 MB survey file on a slow line would outlast:
+#' the total limit is lifted, and a transfer is abandoned only once it has
+#' stalled - moved less than a byte a second - for the timeout's length.
 #'
-#' @return A list with `path`, `content_type` and `status`.
+#' @param progress Whether to show a progress bar.
+#'
+#' @return A list with `path`, `content_type`, `status` and `file_name`, the
+#'   name the server gave the file (`NA` if it gave none).
 #' @noRd
-download_to_temp <- function(url, source_id = NULL, call = rlang::caller_env()) {
+download_to_temp <- function(url,
+                             source_id = NULL,
+                             progress = FALSE,
+                             call = rlang::caller_env()) {
   tmp <- tempfile("knbs-download-")
-  req <- knbs_request(url)
-  resp <- knbs_perform(req, source_id = source_id, call = call)
-  writeBin(httr2::resp_body_raw(resp), tmp)
+  kept <- FALSE
+  on.exit(if (!kept) unlink(tmp), add = TRUE)
+
+  stall <- max(1L, as.integer(ceiling(knbs_option("timeout"))))
+  req <- httr2::req_options(
+    knbs_request(url),
+    timeout_ms = 0,
+    connecttimeout = stall,
+    low_speed_limit = 1L,
+    low_speed_time = stall
+  )
+  if (progress) {
+    req <- httr2::req_progress(req, type = "down")
+  }
+  resp <- knbs_perform(req, source_id = source_id, path = tmp, call = call)
+
+  kept <- TRUE
   list(
     path = tmp,
     content_type = httr2::resp_content_type(resp) %||% NA_character_,
-    status = httr2::resp_status(resp)
+    status = httr2::resp_status(resp),
+    file_name = disposition_file_name(httr2::resp_header(resp, "Content-Disposition"))
   )
+}
+
+#' Ask a server for a file's name and size without downloading it
+#'
+#' A request for the first sixteen bytes is answered with the file's served
+#' name (Content-Disposition) and its total size (`Content-Range: bytes
+#' 0-15/159531918`), so a large download can be held to what was expected
+#' before it starts. A server that ignored the range and began sending a
+#' large file instead is cut off by curl's size limit at once.
+#'
+#' @return A list with `file_name`, `size_bytes`, `content_type` and `status`.
+#' @noRd
+probe_download <- function(url, source_id = NULL, call = rlang::caller_env()) {
+  req <- httr2::req_headers(knbs_request(url), Range = "bytes=0-15")
+  req <- httr2::req_options(req, maxfilesize = 1048576L)
+  resp <- knbs_perform(req, source_id = source_id, call = call)
+
+  status <- httr2::resp_status(resp)
+  range <- httr2::resp_header(resp, "Content-Range") %||% ""
+  size <- if (grepl("/[0-9]+$", range)) {
+    as.numeric(sub("^.*/", "", range))
+  } else if (status == 200L) {
+    as.numeric(httr2::resp_header(resp, "Content-Length") %||% NA_real_)
+  } else {
+    NA_real_
+  }
+  list(
+    file_name = disposition_file_name(httr2::resp_header(resp, "Content-Disposition")),
+    size_bytes = size,
+    content_type = httr2::resp_content_type(resp) %||% NA_character_,
+    status = status
+  )
+}
+
+#' The file name in a Content-Disposition header
+#'
+#' The percent-encoded UTF-8 form (`filename*=`) wins over the plain one, as
+#' RFC 6266 says. Only a bare name is returned: a server-supplied name never
+#' decides which directory a file is written to.
+#'
+#' @return A string, or `NA` if the header names no file.
+#' @noRd
+disposition_file_name <- function(header) {
+  if (is.null(header) || !nzchar(header)) {
+    return(NA_character_)
+  }
+  pick <- function(pattern) {
+    hit <- regmatches(header, regexec(pattern, header, ignore.case = TRUE))[[1]]
+    if (length(hit) == 2L) trimws(hit[[2]]) else NA_character_
+  }
+  name <- pick("filename\\*=UTF-8''([^;]+)")
+  if (!is.na(name)) {
+    name <- utils::URLdecode(name)
+    Encoding(name) <- "UTF-8"
+  } else {
+    name <- pick("filename=\"([^\"]*)\"")
+    if (is.na(name)) name <- pick("filename=([^;]+)")
+  }
+  if (is.na(name)) {
+    return(NA_character_)
+  }
+  name <- basename(gsub("\\\\", "/", name))
+  if (!nzchar(name) || name %in% c(".", "..")) NA_character_ else name
 }
 
 #' Refuse a response that is not the kind of file that was asked for
@@ -227,6 +315,40 @@ write_sidecar <- function(path, record) {
 #' @noRd
 sidecar_path <- function(path) {
   paste0(path, ".metadata.json")
+}
+
+#' Read the provenance sidecar beside a file
+#'
+#' Falls back to the stem-named sidecar of earlier versions, but only when it
+#' names this very file: a stem-named record may belong to a sibling in
+#' another format.
+#'
+#' @return The sidecar as a list, or `NULL` if there is none that fits.
+#' @noRd
+read_sidecar <- function(path) {
+  read_one <- function(candidate) {
+    if (!file.exists(candidate)) {
+      return(NULL)
+    }
+    tryCatch(jsonlite::read_json(candidate, simplifyVector = TRUE),
+             error = function(cnd) NULL)
+  }
+  record <- read_one(sidecar_path(path))
+  if (!is.null(record)) {
+    return(record)
+  }
+  legacy <- read_one(paste0(tools::file_path_sans_ext(path), ".metadata.json"))
+  if (!is.null(legacy) && identical(legacy$original_name, basename(path))) legacy else NULL
+}
+
+#' Parse a sidecar timestamp
+#' @noRd
+sidecar_time <- function(x) {
+  if (!is_string(x)) {
+    return(NULL)
+  }
+  parsed <- as.POSIXct(x, format = "%Y-%m-%dT%H:%M:%S%z", tz = "UTC")
+  if (is.na(parsed)) NULL else parsed
 }
 
 #' Write a manifest describing a set of downloads

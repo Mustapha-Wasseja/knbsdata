@@ -1,0 +1,320 @@
+# knbsdata FinAccess file catalogue
+#
+# The FinAccess household surveys (2006-2024) and the FinAccess MSE Tracker
+# Survey, published by the Central Bank of Kenya, KNBS and FSD Kenya on the
+# FinAccess portal (audit F-40). The portal is a static Google Sites page whose
+# downloads are Google Drive files, so there is no catalogue to query: every
+# file below was opened, named and measured by hand on the date in `checked`.
+#
+# The download layer holds each file to this record. Before a transfer it asks
+# Drive for the file's first bytes, which carry its served name and total
+# size; a file that no longer matches is refused before anything large moves.
+# After the transfer the size is checked again, and the SHA-256 must equal the
+# one recorded here, taken from a full download of every file on `checked`.
+#
+# Corrections to the portal's own labels are deliberate and noted per file:
+# the MSE Wave II links are swapped (the "SPSS" link serves the Stata file and
+# the reverse), the MSE Wave I "STATA" link serves the SPSS file, and the 2006
+# and 2009 "Questionnaire" archives hold the survey data as well. The 2019
+# heading on the portal lists no files.
+#
+# Fields per file: `file_id` (the package's own, stable), `survey`
+# (household | mse_tracker), `year`, `wave`, `content` (data | questionnaire |
+# manual | report), `format` (stata | spss | excel | pdf; for an archive, the
+# format of the data inside), `file_name`, `size_bytes` and `sha256` as Drive
+# serves them, `contains` for an archive's entries, `drive_id`, `portal_label`
+# verbatim, `notes`, and `title` where the generated one would not tell two
+# files apart. A file reachable only through a registration step has
+# `access: registration` and an `access_url` instead of a `drive_id`; the
+# package lists it and never fetches it.
+
+schema_version: 1
+source_id: finaccess
+portal: https://finaccess.knbs.or.ke/reports-and-datasets
+checked: 2026-10-08
+producer: Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya
+licence: Not stated by the source
+terms: >-
+  The FinAccess portal states no licence. Its disclaimer says the Central
+  Bank of Kenya, KNBS and FSD Kenya make no claims, promises or guarantees
+  about the accuracy, completeness or adequacy of the material. FSD Kenya's
+  terms for the 2013 survey on Harvard Dataverse restrict the data to
+  statistical and scientific research, forbid redistributing or selling it
+  without FSD Kenya's written agreement, rule out investigating specific
+  individuals or organisations, and require publications to cite the
+  source. Reuse terms must not be assumed; ask the producers before
+  redistributing.
+
+surveys:
+  household: FinAccess Household Survey
+  mse_tracker: FinAccess MSE Tracker Survey
+
+files:
+  # FinAccess 2024 ------------------------------------------------------------
+  - file_id: hh2024-stata
+    survey: household
+    year: 2024
+    content: data
+    format: stata
+    file_name: 2024_Finaccess_Publicdata.dta
+    size_bytes: 159531918
+    sha256: fe2d1839b2433f79541942f541c4b83822f525b38d98e50c8b40906974f70a4c
+    drive_id: 1FVLHMXH7kbl0hqKVc-ZfluQYN-pp0UZ_
+    portal_label: Anonymised and Weighted Dataset - FinAccess Household Survey 2024 - Stata (dta FORMAT)
+  - file_id: hh2024-spss
+    survey: household
+    year: 2024
+    content: data
+    format: spss
+    file_name: 2024_Finaccess_Publicdata.sav
+    size_bytes: 200306898
+    sha256: 94c01d8d165c13dbc6429d181f569675646def044b2604c06ad1604f509cd9ca
+    drive_id: 1_10j2nquYruKxMY5OoU6Ob5MHkQYl6TV
+    portal_label: Anonymised and Weighted Dataset - FinAccess Household Survey 2024 - SPSS (SAV FORMAT)
+  - file_id: hh2024-excel
+    survey: household
+    year: 2024
+    content: data
+    format: excel
+    file_name: 2024_Finaccess_Publicdata.xlsx
+    size_bytes: 293682571
+    sha256: 55e9048d8ea249a3cc0cd51092aba113ab3c7272cc1a9ec13ccb6c120faa5d07
+    drive_id: 1kBfKMxkdPoYKvh9-SgLOaMNhBedn411l
+    portal_label: Anonymised and Weighted Dataset - FinAccess Household Survey 2024 - Data (Excel FORMAT)
+    notes: The same data as the Stata and SPSS files without their value labels; much slower to read.
+  - file_id: hh2024-questionnaire
+    survey: household
+    year: 2024
+    content: questionnaire
+    format: pdf
+    file_name: 2024 FinAccess Questionnaire.pdf
+    size_bytes: 2792871
+    sha256: 70d829dcb653230ea8fee0793e2b6de601bad672e4eaf50a466a6a6f5eb1074d
+    drive_id: 1Niz_--3sC4au5gnD2-cA5z3VCKH-SqwA
+    portal_label: Questionnaire
+  - file_id: hh2024-manual
+    survey: household
+    year: 2024
+    content: manual
+    format: pdf
+    file_name: FinAccess 2024 Manual.pdf
+    size_bytes: 1835742
+    sha256: 132afd569e717a6ced4f281c8f4ea8650cbc6b7d39becde9c532e5751205eaa6
+    drive_id: 1QPR7yN5xQzkFkU14AKk1M2LoA0yXwmzU
+    portal_label: FinAccess 2024 Manual
+  - file_id: hh2024-report
+    survey: household
+    year: 2024
+    content: report
+    format: pdf
+    file_name: FINACCESS 2024 MAIN REPORT_Post Launch Final 2.pdf
+    size_bytes: 34679994
+    sha256: 21d86c293ee67f62c96abc2a69f3d4dd492049864e5c3a38fccf6b879b4d9d66
+    drive_id: 1dAjsHAl6bef48pgIt3U_M3FZ-gQKNHEf
+    portal_label: The 2024 FinAccess Household Survey Report
+
+  # FinAccess 2021 ------------------------------------------------------------
+  - file_id: hh2021-stata
+    survey: household
+    year: 2021
+    content: data
+    format: stata
+    file_name: Updated Anonymized Weighted FinAccess 2021_Stata.zip
+    size_bytes: 26335790
+    sha256: b43109706fcd8d506d5089ffaccba9130b9f8707749d7c62fcbca842f73877cd
+    contains:
+      - Updated Anonymized Weighted FinAccess 2021.dta
+    drive_id: 1shO3t31PBDYk_6QqzzL55qpPVF6yFiSR
+    portal_label: Anonymised and Weighted Dataset - FinAccess Household Survey 2021 - Stata (dta FORMAT)
+    notes: The archive unpacks to a 602 MB Stata file.
+  - file_id: hh2021-spss
+    survey: household
+    year: 2021
+    content: data
+    format: spss
+    file_name: Updated Anonymized Weighted FinAccess 2021_SPSS.zip
+    size_bytes: 17395099
+    sha256: 86dac3d9434ea2f030507d5c1426773cad9e993e3cf5dcbcc5ad49111d0fb970
+    contains:
+      - Updated Anonymized Weighted FinAccess 2021.sav
+    drive_id: 1LHcGVtJoFIWwYk51FjWctIrr64ZpD6ZP
+    portal_label: Anonymised and weighted dataset - FinAccess Household Survey 2021 - SPSS (SAV FORMAT)
+  - file_id: hh2021-excel
+    survey: household
+    year: 2021
+    content: data
+    format: excel
+    file_name: Updated Anonymized Weighted FinAccess 2021.xlsx
+    size_bytes: 202169688
+    sha256: c5c725d8ab1606340d5e65cb122c7e7a4d6f7571d5a33bea026a072065a88a70
+    drive_id: 1IZ-6HCDzeypoa4IQNr-nH0Y26Qc5EwSE
+    portal_label: Anonymised and weighted dataset - FinAccess Household Survey 2021 - (EXCEL FORMAT)
+    notes: The same data as the Stata and SPSS files without their value labels; much slower to read.
+  - file_id: hh2021-questionnaire
+    survey: household
+    year: 2021
+    content: questionnaire
+    format: excel
+    file_name: 2021 FinAccess Questionnaire_Revised June 2022.xlsx
+    size_bytes: 1268290
+    sha256: 36c337a6813c5926e5cee2165223d575b3651bf6848e1e353728c8ee3bd05e24
+    drive_id: 1z573IodL49VA7XMVpoRBAReY3uCQgQNG
+    portal_label: Questionnaire
+  - file_id: hh2021-manual
+    survey: household
+    year: 2021
+    content: manual
+    format: pdf
+    file_name: FinAccess 2021 Manual - Final.pdf
+    size_bytes: 1218616
+    sha256: cd2fc3d71b3c2c46240504f2d6fba536a7998941f131c4b4f44b03e02bcaa0ba
+    drive_id: 1_PCpEo9WgrPgLPerGRAOR34R7VHZp7ur
+    portal_label: FinAccess 2021 Manual
+  - file_id: hh2021-report
+    survey: household
+    year: 2021
+    content: report
+    format: pdf
+    file_name: 9 Jun FAM 2021.pdf
+    size_bytes: 10090234
+    sha256: bdfcc87d145ab149602b588964b022b96363df45736639fcacdcb287ba31098e
+    drive_id: 1WJ9DuOQoGKZ0FtbEKAhANEgqh3p0LbNo
+    portal_label: The 2021 FinAccess Household Survey Report
+
+  # FinAccess 2016 ------------------------------------------------------------
+  - file_id: hh2016-spss
+    survey: household
+    year: 2016
+    content: data
+    format: spss
+    file_name: FinAccess_2016_data_final.zip
+    size_bytes: 5176399
+    sha256: a70525466a0b44c1967429e3714498feabb7660ce9fffa1a94be6abec870234e
+    contains:
+      - FinAccess_2016_data_final.sav
+    drive_id: 1ce-TvT037zfV84tkgiCVNkK5sXJWFrpD
+    portal_label: FinAccess 2016 datasets
+
+  # FinAccess 2013 ------------------------------------------------------------
+  - file_id: hh2013-spss
+    survey: household
+    year: 2013
+    content: data
+    format: spss
+    file_name: FinAccess_Retail_2013_public.zip
+    size_bytes: 3120191
+    sha256: b1a86e467bcaec5a9fee0606ed90ca3befd0a059465a8e1a2b9e3b4d731b7ba7
+    contains:
+      - FinAccess 2013 Questionnaire.pdf
+      - FinAccess_Retail_2013_public.sav
+    drive_id: 1fjoYtJmUu1qZzJnNrNvdQlqikDU11nu-
+    portal_label: FinAccess 2013 Retail
+    notes: The household survey's public file and its questionnaire, despite the portal's "Retail" label.
+  - file_id: hh2013-stata
+    survey: household
+    year: 2013
+    content: data
+    format: stata
+    file_name: FinAccess_Retail_2013_public.dta
+    access: registration
+    access_url: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/JSPE9W
+    portal_label: FinAccess 2013 datasets
+    notes: >-
+      Held on Harvard Dataverse behind a guestbook form, with the technical
+      report, analysis manual and wealth index note. The SPSS copy
+      (hh2013-spss) is open.
+
+  # FinAccess 2009 ------------------------------------------------------------
+  - file_id: hh2009-spss
+    survey: household
+    year: 2009
+    content: data
+    format: spss
+    file_name: FinAccess 2009 Questionnaire.zip
+    size_bytes: 2193738
+    sha256: 5c16931ec21016a9110cc042fbbfde80f71aab93b4e0f9769f0b1d69b22b518b
+    contains:
+      - FinAccess 2009 Questionnaire.pdf
+      - FinAccess_Retail_2009_public.sav
+    drive_id: 1Gt4HItEWYUvksbtRge8V83vfrFodS2im
+    portal_label: The 2009 FinAccess Questionnaire
+    notes: Listed on the portal as the questionnaire; the archive holds the survey data too.
+
+  # FinAccess 2006 ------------------------------------------------------------
+  - file_id: hh2006-spss
+    survey: household
+    year: 2006
+    content: data
+    format: spss
+    file_name: FinAccess 2006 Questionnaire.zip
+    size_bytes: 991701
+    sha256: 20a0c60fb68d9beefd4b02056a9e1277a1af85267e1d979c1e074d75cef0c15e
+    contains:
+      - FinAccess 2006 Questionnaire.pdf
+      - FinAccess_Retail_2006_public.sav
+    drive_id: 1IoZnolY5CA4e5xwdgpCjlSf7ZD-b_Vmn
+    portal_label: The 2006 FinAccess Questionnaire
+    notes: Listed on the portal as the questionnaire; the archive holds the survey data too.
+
+  # FinAccess MSE Tracker Survey ----------------------------------------------
+  - file_id: mse2023-stata
+    survey: mse_tracker
+    year: 2023
+    wave: Wave II
+    content: data
+    format: stata
+    file_name: FinAccess MSE Tracker Survey Wave II_2023 (1).dta
+    size_bytes: 3973642
+    sha256: cc47d6a7cd2b1bd8d5be600d6cabb9cbe8c3488c2f6325b6c9b5faa7ad922003
+    drive_id: 1hGR7yzfp4U-p7XuMhavgwvGvybTeQuLw
+    portal_label: FinAccess MSE Tracker Survey Wave II 2023 - SPSS (SAV FORMAT)
+    notes: The portal labels this link SPSS; it serves the Stata file.
+  - file_id: mse2023-spss
+    survey: mse_tracker
+    year: 2023
+    wave: Wave II
+    content: data
+    format: spss
+    file_name: FinAccess MSE Tracker Survey Wave II_2023.sav
+    size_bytes: 6679828
+    sha256: 0d72c33027b7ad459ca342abcf1543a1f844772c6985c160d5a6a19737d9e9c6
+    drive_id: 1VH-EeGs9II9pxSzuK5s-TTuPSg71ObLR
+    portal_label: FinAccess MSE Tracker Survey Wave II 2023 - STATA (dta FORMAT)
+    notes: The portal labels this link Stata; it serves the SPSS file.
+  - file_id: mse2022-spss
+    survey: mse_tracker
+    year: 2022
+    wave: Wave I
+    content: data
+    format: spss
+    file_name: FinAccess MSE Tracker Survey Wave 1_2022.sav
+    size_bytes: 7647196
+    sha256: c528bc81b6dfc83b025808fc4c3dea3eeaa4708b0ed717a4c337a8f231751516
+    drive_id: 15QzdUqteTeiX6itSSwa3CSj-u8IDEnHw
+    portal_label: FinAccess MSE Tracker Survey Wave I 2022 - SPSS (SAV FORMAT)
+    notes: >-
+      The portal's Stata link for Wave I serves this same file; no Stata copy
+      is published. The first variable name carries a stray byte-order mark,
+      which knbs_read_microdata() removes.
+  - file_id: mse2023-report-march
+    title: "FinAccess MSE Tracker Survey: report, March 2023"
+    survey: mse_tracker
+    year: 2023
+    content: report
+    format: pdf
+    file_name: FinAccess-MSE-Tracker-Survey-March-2023.pdf
+    size_bytes: 14444279
+    sha256: c35757a18ee71a0d656b48721f87f72bd22d878ca4bedce514ed9ecf754ac6b2
+    drive_id: 1o50XJKoR8A_RFurjERjLZO-QyVF-RxYV
+    portal_label: FinAccess MSE Tracker Survey March 2023
+  - file_id: mse2023-report-august
+    title: "FinAccess MSE Tracker Survey: report, August 2023"
+    survey: mse_tracker
+    year: 2023
+    content: report
+    format: pdf
+    file_name: FinAccess-MSE-Tracker-Survey-August-2023.pdf
+    size_bytes: 29269595
+    sha256: d16fdfc3c2f97766310b4c955f9cd16d341f94e56972ad22f6acec306d65ec67
+    drive_id: 1qJmXIZ-boLsYBmpwB333OBXWjbzmS0rM
+    portal_label: FinAccess MSE Tracker Survey August 2023

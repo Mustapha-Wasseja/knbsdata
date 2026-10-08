@@ -6,9 +6,10 @@
 #' `r lifecycle::badge("experimental")`
 #'
 #' One search across the indicator catalogues of every verified source, the
-#' survey catalogue of the Kenya National Data Archive, the publications in
-#' the KNBS website's media library, and the curated Statistical Abstract
-#' tables. Results come back ranked, in one schema, each with the exact call
+#' survey catalogue of the Kenya National Data Archive, the open FinAccess
+#' survey microdata, the publications in the KNBS website's media library,
+#' and the curated Statistical Abstract tables. Results come back ranked, in
+#' one schema, each with the exact call
 #' that retrieves it — so finding something and getting it are one copy and
 #' paste apart.
 #'
@@ -38,7 +39,9 @@
 #'
 #' @param query Words to search for.
 #' @param type Which kinds of resource to search: any of `"indicator"`,
-#'   `"table"`, `"survey"` and `"publication"`. All by default.
+#'   `"table"`, `"survey"`, `"microdata"` and `"publication"`. All by
+#'   default. A `"microdata"` result is one survey round whose data can be
+#'   downloaded openly; its `get` call downloads and reads it.
 #' @param limit Maximum number of results.
 #' @param cache Whether to use the local cache.
 #' @param refresh Whether to bypass any cached catalogue.
@@ -49,18 +52,20 @@
 #'   that retrieves the resource.
 #'
 #' @seealso [knbs_indicators()], [knbs_search_surveys()],
-#'   [knbs_publications()], [knbs_abstract_tables()]
+#'   [knbs_finaccess_files()], [knbs_publications()], [knbs_abstract_tables()]
 #'
 #' @examples
 #' \dontrun{
 #' knbs_search("consumer price index")
 #' knbs_search("gdp", type = c("indicator", "table"))
+#' knbs_search("financial inclusion", type = "microdata")
 #' hits <- knbs_search("county population")
 #' hits$get[[1]] # the call that fetches the top result
 #' }
 #' @export
 knbs_search <- function(query,
-                        type = c("indicator", "table", "survey", "publication"),
+                        type = c("indicator", "table", "survey", "microdata",
+                                 "publication"),
                         limit = 50,
                         cache = knbs_option("cache"),
                         refresh = FALSE) {
@@ -76,13 +81,15 @@ knbs_search <- function(query,
     )
   }
   type <- unique(as.character(type))
-  check_values(type, "type", c("indicator", "table", "survey", "publication"))
+  check_values(type, "type",
+               c("indicator", "table", "survey", "microdata", "publication"))
   check_number(limit, "limit", min = 1)
 
   collectors <- list(
     indicator = function() search_rows_indicators(cache, refresh),
     table = function() search_rows_tables(),
     survey = function() search_rows_surveys(cache, refresh),
+    microdata = function() search_rows_microdata(),
     publication = function() search_rows_publications(cache, refresh)
   )
 
@@ -349,7 +356,7 @@ search_score <- function(rows, query, terms) {
 #' Data before documents at equal relevance
 #' @noRd
 search_type_weight <- function(type) {
-  unname(c(indicator = 3, table = 3, survey = 2, publication = 1)[type])
+  unname(c(indicator = 3, table = 3, microdata = 2, survey = 2, publication = 1)[type])
 }
 
 #' The source ids a partial-failure warning names
@@ -445,6 +452,38 @@ search_rows_surveys <- function(cache, refresh) {
     url = cat_$catalogue_url,
     get = sprintf('knbs_survey_metadata("%s")', cat_$survey_id),
     text = paste(cat_$title, cat_$acronym, cat_$survey_id, cat_$producer)
+  )
+}
+
+#' Every round of open survey microdata, one row each
+#'
+#' A round is offered in its best-labelled format, Stata before SPSS before
+#' Excel; the others are a [knbs_finaccess_files()] away.
+#'
+#' @noRd
+search_rows_microdata <- function() {
+  cat_ <- finaccess_catalogue()
+  data <- cat_[cat_$content == "data" & cat_$access == "open", ]
+  data <- data[order(match(data$format, c("stata", "spss", "excel"))), ]
+  data$round <- sub("-.*$", "", data$file_id)
+  formats <- tapply(data$format, data$round, function(f) {
+    paste(vapply(f, finaccess_format_label, character(1)), collapse = ", ")
+  })
+  best <- data[!duplicated(data$round), ]
+  best <- best[order(best$survey, -best$year), ]
+  search_rows(
+    "microdata",
+    resource_id = best$round,
+    title = paste0(sub(":.*$", "", best$title), " (microdata)"),
+    topic = "Financial inclusion",
+    period = as.character(best$year),
+    access = "open",
+    source_id = "finaccess",
+    url = finaccess_registry()$portal,
+    get = sprintf('knbs_read_microdata(knbs_download_finaccess("%s"))', best$file_id),
+    text = paste(best$title, best$round, "FinAccess financial inclusion survey microdata",
+                 ifelse(best$survey == "mse_tracker", "micro small enterprises MSE", "household"),
+                 formats[best$round])
   )
 }
 

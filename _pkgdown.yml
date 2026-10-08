@@ -24,14 +24,25 @@ reference:
 
 - title: Surveys
   desc: >
-    Discovering studies and their documentation. Metadata only: no supported
-    source permits programmatic download of microdata.
+    Discovering studies and their documentation in the Kenya National Data
+    Archive. Metadata only: the archive gates its microdata behind an
+    account.
   contents:
   - knbs_search_surveys
   - knbs_survey_metadata
   - knbs_variables
   - knbs_survey_files
   - knbs_download_microdata
+
+- title: Open microdata
+  desc: >
+    The FinAccess household and MSE Tracker surveys, whose anonymised,
+    weighted microdata are published openly: verified downloads and a
+    reader that keeps labels and provenance.
+  contents:
+  - knbs_finaccess_files
+  - knbs_download_finaccess
+  - knbs_read_microdata
 
 - title: Publications
   desc: >

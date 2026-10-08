@@ -52,6 +52,27 @@ Nothing in this release is above `experimental`.
 for metadata. 129 studies covering 1969–2022 were catalogued at the time of the
 audit.
 
+**Open survey microdata**, via the FinAccess portal
+(`finaccess.knbs.or.ke`): `knbs_finaccess_files()`,
+`knbs_download_finaccess()` and `knbs_read_microdata()`. The Central Bank of
+Kenya, KNBS and FSD Kenya publish the anonymised, weighted microdata of the
+FinAccess household surveys — 2006, 2009, 2013, 2016, 2021 and 2024 — and of
+two MSE Tracker Survey waves for anyone to download, with questionnaires,
+manuals and reports. The portal is a web page linking Google Drive files, so
+the package keeps its own catalogue of them, and holds every download to it:
+served name and size before the transfer, size and SHA-256 after. Three
+properties to keep in mind:
+
+- **The portal states no licence.** FSD Kenya's terms for the 2013 survey
+  restrict the data to research and forbid redistribution without written
+  agreement; assume nothing wider. The terms travel in each file's sidecar
+  and metadata, and no file is bundled with the package.
+- **Some portal labels are wrong**, and the catalogue records what each link
+  actually serves: the MSE Tracker Wave II formats are swapped, and the 2006
+  and 2009 "Questionnaire" archives hold the survey data too.
+- **The 2013 survey's Stata copy sits behind a registration form** on
+  Harvard Dataverse. It is listed, never fetched; its SPSS copy is open.
+
 **Publications**, via the KNBS website's media library:
 `knbs_publications()` and `knbs_download_publication()`. The site's WordPress
 REST API lists roughly 1,600 documents — statistical releases, survey reports,
@@ -146,22 +167,24 @@ are correspondingly heavier:
   solves or retries a challenge. Trying again later usually suffices.
 
 **Statistical Abstract tables**, via the KNBS website's chapter workbooks:
-`knbs_abstract_tables()` and `knbs_abstract_table()`. The 2025 edition's
-National Accounts chapter — fifteen tables — extracts into tidy
-observations by hand-verified recipes. Extraction is deliberately strict:
-layout anchors, section labels and pinned reference values are re-checked
-on every read, and a workbook that has drifted is refused with a classed
-error rather than re-interpreted. The other seventeen chapters remain
-verified *downloads* (`knbs_download_publication()`) until they are
-curated. See `vignette("statistical-abstract")`.
+`knbs_abstract_tables()` and `knbs_abstract_table()`. 48 tables of the 2025
+edition, across 13 chapters — the whole National Accounts chapter and 33
+tables from twelve more — extract into tidy observations by hand-verified
+recipes. Extraction is deliberately strict: layout anchors, section labels
+and pinned reference values are re-checked on every read, and a workbook
+that has drifted is refused with a classed error rather than
+re-interpreted. Tables not yet curated remain verified *downloads*
+(`knbs_download_publication()`). See `vignette("statistical-abstract")`.
 
 ## What does not, and why
 
-### Microdata cannot be downloaded
+### The archive's microdata cannot be downloaded
 
 The archive requires an account for every download. `knbs_download_microdata()`
 explains the official access process and stops. The package does not automate
-sign-in, licence acceptance or approval workflows.
+sign-in, licence acceptance or approval workflows. Microdata are downloaded
+only where the producers publish them for anyone, as the FinAccess surveys
+are.
 
 This is worth understanding rather than working around: `access_type` of
 `public_use` describes the archive's *terms* — public-use files exist — not
@@ -191,7 +214,7 @@ sub-counties, with names and parent codes, read from the census service's own
 Territory dimension. What it does not serve, because nothing has been
 verified: other vintages, crosswalks between coding systems, boundary
 geometries (`knbs_boundaries()` does not exist) and statistical
-classifications. `knbs_search()` across sources also does not exist yet.
+classifications.
 
 ### Variable documentation is uneven
 

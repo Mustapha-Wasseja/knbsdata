@@ -73,14 +73,16 @@ knbs_request <- function(url, throttle = NULL) {
 #' @param body_check Optional function of the response, consulted before the
 #'   generic status mapping. A source that describes its failures in the body
 #'   can use it to raise a more specific condition than the status alone allows.
+#' @param path Optional file to stream the body into, instead of memory.
 #' @noRd
 knbs_perform <- function(req,
                          source_id = NULL,
                          expect = NULL,
                          body_check = NULL,
+                         path = NULL,
                          call = rlang::caller_env()) {
   resp <- tryCatch(
-    httr2::req_perform(req),
+    httr2::req_perform(req, path = path),
     error = function(cnd) {
       knbs_abort(
         c(

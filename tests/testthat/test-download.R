@@ -216,3 +216,88 @@ test_that("a safe archive extracts", {
   unzip_safely(zip_path, out)
   expect_true(file.exists(file.path(out, "household.csv")))
 })
+
+# Streaming and probing -------------------------------------------------------
+
+test_that("a download streams to disk and is held to a stall, not a deadline", {
+  seen <- NULL
+  local_mocked_bindings(
+    knbs_perform = function(req, ..., path = NULL) {
+      seen <<- req
+      writeBin(charToRaw("payload"), path)
+      httr2::response(
+        status_code = 200L,
+        headers = list(`Content-Type` = "application/octet-stream",
+                       `Content-Disposition` = 'attachment; filename="served.dta"'),
+        body = raw()
+      )
+    },
+    .package = "knbsdata"
+  )
+  withr::local_options(knbsdata.timeout = 45)
+
+  fetched <- download_to_temp("https://example.invalid/served.dta")
+  on.exit(unlink(fetched$path), add = TRUE)
+  expect_identical(readBin(fetched$path, "raw", 100), charToRaw("payload"))
+  expect_identical(fetched$file_name, "served.dta")
+  expect_identical(fetched$content_type, "application/octet-stream")
+  expect_equal(seen$options$timeout_ms, 0)
+  expect_identical(seen$options$low_speed_limit, 1L)
+  expect_identical(seen$options$low_speed_time, 45L)
+})
+
+test_that("a failed download leaves no temporary file behind", {
+  local_mocked_bindings(
+    knbs_perform = function(req, ..., path = NULL) {
+      writeBin(charToRaw("partial"), path)
+      knbs_abort("Could not reach the source.", class = "knbs_error_source_unavailable")
+    },
+    .package = "knbsdata"
+  )
+  before <- list.files(tempdir(), pattern = "^knbs-download-")
+  expect_error(download_to_temp("https://example.invalid/x.dta"),
+               class = "knbs_error_source_unavailable")
+  expect_identical(list.files(tempdir(), pattern = "^knbs-download-"), before)
+})
+
+test_that("a probe reads the served name and total size from sixteen bytes", {
+  seen <- NULL
+  local_mocked_bindings(
+    knbs_perform = function(req, ...) {
+      seen <<- req
+      httr2::response(
+        status_code = 206L,
+        headers = list(`Content-Range` = "bytes 0-15/159531918",
+                       `Content-Disposition` = 'attachment; filename="big.dta"',
+                       `Content-Type` = "application/octet-stream"),
+        body = as.raw(1:16)
+      )
+    },
+    .package = "knbsdata"
+  )
+
+  probe <- probe_download("https://example.invalid/big.dta")
+  expect_identical(probe$file_name, "big.dta")
+  expect_identical(probe$size_bytes, 159531918)
+  expect_identical(probe$status, 206L)
+  expect_identical(seen$headers$Range, "bytes=0-15")
+  # A server that ignored the range is cut off rather than read whole.
+  expect_identical(seen$options$maxfilesize, 1048576L)
+})
+
+test_that("a served file name is read bare from Content-Disposition", {
+  expect_identical(disposition_file_name('attachment; filename="2024_Finaccess_Publicdata.dta"'),
+                   "2024_Finaccess_Publicdata.dta")
+  # The encoded form wins, and is decoded.
+  expect_identical(
+    disposition_file_name("attachment; filename=\"x.sav\"; filename*=UTF-8''FinAccess%20MSE.sav"),
+    "FinAccess MSE.sav"
+  )
+  expect_identical(disposition_file_name("attachment; filename=plain.pdf"), "plain.pdf")
+  # A server-supplied name never chooses the directory.
+  expect_identical(disposition_file_name('attachment; filename="../../etc/evil.dta"'), "evil.dta")
+  expect_identical(disposition_file_name('attachment; filename="C:\\Windows\\evil.dta"'), "evil.dta")
+  expect_identical(disposition_file_name('attachment; filename=".."'), NA_character_)
+  expect_identical(disposition_file_name("inline"), NA_character_)
+  expect_identical(disposition_file_name(NULL), NA_character_)
+})

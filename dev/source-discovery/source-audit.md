@@ -47,6 +47,7 @@ only).
 |---|---|---|---|
 | KeNADA — survey **metadata** | study search, study metadata, variables, data-file listings | **2** | `experimental` |
 | KeNADA — survey **microdata download** | the files themselves | **3** (metadata only) | operation not declared |
+| FinAccess — open **microdata** (F-40) | catalogued files, verified downloads | **2** | `experimental` |
 | KNBS publications | — | not assessed | `discovery` |
 | KNBS aggregate indicators | — | not assessed | `discovery` |
 | Geographic reference data | — | not assessed | `discovery` |
@@ -656,6 +657,75 @@ match all 47 counties, through spellings such as "Taita–Taveta" (en dash)
 and "Homabay". All 48 curated tables extract from freshly downloaded
 workbooks.
 
+**F-40 — FinAccess publishes its microdata openly.** Audited 2026-10-08.
+`finaccess.knbs.or.ke/reports-and-datasets` is a Google Sites page (no
+`robots.txt`: the path answers 404 with an HTML page) linking 27 files on
+Google Drive under year headings, and one Harvard Dataverse dataset.
+Twenty-one files are catalogued (`finaccess-registry.yml`): the anonymised,
+weighted microdata of the household surveys of 2006, 2009, 2013, 2016, 2021
+and 2024 and of MSE Tracker Waves I (2022) and II (2023), with the 2024 and
+2021 questionnaires, manuals and reports and the two MSE Tracker reports.
+Infographics, presentations and speeches are left out. Every catalogued
+file was downloaded in full and its served name, size and SHA-256 recorded;
+the data files were opened (rows by variables: 2006 4,418 by 1,180; 2009
+6,598 by 1,265; 2013 6,449 by 1,145; 2016 8,665 by 1,421; MSE Wave I
+2,394 by 287; Wave II 1,954 by 283). Findings:
+
+- *Four labels are wrong.* The Wave II "SPSS" link serves the `.dta` and
+  its "STATA" link the `.sav`; the Wave I "STATA" link serves the same
+  `.sav` as its SPSS link; and the 2006 and 2009 "Questionnaire" archives
+  hold `FinAccess_Retail_<year>_public.sav` beside the questionnaire PDF.
+  "Retail" belongs to the public files' names, not to another survey:
+  Harvard Dataverse titles its copy of the 2013 file "FinAccess Household
+  Survey 2013". The catalogue records what each link serves.
+- *Large files answer with a notice.* A plain Drive link to a file over
+  Drive's virus-scanning size limit answers with an HTML page saying the
+  file could not be scanned, whose button requests
+  `drive.usercontent.google.com/download?id=...&export=download&confirm=t`.
+  The package requests that URL directly. The notice is not an access gate
+  (no account, form or terms); the catalogue's checksums stand in for the
+  scan.
+- *Range requests are honoured.* `Range: bytes=0-15` answers 206 with the
+  served name and the total size in `Content-Range`, so a file is checked
+  against the catalogue before a transfer of up to 290 MB.
+- *No licence is stated.* The portal's disclaimer disclaims accuracy and
+  completeness only. FSD Kenya's terms on Harvard Dataverse (2013,
+  doi:10.7910/DVN/JSPE9W) restrict use to statistical and scientific
+  research and forbid redistribution without written agreement. That copy
+  sits behind a guestbook form, so it is listed and never fetched; the
+  portal's SPSS copy of the same file is open.
+- *An encoding slip.* The MSE Wave I `.sav`'s first variable name begins
+  with the remnant of a byte-order mark and arrives as two stray characters
+  before `interview__key`. `knbs_read_microdata()` removes it and notes the
+  repair.
+- The 2019 heading lists no files.
+- *KeNADA catalogues the same studies, as documentation only.* Eight
+  FinAccess studies are in the archive (2006, 2009, 2013, 2016, 2019, 2021
+  and both MSE waves), all `public_use`, every one with zero data files and
+  zero variables listed. Its own records have slips: the 2016 study
+  (`DDI-KEN-KNBS-FHS-2016-V01`) is titled "2013 FINACCESS NATIONAL SURVEY",
+  and both MSE waves carry reference year 2018. The 2019 round exists only
+  there.
+- *The 2024 county variable uses census codes.* Its labels 1-47 run
+  Mombasa to Nairobi City in census order, and all 47 resolve through
+  `knbs_county_code()` to their own values.
+
+**F-41 — The other portals on KNBS's portals page serve nothing usable
+today.** Checked 2026-10-08:
+
+- *KDHS portal* (`kdhsportal.knbs.or.ke/shiny/`): the Shiny app answers
+  "An error has occurred", and a Shiny app has no data API to call in any
+  case. The KDHS indicators are served by the DHS Program's own API
+  (`api.dhsprogram.com`): nine Kenya surveys, 3,480 indicators for the 2022
+  KDHS, with values for the 47 counties. The next adapter.
+- *Visualisations* (`knbs.or.ke/visualizations/`): HTTP 500.
+- *Kenya Open Data for Africa*: the Cloudflare challenge of F-29 is back
+  ("Performing security verification", since about 2026-10-05). Under the
+  F-29 rule it is neither solved nor retried through.
+- *NIPFN* (`nipfn.knbs.or.ke`), also linked from the portals page: its
+  spreadsheet links answer 404, its data repository page is empty, and its
+  dashboards are Power BI embeds, which are not automatable.
+
 **F-22 — The media endpoint ignores its `mime_type` parameter.**
 Requesting the xlsx mime returns PDFs (verified 2026-08-08 during a package
 demonstration). Same silently-ignored-parameter family as F-10 and F-19. The
@@ -828,3 +898,5 @@ Copy this block for each new candidate source.
 | 2026-10-05 | knbs_opendata | F-37 every dataflow now sends an empty `role.geo` (August payloads named `REF_AREA`); hub dimension labels unusable as column names | `REF_AREA` stands in when the role is empty; columns named from lower-cased SDMX ids |
 | 2026-10-05 | knbs_cpi | F-38 Explorer API answering HTTP 500; portal `DF_CPI_R` index matches it to two decimals, portal inflation rates (`DF_CPI_YR`, `DF_CPI_MR`) differ beyond rounding | Outage errors name the portal series and the difference; no silent substitution |
 | 2026-10-06 | knbs_publications | F-39 the 2025 Abstract's chapter workbooks hold 267 tables; 38 fit the engine's layout; traps: a second header row (3.11), tables split across sheets (3.4-3.8), per-row units and attached footnote marks | 33 curated with totals checked; the second-header layout now refused; unit column, footnote stripping and county codes added to recipes |
+| 2026-10-08 | finaccess | F-40 the FinAccess portal links open, anonymised microdata for six household rounds (2006-2024) and two MSE Tracker waves on Google Drive; four portal labels wrong; no licence stated; the Dataverse copy of 2013 behind a guestbook | 21 files catalogued with name, size and SHA-256; downloads probed with a range request, then size- and checksum-verified; the guestbook copy listed, never fetched |
+| 2026-10-08 | portals page | F-41 KDHS Shiny portal errors, visualisations page 500, Open Data for Africa challenged again, NIPFN data links 404 | KDHS to come from the DHS Program API instead; the others left alone |

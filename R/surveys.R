@@ -335,14 +335,19 @@ knbs_survey_files <- function(survey,
 #' @description
 #' `r lifecycle::badge("experimental")`
 #'
-#' No supported source currently permits this. The Kenya National Data Archive
-#' gates every download behind an account, and this package does not automate
-#' sign-in, licence acceptance or approval workflows, so the function reports
-#' what is required and stops.
+#' The Kenya National Data Archive gates every download behind an account,
+#' and this package does not automate sign-in, licence acceptance or approval
+#' workflows, so the function reports what is required and stops.
 #'
 #' @details
 #' It exists so that the refusal is explicit and points at the official process,
 #' rather than the operation appearing to be unsupported by oversight.
+#'
+#' Microdata that their producers publish for anyone are another matter: the
+#' FinAccess household and MSE Tracker surveys are listed by
+#' [knbs_finaccess_files()] and downloaded by [knbs_download_finaccess()].
+#' Files obtained through the archive's own process can be read with
+#' [knbs_read_microdata()].
 #'
 #' @param survey A study identifier.
 #' @param files Files to download.
@@ -354,7 +359,8 @@ knbs_survey_files <- function(survey,
 #'
 #' @return Never returns; raises `knbs_error_authentication_required`.
 #'
-#' @seealso [knbs_survey_files()] to see what a study holds and on what terms.
+#' @seealso [knbs_survey_files()] to see what a study holds and on what terms;
+#'   [knbs_finaccess_files()] for open microdata.
 #'
 #' @examples
 #' \dontrun{
@@ -379,7 +385,8 @@ knbs_download_microdata <- function(survey,
       "x" = "Every download requires an account with the archive.",
       "i" = "Register and request access at {.url {access_url}}.",
       "i" = "knbsdata does not automate sign-in, licence acceptance or approval workflows.",
-      "i" = "Use {.fn knbs_survey_files} to see what the study holds and on what terms."
+      "i" = "Use {.fn knbs_survey_files} to see what the study holds and on what terms.",
+      "i" = "Open microdata, the FinAccess surveys, are listed by {.fn knbs_finaccess_files}."
     ),
     class = "knbs_error_authentication_required",
     access_url = access_url,

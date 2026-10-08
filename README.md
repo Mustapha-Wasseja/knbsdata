@@ -22,15 +22,21 @@ cite it correctly.
 
 ## Scope
 
-**Implemented: surveys, publications, and indicators — census, prices,
-the economy, and Gross County Product.**
+**Implemented: surveys and open microdata, publications, and indicators
+— census, prices, the economy, and Gross County Product.**
 
 - **One search across everything**: `knbs_search()` ranks indicators,
-  Abstract tables, surveys and publications together, and hands back the
-  call that retrieves each one.
+  Abstract tables, surveys, open microdata and publications together,
+  and hands back the call that retrieves each one.
 - **Surveys**, against the Kenya National Data Archive: search studies,
   read their full documentation, search their variables, and list their
   data files — with provenance and citations attached throughout.
+- **Open survey microdata**, from the FinAccess portal: the anonymised,
+  weighted microdata of the FinAccess household surveys (six rounds,
+  2006–2024) and the MSE Tracker Survey, published by the Central Bank
+  of Kenya, KNBS and FSD Kenya — downloaded with name, size and SHA-256
+  verified against a catalogue, and read into R with their labels and a
+  citation.
 - **Publications**, against the KNBS website’s media library: search
   roughly 1,600 statistical releases, reports and workbooks, and
   download them with verification, SHA-256 checksums and a provenance
@@ -71,10 +77,10 @@ Not implemented:
   `knbs_publications("gross county product")`.
 - **Boundary geometries, other geographic vintages, crosswalks and
   classifications** — nothing verified, so nothing served.
-- **Microdata downloads.** The survey archive requires an account for
-  every download. `knbs_download_microdata()` explains the official
-  process and stops; the package does not automate sign-in or licence
-  acceptance.
+- **Microdata from the national data archive.** KeNADA requires an
+  account for every download. `knbs_download_microdata()` explains the
+  official process and stops; the package does not automate sign-in or
+  licence acceptance. (FinAccess, above, is published openly.)
 - **Survey documentation files.** The archive publishes no
   machine-readable listing of questionnaires or reports.
 
@@ -107,32 +113,34 @@ library(knbsdata)
 
 # Which sources does the package know about, and how far are they verified?
 knbs_sources()
-#> # A tibble: 7 × 8
+#> # A tibble: 8 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
-#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 5 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
-#> 6 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 7 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 2 finaccess         FinAccess H… static_fil… <chr [1]>  experime… none          
+#> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
+#> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
+#> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
+#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
+#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 # Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.
 knbs_status()[, c("source_id", "status", "message")]
-#> # A tibble: 7 × 3
+#> # A tibble: 8 × 3
 #>   source_id         status      message                                   
 #>   <chr>             <chr>       <chr>                                     
 #> 1 kenada            not_checked Set live = TRUE to contact the source.    
-#> 2 knbs_publications not_checked Set live = TRUE to contact the source.    
-#> 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    
-#> 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    
-#> 5 knbs_opendata     not_checked Set live = TRUE to contact the source.    
-#> 6 opendataforafrica not_checked Set live = TRUE to contact the source.    
-#> 7 fake_source       unverified  Endpoint not verified; nothing to contact.
+#> 2 finaccess         not_checked Set live = TRUE to contact the source.    
+#> 3 knbs_publications not_checked Set live = TRUE to contact the source.    
+#> 4 knbs_indicators   not_checked Set live = TRUE to contact the source.    
+#> 5 knbs_cpi          not_checked Set live = TRUE to contact the source.    
+#> 6 knbs_opendata     not_checked Set live = TRUE to contact the source.    
+#> 7 opendataforafrica not_checked Set live = TRUE to contact the source.    
+#> 8 fake_source       unverified  Endpoint not verified; nothing to contact.
 ```
 
 Search everything at once — indicators, Statistical Abstract tables,
@@ -163,6 +171,22 @@ knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 
 # See what it holds, and on what terms
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
+```
+
+Open microdata (live requests, not run here):
+
+``` r
+# Every FinAccess file: six household rounds, 2006-2024, and the MSE Tracker
+knbs_finaccess_files(content = "data")
+
+# The 2024 household survey (Stata, 160 MB): downloaded once, verified,
+# and read with its value labels; re-running reuses the file
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+knbs_cite(fa)
+
+# The 2024 and 2021 questionnaires and manuals
+knbs_finaccess_files(content = c("questionnaire", "manual")) |>
+  knbs_download_finaccess("data/docs")
 ```
 
 Publications (also live requests, not run here):
@@ -231,10 +255,14 @@ knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.dta.metadata.json b
 agreements, approval processes, authentication, rate limits or robots
 exclusions. Datasets that require authorised access are represented in
 the catalogue with their access conditions, but are not downloaded: the
-package points you at the official access process instead.
+package points you at the official access process instead. Microdata are
+downloaded only where the producers publish them for anyone, as
+FinAccess does, and never bundled with the package; the terms the
+producers state travel with each file.
 
-Retrieved data and publications remain subject to KNBS terms and
-licences. The MIT licence in this repository covers the software only.
+Retrieved data and publications remain subject to their producers’ terms
+and licences. The MIT licence in this repository covers the software
+only.
 
 ## Sources change
 

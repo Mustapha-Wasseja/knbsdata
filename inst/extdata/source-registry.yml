@@ -42,6 +42,50 @@ sources:
       - Variable metadata is absent for some studies; an empty variable set is valid.
       - Access type must be recorded per study, not per catalogue.
 
+  - source_id: finaccess
+    source_name: FinAccess Household and MSE Tracker Surveys (open microdata)
+    owner: Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya
+    source_type: static_files
+    base_url: https://finaccess.knbs.or.ke
+    landing_page: https://finaccess.knbs.or.ke/reports-and-datasets
+    adapter: finaccess
+    # The portal is a web page linking Google Drive files; nothing lists them
+    # in a machine-readable form. They are catalogued by hand in
+    # finaccess-registry.yml, and every download is held to that record.
+    operations:
+      - download_public_files
+    authentication: none
+    formats:
+      - dta
+      - sav
+      - xlsx
+      - zip
+      - pdf
+    stability: experimental
+    last_verified: 2026-10-08
+    terms_url: null
+    notes:
+      - Google Sites page linking Google Drive files, verified 2026-10-08
+        (audit F-40); tier 2.
+      - Anonymised, weighted microdata from the 2006, 2009, 2013, 2016, 2021
+        and 2024 household surveys and two waves of the MSE Tracker Survey,
+        open without an account.
+      - The portal states no licence. FSD Kenya's terms for the 2013 survey
+        on Harvard Dataverse forbid redistribution without written
+        agreement; reuse terms must not be assumed, and no file is ever
+        bundled with the package.
+      - Files are fetched from drive.usercontent.google.com with confirm=t.
+        A file over Drive's virus-scanning size limit otherwise answers with
+        a notice that it could not be scanned, whose download button
+        requests that same URL. The notice is not an access gate; the files
+        are held to their catalogued name, size and SHA-256 instead.
+      - Several portal labels are wrong - the MSE Wave II formats are
+        swapped, the Wave I Stata link serves the SPSS file, and the 2006 and
+        2009 "Questionnaire" archives hold the data too. The catalogue
+        records what each link serves.
+      - The 2013 survey's Stata copy on Harvard Dataverse sits behind a
+        guestbook form. It is listed, never fetched; the SPSS copy is open.
+
   - source_id: knbs_publications
     source_name: KNBS Publications (website media library)
     owner: Kenya National Bureau of Statistics

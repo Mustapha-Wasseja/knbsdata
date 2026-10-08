@@ -35,14 +35,19 @@ Never returns; raises \code{knbs_error_authentication_required}.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-No supported source currently permits this. The Kenya National Data Archive
-gates every download behind an account, and this package does not automate
-sign-in, licence acceptance or approval workflows, so the function reports
-what is required and stops.
+The Kenya National Data Archive gates every download behind an account,
+and this package does not automate sign-in, licence acceptance or approval
+workflows, so the function reports what is required and stops.
 }
 \details{
 It exists so that the refusal is explicit and points at the official process,
 rather than the operation appearing to be unsupported by oversight.
+
+Microdata that their producers publish for anyone are another matter: the
+FinAccess household and MSE Tracker surveys are listed by
+\code{\link[=knbs_finaccess_files]{knbs_finaccess_files()}} and downloaded by \code{\link[=knbs_download_finaccess]{knbs_download_finaccess()}}.
+Files obtained through the archive's own process can be read with
+\code{\link[=knbs_read_microdata]{knbs_read_microdata()}}.
 }
 \examples{
 \dontrun{
@@ -51,5 +56,6 @@ knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
 }
 }
 \seealso{
-\code{\link[=knbs_survey_files]{knbs_survey_files()}} to see what a study holds and on what terms.
+\code{\link[=knbs_survey_files]{knbs_survey_files()}} to see what a study holds and on what terms;
+\code{\link[=knbs_finaccess_files]{knbs_finaccess_files()}} for open microdata.
 }

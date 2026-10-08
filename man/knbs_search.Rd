@@ -6,7 +6,7 @@
 \usage{
 knbs_search(
   query,
-  type = c("indicator", "table", "survey", "publication"),
+  type = c("indicator", "table", "survey", "microdata", "publication"),
   limit = 50,
   cache = knbs_option("cache"),
   refresh = FALSE
@@ -16,7 +16,9 @@ knbs_search(
 \item{query}{Words to search for.}
 
 \item{type}{Which kinds of resource to search: any of \code{"indicator"},
-\code{"table"}, \code{"survey"} and \code{"publication"}. All by default.}
+\code{"table"}, \code{"survey"}, \code{"microdata"} and \code{"publication"}. All by
+default. A \code{"microdata"} result is one survey round whose data can be
+downloaded openly; its \code{get} call downloads and reads it.}
 
 \item{limit}{Maximum number of results.}
 
@@ -34,9 +36,10 @@ that retrieves the resource.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
 One search across the indicator catalogues of every verified source, the
-survey catalogue of the Kenya National Data Archive, the publications in
-the KNBS website's media library, and the curated Statistical Abstract
-tables. Results come back ranked, in one schema, each with the exact call
+survey catalogue of the Kenya National Data Archive, the open FinAccess
+survey microdata, the publications in the KNBS website's media library,
+and the curated Statistical Abstract tables. Results come back ranked, in
+one schema, each with the exact call
 that retrieves it — so finding something and getting it are one copy and
 paste apart.
 }
@@ -68,11 +71,12 @@ Geographic codes are not searched here; see \code{\link[=knbs_geographies]{knbs_
 \dontrun{
 knbs_search("consumer price index")
 knbs_search("gdp", type = c("indicator", "table"))
+knbs_search("financial inclusion", type = "microdata")
 hits <- knbs_search("county population")
 hits$get[[1]] # the call that fetches the top result
 }
 }
 \seealso{
 \code{\link[=knbs_indicators]{knbs_indicators()}}, \code{\link[=knbs_search_surveys]{knbs_search_surveys()}},
-\code{\link[=knbs_publications]{knbs_publications()}}, \code{\link[=knbs_abstract_tables]{knbs_abstract_tables()}}
+\code{\link[=knbs_finaccess_files]{knbs_finaccess_files()}}, \code{\link[=knbs_publications]{knbs_publications()}}, \code{\link[=knbs_abstract_tables]{knbs_abstract_tables()}}
 }

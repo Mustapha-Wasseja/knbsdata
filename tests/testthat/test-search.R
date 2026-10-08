@@ -16,7 +16,7 @@ test_that("one search spans every catalogue in one schema", {
   surveys <- knbs_search("survey")
   expect_s3_class(surveys, "knbs_catalogue")
   expect_named(surveys, knbs_search_columns())
-  expect_setequal(unique(surveys$resource_type), c("survey", "publication"))
+  expect_setequal(unique(surveys$resource_type), c("survey", "microdata", "publication"))
 
   gdp <- knbs_search("gross domestic product")
   expect_true(all(c("indicator", "table") %in% gdp$resource_type))
@@ -43,6 +43,25 @@ test_that("each result carries the call that retrieves it, and the call works", 
 
   documents <- knbs_search("economic survey", type = "publication")
   expect_match(documents$get, '^knbs_download_publication\\("[0-9]+"\\)$')
+})
+
+test_that("open microdata is found by round, with the call that downloads and reads it", {
+  hits <- knbs_search("finaccess", type = "microdata")
+  expect_setequal(hits$resource_id,
+                  c("hh2024", "hh2021", "hh2016", "hh2013", "hh2009", "hh2006",
+                    "mse2023", "mse2022"))
+  expect_identical(hits$resource_id[1:2], c("hh2024", "hh2021"))
+  expect_true(all(hits$access == "open"))
+  # Each round is offered in its best-labelled format.
+  expect_identical(hits$get[hits$resource_id == "hh2024"],
+                   'knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))')
+  expect_identical(hits$get[hits$resource_id == "hh2016"],
+                   'knbs_read_microdata(knbs_download_finaccess("hh2016-spss"))')
+
+  enterprises <- knbs_search("micro and small enterprises", type = "microdata")
+  expect_setequal(enterprises$resource_id, c("mse2023", "mse2022"))
+  expect_identical(knbs_search("financial inclusion 2021", type = "microdata")$resource_id,
+                   "hh2021")
 })
 
 test_that("plurals, prefixes and acronyms match both ways", {

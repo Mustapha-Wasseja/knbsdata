@@ -1,3 +1,6 @@
+# Session state that is not configuration: what has already been said once.
+the <- new.env(parent = emptyenv())
+
 .onLoad <- function(libname, pkgname) {
   # Register defaults only for options the user has not already set, so that
   # options() reflects the effective configuration in every session.
