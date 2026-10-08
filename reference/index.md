@@ -10,8 +10,9 @@ the call that retrieves it.
 
 ## Surveys
 
-Discovering studies and their documentation. Metadata only: no supported
-source permits programmatic download of microdata.
+Discovering studies and their documentation in the Kenya National Data
+Archive. Metadata only: the archive gates its microdata behind an
+account.
 
 - [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
   **\[experimental\]** : Search official survey and census studies
@@ -23,6 +24,19 @@ source permits programmatic download of microdata.
   **\[experimental\]** : List the data files belonging to a study
 - [`knbs_download_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_microdata.md)
   **\[experimental\]** : Download public-use microdata
+
+## Open microdata
+
+The FinAccess household and MSE Tracker surveys, whose anonymised,
+weighted microdata are published openly: verified downloads and a reader
+that keeps labels and provenance.
+
+- [`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md)
+  **\[experimental\]** : List the FinAccess survey files
+- [`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md)
+  **\[experimental\]** : Download FinAccess survey files
+- [`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md)
+  **\[experimental\]** : Read a microdata file into R
 
 ## Publications
 

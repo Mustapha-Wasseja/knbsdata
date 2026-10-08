@@ -2,6 +2,61 @@
 
 ## knbsdata (development version)
 
+### Open survey microdata: FinAccess
+
+The FinAccess household survey, Kenya’s survey of financial inclusion by
+the Central Bank of Kenya, KNBS and FSD Kenya, publishes its anonymised,
+weighted microdata for anyone to download. The package now reaches it.
+
+- [`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md)
+  lists 22 files: the microdata of six household rounds (2006, 2009,
+  2013, 2016, 2021 and 2024) and two waves of the MSE Tracker Survey
+  (2022 and 2023), in Stata, SPSS or Excel, with the questionnaires,
+  manuals and reports. The catalogue ships with the package and records
+  what each portal link actually serves: four of the portal’s labels are
+  wrong, and its 2006 and 2009 “Questionnaire” archives hold the data
+  (audit F-40).
+- [`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md)
+  downloads them under their official names. A sixteen-byte request
+  checks each file’s served name and size before it moves; its size and
+  SHA-256 are checked after, against checksums taken from full downloads
+  of every file. A file already downloaded and identical is reused
+  without a request, so
+  `knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))` is safe
+  to re-run. The 2013 survey’s Stata copy, behind a registration form on
+  Harvard Dataverse, is listed and never fetched.
+- [`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md)
+  reads Stata, SPSS and Excel files and the data inside a `.zip`,
+  keeping value and variable labels, and attaches the provenance in the
+  file’s sidecar, so
+  [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
+  cites the producers. It also reads files obtained through the national
+  archive’s own process.
+- [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+  has a `"microdata"` type: one result per survey round, whose `get`
+  call downloads and reads it.
+- Downloads stream to disk instead of through memory, and are abandoned
+  only once stalled for the timeout’s length rather than when the
+  timeout runs out, so a 300 MB file on a slow line completes.
+- `knbs_status(live = TRUE)` checks that the portal still links every
+  catalogued file.
+
+The portal states no licence. FSD Kenya’s terms for the 2013 survey
+restrict it to research and forbid redistribution without written
+agreement, so assume nothing wider: the terms travel in each file’s
+sidecar and metadata, the first download of a session names the
+producers, and no file is bundled with the package.
+
+### One provenance record per file
+
+Provenance sidecars are now named after the whole file name: `pop.dta`
+gets `pop.dta.metadata.json`, where it used to get `pop.metadata.json`.
+The old name was shared by every file with the same stem, so
+[`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md)-ing
+a table as `pop.csv` and `pop.dta` into one folder, or downloading a
+survey’s Stata and SPSS copies side by side, left only the last file’s
+record. Sidecars written by earlier versions keep their old names.
+
 ### Quieter lookups
 
 [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)

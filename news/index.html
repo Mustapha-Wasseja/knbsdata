@@ -44,6 +44,26 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="knbsdata-development-version">knbsdata (development version)<a class="anchor" aria-label="anchor" href="#knbsdata-development-version"></a></h2>
 <div class="section level3">
+<h3 id="open-survey-microdata-finaccess-development-version">Open survey microdata: FinAccess<a class="anchor" aria-label="anchor" href="#open-survey-microdata-finaccess-development-version"></a></h3>
+<p>The FinAccess household survey, Kenya’s survey of financial inclusion by the Central Bank of Kenya, KNBS and FSD Kenya, publishes its anonymised, weighted microdata for anyone to download. The package now reaches it.</p>
+<ul><li>
+<code><a href="../reference/knbs_finaccess_files.html">knbs_finaccess_files()</a></code> lists 22 files: the microdata of six household rounds (2006, 2009, 2013, 2016, 2021 and 2024) and two waves of the MSE Tracker Survey (2022 and 2023), in Stata, SPSS or Excel, with the questionnaires, manuals and reports. The catalogue ships with the package and records what each portal link actually serves: four of the portal’s labels are wrong, and its 2006 and 2009 “Questionnaire” archives hold the data (audit F-40).</li>
+<li>
+<code><a href="../reference/knbs_download_finaccess.html">knbs_download_finaccess()</a></code> downloads them under their official names. A sixteen-byte request checks each file’s served name and size before it moves; its size and SHA-256 are checked after, against checksums taken from full downloads of every file. A file already downloaded and identical is reused without a request, so <code>knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))</code> is safe to re-run. The 2013 survey’s Stata copy, behind a registration form on Harvard Dataverse, is listed and never fetched.</li>
+<li>
+<code><a href="../reference/knbs_read_microdata.html">knbs_read_microdata()</a></code> reads Stata, SPSS and Excel files and the data inside a <code>.zip</code>, keeping value and variable labels, and attaches the provenance in the file’s sidecar, so <code><a href="../reference/knbs_cite.html">knbs_cite()</a></code> cites the producers. It also reads files obtained through the national archive’s own process.</li>
+<li>
+<code><a href="../reference/knbs_search.html">knbs_search()</a></code> has a <code>"microdata"</code> type: one result per survey round, whose <code>get</code> call downloads and reads it.</li>
+<li>Downloads stream to disk instead of through memory, and are abandoned only once stalled for the timeout’s length rather than when the timeout runs out, so a 300 MB file on a slow line completes.</li>
+<li>
+<code>knbs_status(live = TRUE)</code> checks that the portal still links every catalogued file.</li>
+</ul><p>The portal states no licence. FSD Kenya’s terms for the 2013 survey restrict it to research and forbid redistribution without written agreement, so assume nothing wider: the terms travel in each file’s sidecar and metadata, the first download of a session names the producers, and no file is bundled with the package.</p>
+</div>
+<div class="section level3">
+<h3 id="one-provenance-record-per-file-development-version">One provenance record per file<a class="anchor" aria-label="anchor" href="#one-provenance-record-per-file-development-version"></a></h3>
+<p>Provenance sidecars are now named after the whole file name: <code>pop.dta</code> gets <code>pop.dta.metadata.json</code>, where it used to get <code>pop.metadata.json</code>. The old name was shared by every file with the same stem, so <code><a href="../reference/knbs_write.html">knbs_write()</a></code>-ing a table as <code>pop.csv</code> and <code>pop.dta</code> into one folder, or downloading a survey’s Stata and SPSS copies side by side, left only the last file’s record. Sidecars written by earlier versions keep their old names.</p>
+</div>
+<div class="section level3">
 <h3 id="quieter-lookups-development-version">Quieter lookups<a class="anchor" aria-label="anchor" href="#quieter-lookups-development-version"></a></h3>
 <p><code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> resolves an indicator against every source’s catalogue, and warned “Could not reach: …” on every call while any one portal was down — even for an indicator served by another source. It now stays silent when the id is found in a source that answered. A name search still warns, since the unreachable catalogue might hold another match, and a not-found error names the unreachable source as a possible reason. The README leads its live examples with the most dependable sources and says what an outage looks like.</p>
 </div>

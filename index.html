@@ -67,12 +67,14 @@
 <div class="section level2">
 <h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
 </h2>
-<p><strong>Implemented: surveys, publications, and indicators — census, prices, the economy, and Gross County Product.</strong></p>
+<p><strong>Implemented: surveys and open microdata, publications, and indicators — census, prices, the economy, and Gross County Product.</strong></p>
 <ul>
 <li>
-<strong>One search across everything</strong>: <code><a href="reference/knbs_search.html">knbs_search()</a></code> ranks indicators, Abstract tables, surveys and publications together, and hands back the call that retrieves each one.</li>
+<strong>One search across everything</strong>: <code><a href="reference/knbs_search.html">knbs_search()</a></code> ranks indicators, Abstract tables, surveys, open microdata and publications together, and hands back the call that retrieves each one.</li>
 <li>
 <strong>Surveys</strong>, against the Kenya National Data Archive: search studies, read their full documentation, search their variables, and list their data files — with provenance and citations attached throughout.</li>
+<li>
+<strong>Open survey microdata</strong>, from the FinAccess portal: the anonymised, weighted microdata of the FinAccess household surveys (six rounds, 2006–2024) and the MSE Tracker Survey, published by the Central Bank of Kenya, KNBS and FSD Kenya — downloaded with name, size and SHA-256 verified against a catalogue, and read into R with their labels and a citation.</li>
 <li>
 <strong>Publications</strong>, against the KNBS website’s media library: search roughly 1,600 statistical releases, reports and workbooks, and download them with verification, SHA-256 checksums and a provenance sidecar.</li>
 <li>
@@ -95,7 +97,7 @@
 <li>
 <strong>Boundary geometries, other geographic vintages, crosswalks and classifications</strong> — nothing verified, so nothing served.</li>
 <li>
-<strong>Microdata downloads.</strong> The survey archive requires an account for every download. <code><a href="reference/knbs_download_microdata.html">knbs_download_microdata()</a></code> explains the official process and stops; the package does not automate sign-in or licence acceptance.</li>
+<strong>Microdata from the national data archive.</strong> KeNADA requires an account for every download. <code><a href="reference/knbs_download_microdata.html">knbs_download_microdata()</a></code> explains the official process and stops; the package does not automate sign-in or licence acceptance. (FinAccess, above, is published openly.)</li>
 <li>
 <strong>Survey documentation files.</strong> The archive publishes no machine-readable listing of questionnaires or reports.</li>
 </ul>
@@ -123,30 +125,32 @@
 <span></span>
 <span><span class="co"># Which sources does the package know about, and how far are they verified?</span></span>
 <span><span class="fu"><a href="reference/knbs_sources.html">knbs_sources</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 7 × 8</span></span>
+<span><span class="co">#&gt; # A tibble: 8 × 8</span></span>
 <span><span class="co">#&gt;   source_id         source_name  source_type operations stability authentication</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;        &lt;chr&gt;       &lt;list&gt;     &lt;chr&gt;     &lt;chr&gt;         </span></span>
 <span><span class="co">#&gt; 1 kenada            Kenya Natio… survey_cat… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 2 knbs_publications KNBS Public… publicatio… &lt;chr [3]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 3 knbs_indicators   KNBS Census… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 4 knbs_cpi          KNBS CPI Ex… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 5 knbs_opendata     KNBS Data P… indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 6 opendataforafrica Kenya Open … indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 7 fake_source       Offline tes… fake        &lt;chr [6]&gt;  discovery none          </span></span>
+<span><span class="co">#&gt; 2 finaccess         FinAccess H… static_fil… &lt;chr [1]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 3 knbs_publications KNBS Public… publicatio… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 4 knbs_indicators   KNBS Census… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 5 knbs_cpi          KNBS CPI Ex… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 6 knbs_opendata     KNBS Data P… indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 7 opendataforafrica Kenya Open … indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 8 fake_source       Offline tes… fake        &lt;chr [6]&gt;  discovery none          </span></span>
 <span><span class="co">#&gt; # ℹ 2 more variables: last_verified &lt;date&gt;, base_url &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.</span></span>
 <span><span class="fu"><a href="reference/knbs_status.html">knbs_status</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"source_id"</span>, <span class="st">"status"</span>, <span class="st">"message"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt; # A tibble: 7 × 3</span></span>
+<span><span class="co">#&gt; # A tibble: 8 × 3</span></span>
 <span><span class="co">#&gt;   source_id         status      message                                   </span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;       &lt;chr&gt;                                     </span></span>
 <span><span class="co">#&gt; 1 kenada            not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 2 knbs_publications not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 5 knbs_opendata     not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 6 opendataforafrica not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 7 fake_source       unverified  Endpoint not verified; nothing to contact.</span></span></code></pre></div>
+<span><span class="co">#&gt; 2 finaccess         not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 3 knbs_publications not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 4 knbs_indicators   not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 5 knbs_cpi          not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 6 knbs_opendata     not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 7 opendataforafrica not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 8 fake_source       unverified  Endpoint not verified; nothing to contact.</span></span></code></pre></div>
 <p>Search everything at once — indicators, Statistical Abstract tables, surveys and publications. Each result carries the call that retrieves it (live requests, not run here):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span>
@@ -169,8 +173,21 @@
 <span></span>
 <span><span class="co"># See what it holds, and on what terms</span></span>
 <span><span class="fu"><a href="reference/knbs_survey_files.html">knbs_survey_files</a></span><span class="op">(</span><span class="st">"KEN-KNBS-KIHBS-2015-2016-v01"</span><span class="op">)</span></span></code></pre></div>
-<p>Publications (also live requests, not run here):</p>
+<p>Open microdata (live requests, not run here):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Every FinAccess file: six household rounds, 2006-2024, and the MSE Tracker</span></span>
+<span><span class="fu"><a href="reference/knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span>content <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The 2024 household survey (Stata, 160 MB): downloaded once, verified,</span></span>
+<span><span class="co"># and read with its value labels; re-running reuses the file</span></span>
+<span><span class="va">fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_read_microdata.html">knbs_read_microdata</a></span><span class="op">(</span><span class="fu"><a href="reference/knbs_download_finaccess.html">knbs_download_finaccess</a></span><span class="op">(</span><span class="st">"hh2024-stata"</span>, <span class="st">"data"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">fa</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The 2024 and 2021 questionnaires and manuals</span></span>
+<span><span class="fu"><a href="reference/knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span>content <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"questionnaire"</span>, <span class="st">"manual"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/knbs_download_finaccess.html">knbs_download_finaccess</a></span><span class="op">(</span><span class="st">"data/docs"</span><span class="op">)</span></span></code></pre></div>
+<p>Publications (also live requests, not run here):</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find publications</span></span>
 <span><span class="va">pubs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_publications.html">knbs_publications</a></span><span class="op">(</span><span class="st">"economic survey"</span>, year <span class="op">=</span> <span class="fl">2026</span><span class="op">)</span></span>
 <span></span>
@@ -181,7 +198,7 @@
 <span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span><span class="op">)</span>                      <span class="co"># last 30 days, tenders and adverts left out</span></span>
 <span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span>series <span class="op">=</span> <span class="st">"cpi"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>   <span class="co"># the latest CPI release</span></span></code></pre></div>
 <p>Indicators and tables (live requests, not run here):</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The Statistical Abstract's tables, tidy: GDP by activity, county births...</span></span>
 <span><span class="fu"><a href="reference/knbs_abstract_tables.html">knbs_abstract_tables</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span></span>
@@ -209,15 +226,15 @@
 <span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span></code></pre></div>
 <p>Each source is a separate KNBS (or partner) service, and any of them can be down for a while. <code>knbs_status(live = TRUE)</code> shows which are answering. A call to a source that is down fails with a clear <code>knbs_error_source_unavailable</code> rather than partial data, and where another source publishes the same series the error names it: during a CPI Explorer outage, for instance, it points to the Data Portal’s <code>DF_CPI_R</code> index.</p>
 <p>Hand the data to colleagues in Excel, Stata or SPSS without losing where it came from:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.xlsx"</span><span class="op">)</span>  <span class="co"># data sheet + "about" sheet with source and citation</span></span>
-<span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.dta"</span><span class="op">)</span>   <span class="co"># + gdp-by-activity.metadata.json beside it</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.dta"</span><span class="op">)</span>   <span class="co"># + gdp-by-activity.dta.metadata.json beside it</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="access-conditions">Access conditions<a class="anchor" aria-label="anchor" href="#access-conditions"></a>
 </h2>
-<p><code>knbsdata</code> will not circumvent registration requirements, licence agreements, approval processes, authentication, rate limits or robots exclusions. Datasets that require authorised access are represented in the catalogue with their access conditions, but are not downloaded: the package points you at the official access process instead.</p>
-<p>Retrieved data and publications remain subject to KNBS terms and licences. The MIT licence in this repository covers the software only.</p>
+<p><code>knbsdata</code> will not circumvent registration requirements, licence agreements, approval processes, authentication, rate limits or robots exclusions. Datasets that require authorised access are represented in the catalogue with their access conditions, but are not downloaded: the package points you at the official access process instead. Microdata are downloaded only where the producers publish them for anyone, as FinAccess does, and never bundled with the package; the terms the producers state travel with each file.</p>
+<p>Retrieved data and publications remain subject to their producers’ terms and licences. The MIT licence in this repository covers the software only.</p>
 </div>
 <div class="section level2">
 <h2 id="sources-change">Sources change<a class="anchor" aria-label="anchor" href="#sources-change"></a>

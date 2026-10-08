@@ -22,16 +22,17 @@ this vignette never depends on a live service.
 ``` r
 
 knbs_sources()
-#> # A tibble: 7 × 8
+#> # A tibble: 8 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
-#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 5 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
-#> 6 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 7 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 2 finaccess         FinAccess H… static_fil… <chr [1]>  experime… none          
+#> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
+#> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
+#> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
+#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
+#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 

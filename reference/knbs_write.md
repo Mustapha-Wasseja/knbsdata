@@ -102,7 +102,7 @@ haven package; you are asked to install them if they are missing.
 if (FALSE) { # \dontrun{
 gdp <- knbs_abstract_table("2.2")
 knbs_write(gdp, "gdp-by-activity.xlsx")   # data + about sheet
-knbs_write(gdp, "gdp-by-activity.dta")    # + gdp-by-activity.metadata.json
+knbs_write(gdp, "gdp-by-activity.dta")    # + gdp-by-activity.dta.metadata.json
 
 # A derived table keeps the source's provenance when you pass it on
 totals <- dplyr::summarise(gdp, value = sum(value), .by = period)

@@ -14,32 +14,34 @@ matters.
 ``` r
 
 knbs_sources()
-#> # A tibble: 7 × 8
+#> # A tibble: 8 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
-#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 5 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
-#> 6 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 7 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 2 finaccess         FinAccess H… static_fil… <chr [1]>  experime… none          
+#> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
+#> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
+#> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
+#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
+#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 
 knbs_status()
-#> # A tibble: 7 × 7
+#> # A tibble: 8 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-08 11:30:57
-#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-08 11:30:57
-#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
-#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-08 11:30:57
-#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
-#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
-#> 7 fake_source  search_s… unver…          NA               NA 2026-10-08 11:30:57
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-08 12:07:49
+#> 2 finaccess    download… not_c…          NA               NA 2026-10-08 12:07:49
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-10-08 12:07:49
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-08 12:07:49
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
+#> 8 fake_source  search_s… unver…          NA               NA 2026-10-08 12:07:49
 #> # ℹ 1 more variable: message <chr>
 ```
 
@@ -69,6 +71,31 @@ and
 [`knbs_survey_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_files.md).
 The archive exposes a JSON API that needs no credentials for metadata.
 129 studies covering 1969–2022 were catalogued at the time of the audit.
+
+**Open survey microdata**, via the FinAccess portal
+(`finaccess.knbs.or.ke`):
+[`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md),
+[`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md)
+and
+[`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md).
+The Central Bank of Kenya, KNBS and FSD Kenya publish the anonymised,
+weighted microdata of the FinAccess household surveys — 2006, 2009,
+2013, 2016, 2021 and 2024 — and of two MSE Tracker Survey waves for
+anyone to download, with questionnaires, manuals and reports. The portal
+is a web page linking Google Drive files, so the package keeps its own
+catalogue of them, and holds every download to it: served name and size
+before the transfer, size and SHA-256 after. Three properties to keep in
+mind:
+
+- **The portal states no licence.** FSD Kenya’s terms for the 2013
+  survey restrict the data to research and forbid redistribution without
+  written agreement; assume nothing wider. The terms travel in each
+  file’s sidecar and metadata, and no file is bundled with the package.
+- **Some portal labels are wrong**, and the catalogue records what each
+  link actually serves: the MSE Tracker Wave II formats are swapped, and
+  the 2006 and 2009 “Questionnaire” archives hold the survey data too.
+- **The 2013 survey’s Stata copy sits behind a registration form** on
+  Harvard Dataverse. It is listed, never fetched; its SPSS copy is open.
 
 **Publications**, via the KNBS website’s media library:
 [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md)
@@ -187,24 +214,27 @@ workbooks:
 [`knbs_abstract_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_tables.md)
 and
 [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md).
-The 2025 edition’s National Accounts chapter — fifteen tables — extracts
-into tidy observations by hand-verified recipes. Extraction is
-deliberately strict: layout anchors, section labels and pinned reference
-values are re-checked on every read, and a workbook that has drifted is
-refused with a classed error rather than re-interpreted. The other
-seventeen chapters remain verified *downloads*
-([`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md))
-until they are curated. See
+48 tables of the 2025 edition, across 13 chapters — the whole National
+Accounts chapter and 33 tables from twelve more — extract into tidy
+observations by hand-verified recipes. Extraction is deliberately
+strict: layout anchors, section labels and pinned reference values are
+re-checked on every read, and a workbook that has drifted is refused
+with a classed error rather than re-interpreted. Tables not yet curated
+remain verified *downloads*
+([`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)).
+See
 [`vignette("statistical-abstract")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/statistical-abstract.md).
 
 ## What does not, and why
 
-### Microdata cannot be downloaded
+### The archive’s microdata cannot be downloaded
 
 The archive requires an account for every download.
 [`knbs_download_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_microdata.md)
 explains the official access process and stops. The package does not
-automate sign-in, licence acceptance or approval workflows.
+automate sign-in, licence acceptance or approval workflows. Microdata
+are downloaded only where the producers publish them for anyone, as the
+FinAccess surveys are.
 
 This is worth understanding rather than working around: `access_type` of
 `public_use` describes the archive’s *terms* — public-use files exist —
@@ -236,8 +266,6 @@ names and parent codes, read from the census service’s own Territory
 dimension. What it does not serve, because nothing has been verified:
 other vintages, crosswalks between coding systems, boundary geometries
 (`knbs_boundaries()` does not exist) and statistical classifications.
-[`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
-across sources also does not exist yet.
 
 ### Variable documentation is uneven
 

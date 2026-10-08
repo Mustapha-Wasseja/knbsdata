@@ -3,18 +3,18 @@
 **\[experimental\]**
 
 One search across the indicator catalogues of every verified source, the
-survey catalogue of the Kenya National Data Archive, the publications in
-the KNBS website's media library, and the curated Statistical Abstract
-tables. Results come back ranked, in one schema, each with the exact
-call that retrieves it — so finding something and getting it are one
-copy and paste apart.
+survey catalogue of the Kenya National Data Archive, the open FinAccess
+survey microdata, the publications in the KNBS website's media library,
+and the curated Statistical Abstract tables. Results come back ranked,
+in one schema, each with the exact call that retrieves it — so finding
+something and getting it are one copy and paste apart.
 
 ## Usage
 
 ``` r
 knbs_search(
   query,
-  type = c("indicator", "table", "survey", "publication"),
+  type = c("indicator", "table", "survey", "microdata", "publication"),
   limit = 50,
   cache = knbs_option("cache"),
   refresh = FALSE
@@ -30,7 +30,9 @@ knbs_search(
 - type:
 
   Which kinds of resource to search: any of `"indicator"`, `"table"`,
-  `"survey"` and `"publication"`. All by default.
+  `"survey"`, `"microdata"` and `"publication"`. All by default. A
+  `"microdata"` result is one survey round whose data can be downloaded
+  openly; its `get` call downloads and reads it.
 
 - limit:
 
@@ -80,6 +82,7 @@ Geographic codes are not searched here; see
 
 [`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md),
 [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md),
+[`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md),
 [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md),
 [`knbs_abstract_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_tables.md)
 
@@ -89,6 +92,7 @@ Geographic codes are not searched here; see
 if (FALSE) { # \dontrun{
 knbs_search("consumer price index")
 knbs_search("gdp", type = c("indicator", "table"))
+knbs_search("financial inclusion", type = "microdata")
 hits <- knbs_search("county population")
 hits$get[[1]] # the call that fetches the top result
 } # }
