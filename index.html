@@ -180,18 +180,12 @@
 <span><span class="co"># What has KNBS released lately? Series and period read from each title</span></span>
 <span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span><span class="op">)</span>                      <span class="co"># last 30 days, tenders and adverts left out</span></span>
 <span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span>series <span class="op">=</span> <span class="st">"cpi"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>   <span class="co"># the latest CPI release</span></span></code></pre></div>
-<p>Indicators (live requests, not run here):</p>
+<p>Indicators and tables (live requests, not run here):</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Monthly CPI and inflation, from 2009</span></span>
-<span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, geo_level <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Gross County Product, all 47 counties, 2013-2020</span></span>
-<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># The Statistical Abstract's National Accounts tables, tidy</span></span>
+<code class="sourceCode R"><span><span class="co"># The Statistical Abstract's tables, tidy: GDP by activity, county births...</span></span>
 <span><span class="fu"><a href="reference/knbs_abstract_tables.html">knbs_abstract_tables</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span></span>
+<span><span class="va">births</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"16.11"</span><span class="op">)</span>      <span class="co"># by county, with census codes</span></span>
 <span></span>
 <span><span class="co"># County populations from the 2019 census, leading-zero codes intact</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
@@ -202,7 +196,18 @@
 <span></span>
 <span><span class="co"># County names written any way, as census codes - for joining anyone's data</span></span>
 <span><span class="fu"><a href="reference/knbs_county_code.html">knbs_county_code</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murang'a"</span>, <span class="st">"MURANGA"</span>, <span class="st">"Nairobi City County"</span>, <span class="st">"47"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "21" "21" "47" "47"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "21" "21" "47" "47"</span></span>
+<span></span>
+<span><span class="co"># GDP, trade, county finance and more from the KNBS Data Portal (SDMX)</span></span>
+<span><span class="va">gdp_flow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span>, source <span class="op">=</span> <span class="st">"knbs_opendata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Monthly CPI and inflation, from 2009, from the CPI Explorer</span></span>
+<span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, geo_level <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Gross County Product, all 47 counties, 2013-2020, from Open Data for Africa</span></span>
+<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span></code></pre></div>
+<p>Each source is a separate KNBS (or partner) service, and any of them can be down for a while. <code>knbs_status(live = TRUE)</code> shows which are answering. A call to a source that is down fails with a clear <code>knbs_error_source_unavailable</code> rather than partial data, and where another source publishes the same series the error names it: during a CPI Explorer outage, for instance, it points to the Data Portal’s <code>DF_CPI_R</code> index.</p>
 <p>Hand the data to colleagues in Excel, Stata or SPSS without losing where it came from:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.xlsx"</span><span class="op">)</span>  <span class="co"># data sheet + "about" sheet with source and citation</span></span>

@@ -33,13 +33,13 @@ knbs_status()
 #> # A tibble: 7 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-06 08:55:41
-#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-06 08:55:41
-#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
-#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-06 08:55:41
-#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
-#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-06 08:55:41
-#> 7 fake_source  search_s… unver…          NA               NA 2026-10-06 08:55:41
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-08 11:30:57
+#> 2 knbs_public… search_p… not_c…          NA               NA 2026-10-08 11:30:57
+#> 3 knbs_indica… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
+#> 4 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-08 11:30:57
+#> 5 knbs_openda… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
+#> 6 opendatafor… list_ind… not_c…          NA               NA 2026-10-08 11:30:57
+#> 7 fake_source  search_s… unver…          NA               NA 2026-10-08 11:30:57
 #> # ℹ 1 more variable: message <chr>
 ```
 

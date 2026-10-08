@@ -44,6 +44,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="knbsdata-development-version">knbsdata (development version)<a class="anchor" aria-label="anchor" href="#knbsdata-development-version"></a></h2>
 <div class="section level3">
+<h3 id="quieter-lookups-development-version">Quieter lookups<a class="anchor" aria-label="anchor" href="#quieter-lookups-development-version"></a></h3>
+<p><code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> resolves an indicator against every source’s catalogue, and warned “Could not reach: …” on every call while any one portal was down — even for an indicator served by another source. It now stays silent when the id is found in a source that answered. A name search still warns, since the unreachable catalogue might hold another match, and a not-found error names the unreachable source as a possible reason. The README leads its live examples with the most dependable sources and says what an outage looks like.</p>
+</div>
+<div class="section level3">
 <h3 id="twelve-more-statistical-abstract-chapters-development-version">Twelve more Statistical Abstract chapters<a class="anchor" aria-label="anchor" href="#twelve-more-statistical-abstract-chapters-development-version"></a></h3>
 <p><code><a href="../reference/knbs_abstract_table.html">knbs_abstract_table()</a></code> now serves 48 tables of the 2025 Statistical Abstract, up from Chapter 2’s fifteen: 33 more from Chapters 3–16 — wage employment by sector; the Post Office Savings Bank and insurance business; principal export commodities; crop sales and producer prices; forest plantations and wildlife; electricity connections and fuel sales; producer price indices and production of selected commodities; construction output by county and cement; visitor arrivals, departures and hotel occupancy; railway earnings, vehicle registration and inspection, Mombasa port and aircraft; school enrolment, by county too; and registered births and deaths by county. Each has a curated recipe, totals checked against their parts where the table has them, and pinned figures (audit F-39).</p>
 <ul><li>
