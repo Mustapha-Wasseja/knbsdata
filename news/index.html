@@ -44,6 +44,20 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="knbsdata-development-version">knbsdata (development version)<a class="anchor" aria-label="anchor" href="#knbsdata-development-version"></a></h2>
 <div class="section level3">
+<h3 id="health-and-demography-from-the-kdhs-development-version">Health and demography from the KDHS<a class="anchor" aria-label="anchor" href="#health-and-demography-from-the-kdhs-development-version"></a></h3>
+<p>KNBS implements the Kenya Demographic and Health Surveys, and the DHS Program publishes their indicators through its Indicator Data API, now a source (<code>"dhs_program"</code>): 4,115 indicators from the KDHS of 1989 to 2022 and the 2015 and 2020 Malaria Indicator Surveys, through the same <code><a href="../reference/knbs_indicators.html">knbs_indicators()</a></code> and <code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> as every other source.</p>
+<ul><li>Each indicator comes for every survey that measured it, by background characteristic (residence, wealth, education and others), by the former provinces, and from 2014 for the 47 counties, with 2019 census county codes so they join the census tables: <code>knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county")</code>.</li>
+<li>Where the DHS Program gives values for several reference periods, all are kept and <code>preferred</code> marks its choice. An id the API reuses for two indicators, serving two values for one survey and group, is refused rather than guessed at (audit F-42).</li>
+<li>
+<code><a href="../reference/knbs_cite.html">knbs_cite()</a></code> gives the citation the API’s terms ask for, and no longer repeats a URL that a source’s own citation already names.</li>
+<li>
+<code><a href="../reference/knbs_search.html">knbs_search()</a></code> finds them. Search now reads -ing and -ed as endings, so “stunting” matches “Children stunted”, and “KDHS” finds the survey’s indicators. Scoring is vectorised, stemming each distinct word once, so ranking the 6,000-odd rows it now searches takes about a second rather than eight.</li>
+<li>
+<code><a href="../reference/knbs_county_code.html">knbs_county_code()</a></code> falls back on the 47 counties’ statutory codes, the census frame’s own and held identical by the tests, when the census service cannot be reached.</li>
+<li>The API’s robots file bars its own <code>/rest/dhs/</code> path to every client, while its documentation invites applications to use it. The package reads the rule as one for crawlers: it requests only what is asked for, one indicator at a time, under its own name, throttled and cached. The README’s access conditions now say how robots rules are read, and the audit records the reasoning.</li>
+<li>The test suite now fails any test that would reach the network.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="open-survey-microdata-finaccess-development-version">Open survey microdata: FinAccess<a class="anchor" aria-label="anchor" href="#open-survey-microdata-finaccess-development-version"></a></h3>
 <p>The FinAccess household survey, Kenya’s survey of financial inclusion by the Central Bank of Kenya, KNBS and FSD Kenya, publishes its anonymised, weighted microdata for anyone to download. The package now reaches it.</p>
 <ul><li>

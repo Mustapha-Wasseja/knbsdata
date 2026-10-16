@@ -65,17 +65,18 @@ for what each source supports.
 ``` r
 # Offline: reports what the registry knows, contacts nothing.
 knbs_status()
-#> # A tibble: 8 × 7
+#> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-08 12:07:38
-#> 2 finaccess    download… not_c…          NA               NA 2026-10-08 12:07:38
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-10-08 12:07:38
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-10-08 12:07:38
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-08 12:07:38
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-10-08 12:07:38
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-10-08 12:07:39
-#> 8 fake_source  search_s… unver…          NA               NA 2026-10-08 12:07:39
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-16 07:43:08
+#> 2 finaccess    download… not_c…          NA               NA 2026-10-16 07:43:08
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-10-16 07:43:08
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-10-16 07:43:08
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-16 07:43:08
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-10-16 07:43:08
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-10-16 07:43:08
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-10-16 07:43:08
+#> 9 fake_source  search_s… unver…          NA               NA 2026-10-16 07:43:08
 #> # ℹ 1 more variable: message <chr>
 
 if (FALSE) { # \dontrun{

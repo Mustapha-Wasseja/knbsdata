@@ -14,7 +14,7 @@ matters.
 ``` r
 
 knbs_sources()
-#> # A tibble: 8 × 8
+#> # A tibble: 9 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
@@ -24,24 +24,26 @@ knbs_sources()
 #> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
 #> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
 #> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
+#> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
 ``` r
 
 knbs_status()
-#> # A tibble: 8 × 7
+#> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-10-08 12:07:49
-#> 2 finaccess    download… not_c…          NA               NA 2026-10-08 12:07:49
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-10-08 12:07:49
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-08 12:07:49
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-10-08 12:07:49
-#> 8 fake_source  search_s… unver…          NA               NA 2026-10-08 12:07:49
+#> 1 kenada       search_s… not_c…          NA               NA 2026-10-16 07:43:16
+#> 2 finaccess    download… not_c…          NA               NA 2026-10-16 07:43:16
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-10-16 07:43:16
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-10-16 07:43:16
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-10-16 07:43:16
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-10-16 07:43:16
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-10-16 07:43:16
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-10-16 07:43:16
+#> 9 fake_source  search_s… unver…          NA               NA 2026-10-16 07:43:16
 #> # ℹ 1 more variable: message <chr>
 ```
 
@@ -208,6 +210,36 @@ caveats are correspondingly heavier:
   access gate and you get `knbs_error_access_restricted` — the package
   never solves or retries a challenge. Trying again later usually
   suffices.
+
+**Health and demography**, via the DHS Program’s Indicator Data API
+(`api.dhsprogram.com`): the indicators of the Kenya Demographic and
+Health Surveys (1989–2022), which KNBS implements, and of the 2015 and
+2020 Malaria Indicator Surveys — 4,115 of them, listed by
+[`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
+with `source_id` `"dhs_program"` and fetched by id, for example
+`knbs_get_indicator("CN_NUTS_C_HA2")` (children stunted). Each comes for
+every survey that measured it, by background characteristic, by the
+former provinces, and from 2014 by county. KNBS’s own KDHS portal is a
+dashboard with no data API, and answered with an error when checked.
+Properties to keep in mind:
+
+- **County rows carry census codes**; province and malaria-zone rows
+  carry none, since no census code exists for them.
+- **Several values can describe one group.** Where the DHS Program
+  reports more than one reference period, every value is kept and
+  `preferred` marks the one it prefers.
+- **A few ids are reused.** The API lists 27 indicator ids twice; where
+  one serves two different values for the same survey and group, the
+  package refuses it with `knbs_error_validation_failed` rather than
+  choose.
+- **The terms ask for a citation**, which
+  [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
+  gives in the form the API specifies. No licence is stated.
+- **Its robots file bars `/rest/dhs/`**, the API itself, to every
+  client, while its documentation invites applications to use it. The
+  package reads the rule as addressed to crawlers: it asks only for what
+  you request, one indicator at a time, under its own name, throttled
+  and cached, and never walks the API.
 
 **Statistical Abstract tables**, via the KNBS website’s chapter
 workbooks:

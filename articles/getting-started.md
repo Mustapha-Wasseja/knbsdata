@@ -22,7 +22,7 @@ this vignette never depends on a live service.
 ``` r
 
 knbs_sources()
-#> # A tibble: 8 × 8
+#> # A tibble: 9 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
@@ -32,21 +32,24 @@ knbs_sources()
 #> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
 #> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
 #> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 8 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
+#> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
-Six sources are verified and usable: `kenada`, the Kenya National Data
-Archive (surveys); `knbs_publications`, the KNBS website’s media
-library; `knbs_indicators`, the KNBS census data service (2019 census
-tables, CC BY 4.0); `knbs_cpi`, the CPI Explorer (monthly consumer
-prices from 2009); `knbs_opendata`, the Data Portal (323 SDMX dataflows:
-GDP, trade, county finance and more); and `opendataforafrica`, the
-Knoema-operated republisher that fills gaps no first-party portal serves
-as data — Gross County Product above all. A source the audit has not
-verified stays at stability `discovery` and is never contacted — there
-is nothing there to call. The `source-status` vignette says exactly what
-is and is not covered, and why.
+Eight sources are verified and usable: `kenada`, the Kenya National Data
+Archive (surveys); `finaccess`, the FinAccess portal (open survey
+microdata); `knbs_publications`, the KNBS website’s media library;
+`knbs_indicators`, the KNBS census data service (2019 census tables, CC
+BY 4.0); `knbs_cpi`, the CPI Explorer (monthly consumer prices from
+2009); `knbs_opendata`, the Data Portal (323 SDMX dataflows: GDP, trade,
+county finance and more); `opendataforafrica`, the Knoema-operated
+republisher that fills gaps no first-party portal serves as data — Gross
+County Product above all; and `dhs_program`, the DHS Program’s API for
+the Kenya Demographic and Health Survey indicators, by county from 2014.
+A source the audit has not verified stays at stability `discovery` and
+is never contacted — there is nothing there to call. The `source-status`
+vignette says exactly what is and is not covered, and why.
 
 ## Five ideas worth knowing
 

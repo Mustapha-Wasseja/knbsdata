@@ -121,7 +121,10 @@ misspelling stays unmatched rather than being guessed at; the warning
 names each unmatched value and, where one official name is close, says
 which. <code><a href="knbs_match_counties.html">knbs_match_counties()</a></code> shows how every value was matched.</p>
 <p>The official names are read from the census frame through
-<code><a href="knbs_geographies.html">knbs_geographies()</a></code>, once, and cached.</p>
+<code><a href="knbs_geographies.html">knbs_geographies()</a></code>, once, and cached. If the census service cannot be
+reached, the 47 counties' statutory names and numbers built into the
+package are used instead; they are the census frame's own, and the
+package's tests hold them identical.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

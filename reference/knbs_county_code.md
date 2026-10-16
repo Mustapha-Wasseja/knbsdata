@@ -67,7 +67,10 @@ shows how every value was matched.
 
 The official names are read from the census frame through
 [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md),
-once, and cached.
+once, and cached. If the census service cannot be reached, the 47
+counties' statutory names and numbers built into the package are used
+instead; they are the census frame's own, and the package's tests hold
+them identical.
 
 ## See also
 

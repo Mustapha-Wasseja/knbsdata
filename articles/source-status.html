@@ -80,7 +80,7 @@ matters.</p>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_sources.html">knbs_sources</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 8</span></span></span>
 <span><span class="co">#&gt;   source_id         source_name  source_type operations stability authentication</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> kenada            Kenya Natio… survey_cat… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
@@ -90,21 +90,23 @@ matters.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> knbs_cpi          KNBS CPI Ex… indicator_… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> knbs_opendata     KNBS Data P… indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> opendataforafrica Kenya Open … indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> fake_source       Offline tes… fake        <span style="color: #949494;">&lt;chr [6]&gt;</span>  discovery none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> dhs_program       The DHS Pro… indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> fake_source       Offline tes… fake        <span style="color: #949494;">&lt;chr [6]&gt;</span>  discovery none          </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: last_verified &lt;date&gt;, base_url &lt;chr&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_status.html">knbs_status</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 7</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 7</span></span></span>
 <span><span class="co">#&gt;   source_id    operation status http_status response_time_ms checked_at         </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> kenada       search_s… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> finaccess    download… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> knbs_public… search_p… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> knbs_indica… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> knbs_cpi     list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> knbs_openda… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> opendatafor… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> fake_source  search_s… unver…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-08 <span style="color: #949494;">12:07:49</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> kenada       search_s… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> finaccess    download… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> knbs_public… search_p… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> knbs_indica… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> knbs_cpi     list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> knbs_openda… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> opendatafor… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> dhs_program  list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> fake_source  search_s… unver…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-16 <span style="color: #949494;">07:43:16</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: message &lt;chr&gt;</span></span></span></code></pre></div>
 <p><code>knbs_status(live = TRUE)</code> contacts the verified sources.
 It never contacts a source at stability <code>discovery</code>, because
@@ -299,6 +301,41 @@ which the portal serves; if a challenge page comes back anyway, that is
 an access gate and you get <code>knbs_error_access_restricted</code> —
 the package never solves or retries a challenge. Trying again later
 usually suffices.</li>
+</ul>
+<p><strong>Health and demography</strong>, via the DHS Program’s
+Indicator Data API (<code>api.dhsprogram.com</code>): the indicators of
+the Kenya Demographic and Health Surveys (1989–2022), which KNBS
+implements, and of the 2015 and 2020 Malaria Indicator Surveys — 4,115
+of them, listed by <code><a href="../reference/knbs_indicators.html">knbs_indicators()</a></code> with
+<code>source_id</code> <code>"dhs_program"</code> and fetched by id, for
+example <code>knbs_get_indicator("CN_NUTS_C_HA2")</code> (children
+stunted). Each comes for every survey that measured it, by background
+characteristic, by the former provinces, and from 2014 by county. KNBS’s
+own KDHS portal is a dashboard with no data API, and answered with an
+error when checked. Properties to keep in mind:</p>
+<ul>
+<li>
+<strong>County rows carry census codes</strong>; province and
+malaria-zone rows carry none, since no census code exists for them.</li>
+<li>
+<strong>Several values can describe one group.</strong> Where the
+DHS Program reports more than one reference period, every value is kept
+and <code>preferred</code> marks the one it prefers.</li>
+<li>
+<strong>A few ids are reused.</strong> The API lists 27 indicator
+ids twice; where one serves two different values for the same survey and
+group, the package refuses it with
+<code>knbs_error_validation_failed</code> rather than choose.</li>
+<li>
+<strong>The terms ask for a citation</strong>, which
+<code><a href="../reference/knbs_cite.html">knbs_cite()</a></code> gives in the form the API specifies. No licence
+is stated.</li>
+<li>
+<strong>Its robots file bars <code>/rest/dhs/</code></strong>, the
+API itself, to every client, while its documentation invites
+applications to use it. The package reads the rule as addressed to
+crawlers: it asks only for what you request, one indicator at a time,
+under its own name, throttled and cached, and never walks the API.</li>
 </ul>
 <p><strong>Statistical Abstract tables</strong>, via the KNBS website’s
 chapter workbooks: <code><a href="../reference/knbs_abstract_tables.html">knbs_abstract_tables()</a></code> and
