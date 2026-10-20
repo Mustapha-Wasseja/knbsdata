@@ -21,6 +21,9 @@ test_that("the catalogue lists every curated table", {
 })
 
 test_that("every curated table extracts cleanly from the real workbook", {
+  # All 48 tables against the full workbooks: about a minute, so not on CRAN,
+  # whose check time is shared. CI and local runs keep it.
+  skip_on_cran()
   local_cache()
   local_abstract_workbook()
   catalogue <- knbs_abstract_tables()

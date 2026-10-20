@@ -346,6 +346,8 @@ test_that("a boundary record repeated across pages is kept once", {
 })
 
 test_that("the scan cap warns rather than trailing off silently", {
+  # Pages through the 5,000-document cap: slow, so not on CRAN; CI keeps it.
+  skip_on_cran()
   local_cache()
   local_wp_api(list("^media$" = function(path, query) {
     # Endless listing, no matches: 100 declared pages, none carrying xlsx.
