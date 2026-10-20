@@ -1,6 +1,8 @@
 test_that("defaults are returned when nothing is set", {
+  # setup.R points the whole suite at a temporary cache; unset it here too.
   withr::local_options(list(
     knbsdata.cache = NULL,
+    knbsdata.cache_dir = NULL,
     knbsdata.timeout = NULL,
     knbsdata.retries = NULL,
     knbsdata.quiet = NULL
