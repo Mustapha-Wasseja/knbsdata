@@ -62,10 +62,10 @@ time, the function stops with \code{knbs_error_schema_changed} or
 would be worse than an honest error.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 gdp <- knbs_abstract_table("2.2")
 expenditure <- knbs_abstract_table("expenditure on the gross domestic")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_abstract_tables]{knbs_abstract_tables()}}

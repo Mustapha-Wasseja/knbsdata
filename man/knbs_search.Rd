@@ -68,13 +68,15 @@ catalogue answers.
 Geographic codes are not searched here; see \code{\link[=knbs_geographies]{knbs_geographies()}}.
 }
 \examples{
-\dontrun{
+# The microdata and table catalogues ship with the package: no request
+knbs_search("financial inclusion", type = "microdata")
+knbs_search("capital formation", type = "table")
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_search("consumer price index")
 knbs_search("gdp", type = c("indicator", "table"))
-knbs_search("financial inclusion", type = "microdata")
 hits <- knbs_search("county population")
 hits$get[[1]] # the call that fetches the top result
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_indicators]{knbs_indicators()}}, \code{\link[=knbs_search_surveys]{knbs_search_surveys()}},

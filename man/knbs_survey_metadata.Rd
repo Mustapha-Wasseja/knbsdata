@@ -37,10 +37,10 @@ and \code{\link[=knbs_cite]{knbs_cite()}} to cite it.
 Retrieves the archive's full descriptive record for one study.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
 knbs_cite(meta)
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_search_surveys]{knbs_search_surveys()}}, \code{\link[=knbs_variables]{knbs_variables()}}, \code{\link[=knbs_survey_files]{knbs_survey_files()}}

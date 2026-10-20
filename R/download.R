@@ -1,4 +1,4 @@
-﻿# Safe downloading ------------------------------------------------------------
+# Safe downloading ------------------------------------------------------------
 #
 # Source-independent machinery for retrieving a file and proving what was
 # retrieved (plan sections 15.6, 11.9, 11.11 and 16.6). Publications and the
@@ -289,6 +289,23 @@ knbs_download_file <- function(url,
 }
 
 pretty_number <- function(x) format(x, big.mark = ",", scientific = FALSE, trim = TRUE)
+
+#' Refuse a download that names no directory
+#'
+#' Downloads have no default destination: the package writes only where the
+#' user says, never into the working directory unasked.
+#'
+#' @noRd
+abort_no_destination <- function(call = rlang::caller_env()) {
+  knbs_abort(
+    c(
+      "{.arg destination} is required: the directory to download into.",
+      "i" = "For example {.code \"data\"}, or {.code tempdir()} for this session only."
+    ),
+    class = "knbs_error_invalid_argument",
+    call = call
+  )
+}
 
 #' Write the provenance sidecar next to a downloaded file
 #'

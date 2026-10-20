@@ -207,11 +207,20 @@ test_that("a file behind a registration form is refused before anything is fetch
   expect_match(cnd$access_url, "^https://dataverse\\.harvard\\.edu/")
 })
 
+test_that("a download must name its destination; nothing goes to the working directory", {
+  calls <- local_finaccess_drive()
+  expect_error(knbs_download_finaccess("hh2024-stata", quiet = TRUE),
+               "destination", class = "knbs_error_invalid_argument")
+  expect_error(knbs_download_publication("16624"), "destination",
+               class = "knbs_error_invalid_argument")
+  expect_length(calls$download, 0L)
+})
+
 test_that("an unknown id is refused with the intended file suggested", {
   local_finaccess_drive()
-  expect_error(knbs_download_finaccess("hh2024", quiet = TRUE), "survey round",
+  expect_error(knbs_download_finaccess("hh2024", tempdir(), quiet = TRUE), "survey round",
                class = "knbs_error_resource_not_found")
-  expect_error(knbs_download_finaccess("hh2024-stat", quiet = TRUE), "hh2024-stata",
+  expect_error(knbs_download_finaccess("hh2024-stat", tempdir(), quiet = TRUE), "hh2024-stata",
                class = "knbs_error_resource_not_found")
 })
 

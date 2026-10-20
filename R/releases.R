@@ -51,11 +51,9 @@
 #'
 #' @seealso [knbs_release_series()], [knbs_publications()], [knbs_search()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_releases(since = "2026-09-01")
 #' knbs_releases(series = c("cpi", "lei"), since = "2026-01-01")
-#' }
 #' @export
 knbs_releases <- function(since = NULL,
                           until = NULL,
@@ -95,7 +93,7 @@ knbs_releases <- function(since = NULL,
     format = listing$format,
     publication_id = listing$publication_id,
     landing_page = listing$landing_page,
-    get = sprintf('knbs_download_publication("%s")', listing$publication_id)
+    get = sprintf('knbs_download_publication("%s", destination = ".")', listing$publication_id)
   )[keep, ]
   # Newest upload first; among same-day uploads (the library's 2023
   # migration put years of releases on one date), the latest period first.

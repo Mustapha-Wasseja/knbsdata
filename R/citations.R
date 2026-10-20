@@ -23,7 +23,10 @@
 #' @seealso [knbs_metadata()]
 #'
 #' @examples
-#' # Citations are produced from objects returned by knbsdata.
+#' # Any object knbsdata returns can be cited; this catalogue ships with it.
+#' files <- knbs_finaccess_files(year = 2024, content = "data")
+#' knbs_cite(files)
+#' knbs_cite(files, style = "bibtex")
 #' @export
 knbs_cite <- function(x,
                       style = c("plain", "bibtex", "ris"),

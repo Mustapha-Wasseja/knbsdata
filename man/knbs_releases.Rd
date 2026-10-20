@@ -66,10 +66,10 @@ The publications library is listed once a day and cached, as for
 \code{\link[=knbs_search]{knbs_search()}}.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_releases(since = "2026-09-01")
 knbs_releases(series = c("cpi", "lei"), since = "2026-01-01")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_release_series]{knbs_release_series()}}, \code{\link[=knbs_publications]{knbs_publications()}}, \code{\link[=knbs_search]{knbs_search()}}

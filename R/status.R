@@ -46,12 +46,10 @@ knbs_status_values <- function() {
 #'
 #' @examples
 #' # Offline: reports what the registry knows, contacts nothing.
-#' knbs_status()
-#'
-#' \dontrun{
+#' knbs_status(live = FALSE)
+#' @examplesIf interactive()
 #' # Contacts each verified source.
 #' knbs_status(live = TRUE)
-#' }
 #' @export
 knbs_status <- function(source = NULL, live = interactive(), timeout = 10) {
   check_bool(live, "live")

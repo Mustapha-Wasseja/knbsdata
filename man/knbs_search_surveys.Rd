@@ -56,10 +56,10 @@ They are held in the study record, which \code{\link[=knbs_survey_metadata]{knbs
 Filling them here would mean one extra request per row.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_search_surveys("household budget")
 knbs_search_surveys(year = c(2015, 2020), access = "public_use")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_survey_metadata]{knbs_survey_metadata()}}, \code{\link[=knbs_variables]{knbs_variables()}}, \code{\link[=knbs_survey_files]{knbs_survey_files()}}

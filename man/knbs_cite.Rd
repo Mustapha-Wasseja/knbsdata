@@ -31,7 +31,10 @@ supplies its own required citation, that text is used and the package adds
 only the retrieval information.
 }
 \examples{
-# Citations are produced from objects returned by knbsdata.
+# Any object knbsdata returns can be cited; this catalogue ships with it.
+files <- knbs_finaccess_files(year = 2024, content = "data")
+knbs_cite(files)
+knbs_cite(files, style = "bibtex")
 }
 \seealso{
 \code{\link[=knbs_metadata]{knbs_metadata()}}

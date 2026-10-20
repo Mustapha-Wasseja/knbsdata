@@ -56,9 +56,9 @@ Question text, universe, concept and value labels each require one request
 per variable, so they are \code{NA} unless \code{details = TRUE}.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_survey_files]{knbs_survey_files()}}, \code{\link[=knbs_survey_metadata]{knbs_survey_metadata()}}

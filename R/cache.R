@@ -216,7 +216,10 @@ cache_fetch <- function(key,
 #' @seealso [knbs_cache_dir()], [knbs_cache_clear()]
 #'
 #' @examples
+#' # A throwaway cache, so the example leaves yours alone
+#' op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 #' knbs_cache_info()
+#' options(op)
 #' @export
 knbs_cache_info <- function() {
   dir <- knbs_cache_dir()
@@ -272,9 +275,10 @@ knbs_cache_info <- function() {
 #' @seealso [knbs_cache_prune()] to remove only expired entries.
 #'
 #' @examples
-#' \dontrun{
+#' # A throwaway cache, so the example leaves yours alone
+#' op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 #' knbs_cache_clear()
-#' }
+#' options(op)
 #' @export
 knbs_cache_clear <- function(quiet = knbs_option("quiet")) {
   check_bool(quiet, "quiet")
@@ -300,9 +304,10 @@ knbs_cache_clear <- function(quiet = knbs_option("quiet")) {
 #' @seealso [knbs_cache_clear()] to remove everything.
 #'
 #' @examples
-#' \dontrun{
+#' # A throwaway cache, so the example leaves yours alone
+#' op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 #' knbs_cache_prune()
-#' }
+#' options(op)
 #' @export
 knbs_cache_prune <- function(quiet = knbs_option("quiet")) {
   check_bool(quiet, "quiet")

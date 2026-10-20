@@ -72,15 +72,19 @@ Excel output needs the writexl package and Stata or SPSS output the
 haven package; you are asked to install them if they are missing.
 }
 \examples{
-\dontrun{
+# The FinAccess file catalogue ships with the package, provenance and all
+files <- knbs_finaccess_files(content = "data")
+path <- file.path(tempdir(), "finaccess-files.csv")
+knbs_write(files, path)                        # + finaccess-files.csv.metadata.json
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 gdp <- knbs_abstract_table("2.2")
-knbs_write(gdp, "gdp-by-activity.xlsx")   # data + about sheet
-knbs_write(gdp, "gdp-by-activity.dta")    # + gdp-by-activity.dta.metadata.json
+knbs_write(gdp, file.path(tempdir(), "gdp-by-activity.xlsx"))   # data + about sheet
+knbs_write(gdp, file.path(tempdir(), "gdp-by-activity.dta"))
 
 # A derived table keeps the source's provenance when you pass it on
 totals <- dplyr::summarise(gdp, value = sum(value), .by = period)
-knbs_write(totals, "totals.csv", metadata = knbs_metadata(gdp))
-}
+knbs_write(totals, file.path(tempdir(), "totals.csv"), metadata = knbs_metadata(gdp))
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_metadata]{knbs_metadata()}}, \code{\link[=knbs_cite]{knbs_cite()}}

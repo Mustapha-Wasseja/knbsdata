@@ -43,12 +43,10 @@
 #'
 #' @seealso [knbs_download_publication()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_publications("economic survey")
 #' knbs_publications("consumer price", format = "xlsx")
 #' knbs_publications("census", year = c(2019, 2023))
-#' }
 #' @export
 knbs_publications <- function(query = NULL,
                               year = NULL,
@@ -185,7 +183,8 @@ knbs_publications <- function(query = NULL,
 #' `<file>.metadata.json` provenance sidecar next to it.
 #'
 #' @param publication_id A `publication_id` from [knbs_publications()].
-#' @param destination Directory to write into.
+#' @param destination Directory to write into; created if needed. There is
+#'   no default: nothing is written anywhere you have not named.
 #' @param overwrite Whether to replace an existing file of the same name.
 #' @param verify Whether to refuse a response that is a web page rather than a
 #'   document.
@@ -200,20 +199,21 @@ knbs_publications <- function(query = NULL,
 #' @seealso [knbs_publications()] to find identifiers, [knbs_cite()] to cite
 #'   what you downloaded.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' pubs <- knbs_publications("economic survey", year = 2026)
-#' knbs_download_publication(pubs$publication_id[[1]], "data/publications")
-#' }
+#' knbs_download_publication(pubs$publication_id[[1]], tempdir())
 #' @export
 knbs_download_publication <- function(publication_id,
-                                      destination = ".",
+                                      destination,
                                       overwrite = FALSE,
                                       verify = TRUE,
                                       sidecar = TRUE,
                                       source = NULL,
                                       quiet = knbs_option("quiet")) {
   check_string(publication_id, "publication_id")
+  if (missing(destination)) {
+    abort_no_destination()
+  }
   check_string(destination, "destination")
 
   src <- resolve_source("download_publication", source)

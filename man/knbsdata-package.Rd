@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Mustapha Wasseja \email{muswaseja@gmail.com}
 
+Authors:
+\itemize{
+  \item Pascal Ochieng Owiti (Kenya National Bureau of Statistics)
+}
+
 }
 \keyword{internal}

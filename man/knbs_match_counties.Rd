@@ -33,9 +33,9 @@ value of \code{x}, saying which county it matched, how, and — for a value that
 matched nothing — the official name it most resembles, if any.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_match_counties(c("Nairobi City County", "Kakamenga", "12"))
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_county_code]{knbs_county_code()}}

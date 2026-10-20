@@ -48,11 +48,9 @@
 #'
 #' @seealso [knbs_match_counties()], [knbs_geographies()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_county_code(c("Murang'a", "MURANGA", "Nairobi", "taita/taveta", "47"))
 #' #> [1] "21" "21" "47" "06" "47"
-#' }
 #' @export
 knbs_county_code <- function(x, vintage = 2019L,
                              cache = knbs_option("cache"), refresh = FALSE) {
@@ -79,10 +77,8 @@ knbs_county_code <- function(x, vintage = 2019L,
 #'
 #' @seealso [knbs_county_code()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_match_counties(c("Nairobi City County", "Kakamenga", "12"))
-#' }
 #' @export
 knbs_match_counties <- function(x, vintage = 2019L,
                                 cache = knbs_option("cache"), refresh = FALSE) {

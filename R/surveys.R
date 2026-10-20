@@ -35,11 +35,9 @@
 #'
 #' @seealso [knbs_survey_metadata()], [knbs_variables()], [knbs_survey_files()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_search_surveys("household budget")
 #' knbs_search_surveys(year = c(2015, 2020), access = "public_use")
-#' }
 #' @export
 knbs_search_surveys <- function(query = NULL,
                                 year = NULL,
@@ -139,11 +137,9 @@ knbs_search_surveys <- function(query = NULL,
 #'
 #' @seealso [knbs_search_surveys()], [knbs_variables()], [knbs_survey_files()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
 #' knbs_cite(meta)
-#' }
 #' @export
 knbs_survey_metadata <- function(survey,
                                  include = c("overview", "scope", "sampling",
@@ -194,10 +190,8 @@ knbs_survey_metadata <- function(survey,
 #'
 #' @seealso [knbs_survey_files()], [knbs_survey_metadata()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
-#' }
 #' @export
 knbs_variables <- function(survey,
                            search = NULL,
@@ -297,10 +291,8 @@ knbs_variables <- function(survey,
 #'
 #' @seealso [knbs_variables()], [knbs_download_microdata()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
-#' }
 #' @export
 knbs_survey_files <- function(survey,
                               type = NULL,
@@ -351,7 +343,7 @@ knbs_survey_files <- function(survey,
 #'
 #' @param survey A study identifier.
 #' @param files Files to download.
-#' @param destination Directory to write to.
+#' @param destination Directory to write to. Unused: nothing is downloaded.
 #' @param overwrite Whether to overwrite existing files.
 #' @param verify Whether to verify downloads.
 #' @param manifest Whether to write a download manifest.
@@ -363,14 +355,12 @@ knbs_survey_files <- function(survey,
 #'   [knbs_finaccess_files()] for open microdata.
 #'
 #' @examples
-#' \dontrun{
-#' # Raises an error explaining the official access process:
-#' knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
-#' }
+#' # Raises an error explaining the official access process; contacts nothing.
+#' try(knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01"))
 #' @export
 knbs_download_microdata <- function(survey,
                                     files = NULL,
-                                    destination = ".",
+                                    destination,
                                     overwrite = FALSE,
                                     verify = TRUE,
                                     manifest = TRUE,

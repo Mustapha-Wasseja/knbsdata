@@ -6,7 +6,7 @@
 \usage{
 knbs_download_publication(
   publication_id,
-  destination = ".",
+  destination,
   overwrite = FALSE,
   verify = TRUE,
   sidecar = TRUE,
@@ -17,7 +17,8 @@ knbs_download_publication(
 \arguments{
 \item{publication_id}{A \code{publication_id} from \code{\link[=knbs_publications]{knbs_publications()}}.}
 
-\item{destination}{Directory to write into.}
+\item{destination}{Directory to write into; created if needed. There is
+no default: nothing is written anywhere you have not named.}
 
 \item{overwrite}{Whether to replace an existing file of the same name.}
 
@@ -43,10 +44,10 @@ that a document (not an error page) arrived, checksumming it, and writing a
 \verb{<file>.metadata.json} provenance sidecar next to it.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 pubs <- knbs_publications("economic survey", year = 2026)
-knbs_download_publication(pubs$publication_id[[1]], "data/publications")
-}
+knbs_download_publication(pubs$publication_id[[1]], tempdir())
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_publications]{knbs_publications()}} to find identifiers, \code{\link[=knbs_cite]{knbs_cite()}} to cite

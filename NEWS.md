@@ -1,4 +1,27 @@
-# knbsdata (development version)
+# knbsdata 0.5.0
+
+First release prepared for CRAN.
+
+## Breaking change: downloads name their destination
+
+`knbs_download_finaccess()` and `knbs_download_publication()` no longer
+default `destination` to the working directory: the package writes only
+where you say. A call without one stops with a classed error that says
+so. The `get` calls `knbs_search()` and `knbs_releases()` hand back now
+name `destination = "."` explicitly.
+
+## Packaging
+
+* Pascal Ochieng Owiti (Kenya National Bureau of Statistics) joins as an
+  author. `citation("knbsdata")` names both authors and reads the version
+  from the package rather than a hard-coded one.
+* Examples that contact a source run only in an interactive session, and
+  those that need nothing but the package now run everywhere: citing and
+  reading the FinAccess catalogue, writing it with `knbs_write()`, reading
+  a Stata file with `knbs_read_microdata()`, and the cache functions, which
+  work on a throwaway cache rather than yours.
+* The tests give every test a temporary cache, so no test can write to the
+  user's own.
 
 ## Health and demography from the KDHS
 
@@ -53,7 +76,7 @@ weighted microdata for anyone to download. The package now reaches it.
   moves; its size and SHA-256 are checked after, against checksums taken
   from full downloads of every file. A file already downloaded and
   identical is reused without a request, so
-  `knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))` is safe to
+  `knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))` is safe to
   re-run. The 2013 survey's Stata copy, behind a registration form on
   Harvard Dataverse, is listed and never fetched.
 * `knbs_read_microdata()` reads Stata, SPSS and Excel files and the data

@@ -20,6 +20,9 @@ retrieved, which release it represents and how it should be cited.
 }
 \examples{
 # Metadata accompany every object the package returns.
+meta <- knbs_metadata(knbs_finaccess_files())
+meta$producer
+meta$licence
 }
 \seealso{
 \code{\link[=knbs_cite]{knbs_cite()}}

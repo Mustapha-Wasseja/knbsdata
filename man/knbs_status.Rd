@@ -40,12 +40,11 @@ is nothing to contact. It is never checked live.}
 }
 \examples{
 # Offline: reports what the registry knows, contacts nothing.
-knbs_status()
-
-\dontrun{
+knbs_status(live = FALSE)
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Contacts each verified source.
 knbs_status(live = TRUE)
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_sources]{knbs_sources()}} for what each source supports.

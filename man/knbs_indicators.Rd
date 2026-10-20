@@ -50,11 +50,11 @@ If one source cannot be reached, its rows are missing and a warning says
 so; the error comes only when no source answers.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_indicators()
 knbs_indicators(topic = "prices")
 knbs_indicators(search = "marital")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_get_indicator]{knbs_get_indicator()}}

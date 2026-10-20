@@ -82,7 +82,7 @@ test_that("the default is the last 30 days, newest first, notices left out", {
                          "publication_id", "landing_page", "get"))
   expect_identical(recent$release_date, as.Date(c("2026-09-30", "2026-09-22")))
   expect_identical(recent$period, c("2026-09", "2026-07"))
-  expect_match(recent$get, '^knbs_download_publication\\("[0-9]+"\\)$')
+  expect_match(recent$get, '^knbs_download_publication\\("[0-9]+", destination = "\\."\\)$')
 })
 
 test_that("a series returns its history; notices come on request", {

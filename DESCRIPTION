@@ -1,8 +1,11 @@
 Package: knbsdata
 Title: Discover, Retrieve and Cite Official Kenyan Statistics
-Version: 0.4.0.9000
-Authors@R:
-    person("Mustapha", "Wasseja", , "muswaseja@gmail.com", role = c("aut", "cre"))
+Version: 0.5.0
+Authors@R: c(
+    person("Mustapha", "Wasseja", , "muswaseja@gmail.com", role = c("aut", "cre")),
+    person(c("Pascal", "Ochieng"), "Owiti", role = "aut",
+           comment = c(affiliation = "Kenya National Bureau of Statistics"))
+  )
 Description: An R client and standardisation layer for official data and
     statistical products published by the Kenya National Bureau of
     Statistics (KNBS). Provides a consistent interface for discovering

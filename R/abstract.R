@@ -126,11 +126,9 @@ knbs_abstract_tables <- function() {
 #'
 #' @seealso [knbs_abstract_tables()]
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' gdp <- knbs_abstract_table("2.2")
 #' expenditure <- knbs_abstract_table("expenditure on the gross domestic")
-#' }
 #' @export
 knbs_abstract_table <- function(table,
                                 cache = knbs_option("cache"),

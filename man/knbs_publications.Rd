@@ -62,11 +62,11 @@ retrieval. With a narrow \code{query} this is exact; with a broad one it filters
 only within the records retrieved.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_publications("economic survey")
 knbs_publications("consumer price", format = "xlsx")
 knbs_publications("census", year = c(2019, 2023))
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_download_publication]{knbs_download_publication()}}

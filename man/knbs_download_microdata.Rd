@@ -7,7 +7,7 @@
 knbs_download_microdata(
   survey,
   files = NULL,
-  destination = ".",
+  destination,
   overwrite = FALSE,
   verify = TRUE,
   manifest = TRUE,
@@ -19,7 +19,7 @@ knbs_download_microdata(
 
 \item{files}{Files to download.}
 
-\item{destination}{Directory to write to.}
+\item{destination}{Directory to write to. Unused: nothing is downloaded.}
 
 \item{overwrite}{Whether to overwrite existing files.}
 
@@ -50,10 +50,8 @@ Files obtained through the archive's own process can be read with
 \code{\link[=knbs_read_microdata]{knbs_read_microdata()}}.
 }
 \examples{
-\dontrun{
-# Raises an error explaining the official access process:
-knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
-}
+# Raises an error explaining the official access process; contacts nothing.
+try(knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01"))
 }
 \seealso{
 \code{\link[=knbs_survey_files]{knbs_survey_files()}} to see what a study holds and on what terms;

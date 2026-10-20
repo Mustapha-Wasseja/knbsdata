@@ -42,7 +42,7 @@ test_that("each result carries the call that retrieves it, and the call works", 
   expect_s3_class(eval(parse(text = study$get[[1]])), "knbs_survey")
 
   documents <- knbs_search("economic survey", type = "publication")
-  expect_match(documents$get, '^knbs_download_publication\\("[0-9]+"\\)$')
+  expect_match(documents$get, '^knbs_download_publication\\("[0-9]+", destination = "\\."\\)$')
 })
 
 test_that("open microdata is found by round, with the call that downloads and reads it", {
@@ -54,9 +54,9 @@ test_that("open microdata is found by round, with the call that downloads and re
   expect_true(all(hits$access == "open"))
   # Each round is offered in its best-labelled format.
   expect_identical(hits$get[hits$resource_id == "hh2024"],
-                   'knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))')
+                   'knbs_read_microdata(knbs_download_finaccess("hh2024-stata", destination = "."))')
   expect_identical(hits$get[hits$resource_id == "hh2016"],
-                   'knbs_read_microdata(knbs_download_finaccess("hh2016-spss"))')
+                   'knbs_read_microdata(knbs_download_finaccess("hh2016-spss", destination = "."))')
 
   enterprises <- knbs_search("micro and small enterprises", type = "microdata")
   expect_setequal(enterprises$resource_id, c("mse2023", "mse2022"))

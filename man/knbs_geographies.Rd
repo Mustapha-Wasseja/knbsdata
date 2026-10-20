@@ -52,10 +52,10 @@ other vintage, and no crosswalk to other coding systems, is offered,
 because none has been verified.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 counties <- knbs_geographies(level = "county")
 knbs_geographies(parent = "01")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_get_indicator]{knbs_get_indicator()}}, whose observations carry the same codes.

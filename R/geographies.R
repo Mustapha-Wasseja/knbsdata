@@ -170,11 +170,9 @@ source_geographies.knbs_source_indicators <- function(source, ...) {
 #'
 #' @seealso [knbs_get_indicator()], whose observations carry the same codes.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' counties <- knbs_geographies(level = "county")
 #' knbs_geographies(parent = "01")
-#' }
 #' @export
 knbs_geographies <- function(level = NULL,
                              vintage = NULL,

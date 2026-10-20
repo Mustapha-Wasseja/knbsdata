@@ -16,9 +16,10 @@ The number of entries removed, invisibly.
 Remove expired cache entries
 }
 \examples{
-\dontrun{
+# A throwaway cache, so the example leaves yours alone
+op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 knbs_cache_prune()
-}
+options(op)
 }
 \seealso{
 \code{\link[=knbs_cache_clear]{knbs_cache_clear()}} to remove everything.

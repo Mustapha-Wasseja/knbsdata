@@ -46,9 +46,9 @@ and retrieving them would mean parsing a web page. They are linked from the
 study's page on the archive, which \code{catalogue_url} points to.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_variables]{knbs_variables()}}, \code{\link[=knbs_download_microdata]{knbs_download_microdata()}}

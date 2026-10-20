@@ -142,11 +142,9 @@ source_retail_prices.knbs_source_cpiexplorer <- function(source, query, ...) {
 #' @seealso [knbs_get_indicator()] for the price *indices* the same portal
 #'   serves.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf interactive()
 #' knbs_retail_prices(commodity = "petrol", start = 2024)
 #' knbs_retail_prices(start = "2026-06", end = "2026-06")
-#' }
 #' @export
 knbs_retail_prices <- function(commodity = NULL,
                                start = NULL,

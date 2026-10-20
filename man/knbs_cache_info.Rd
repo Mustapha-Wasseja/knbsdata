@@ -15,7 +15,10 @@ A \link[tibble:tibble]{tibble} with one row per cached entry: \code{cache_key},
 What is in the cache
 }
 \examples{
+# A throwaway cache, so the example leaves yours alone
+op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 knbs_cache_info()
+options(op)
 }
 \seealso{
 \code{\link[=knbs_cache_dir]{knbs_cache_dir()}}, \code{\link[=knbs_cache_clear]{knbs_cache_clear()}}

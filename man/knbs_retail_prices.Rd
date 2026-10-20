@@ -45,10 +45,10 @@ so. A range query retrieves the full history once (a few seconds, then
 cached); an exact single month is fetched directly.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_retail_prices(commodity = "petrol", start = 2024)
 knbs_retail_prices(start = "2026-06", end = "2026-06")
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_get_indicator]{knbs_get_indicator()}} for the price \emph{indices} the same portal

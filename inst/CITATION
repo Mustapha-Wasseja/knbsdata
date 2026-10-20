@@ -7,14 +7,15 @@ citHeader(
 bibentry(
   bibtype  = "Manual",
   title    = "{knbsdata}: Discover, Retrieve and Cite Official Kenyan Statistics",
-  author   = person("Mustapha", "Wasseja"),
+  author   = c(person("Mustapha", "Wasseja"),
+               person(c("Pascal", "Ochieng"), "Owiti")),
   year     = "2026",
-  note     = "R package version 0.4.0",
+  note     = sprintf("R package version %s", meta$Version),
   url      = "https://github.com/Mustapha-Wasseja/knbsdata",
-  textVersion = paste(
-    "Wasseja, M. (2026).",
-    "knbsdata: Discover, Retrieve and Cite Official Kenyan Statistics.",
-    "R package version 0.4.0.",
+  textVersion = paste0(
+    "Wasseja, M. and Owiti, P. O. (2026). ",
+    "knbsdata: Discover, Retrieve and Cite Official Kenyan Statistics. ",
+    "R package version ", meta$Version, ". ",
     "https://github.com/Mustapha-Wasseja/knbsdata"
   )
 )

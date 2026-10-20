@@ -6,7 +6,7 @@
 \usage{
 knbs_download_finaccess(
   file,
-  destination = ".",
+  destination,
   overwrite = FALSE,
   verify = TRUE,
   quiet = knbs_option("quiet")
@@ -16,7 +16,8 @@ knbs_download_finaccess(
 \item{file}{File ids from \code{\link[=knbs_finaccess_files]{knbs_finaccess_files()}}, such as
 \code{"hh2024-stata"}, or that function's result.}
 
-\item{destination}{Directory to write into; created if needed.}
+\item{destination}{Directory to write into; created if needed. There is
+no default: nothing is written anywhere you have not named.}
 
 \item{overwrite}{Whether to replace a file already in \code{destination}.}
 
@@ -57,7 +58,7 @@ The first download in a session says so.
 \strong{Already downloaded.} A file already in \code{destination} is not downloaded
 again if it is byte-identical to the catalogued one; its record is
 returned instead. That makes
-\code{knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))} safe to
+\code{knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))} safe to
 re-run. A file there that differs is left alone, and the call stops unless
 \code{overwrite = TRUE}.
 
@@ -75,14 +76,16 @@ Dataverse holds behind a registration form, raises
 does not automate sign-in, licence acceptance or approval workflows.
 }
 \examples{
-\dontrun{
-# The 2024 household survey, Stata format (160 MB)
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+dir <- file.path(tempdir(), "finaccess")
 
-# Every round's documentation
+# The 2024 household survey, Stata format (160 MB)
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", dir))
+
+# The questionnaires and manuals
 knbs_finaccess_files(content = c("questionnaire", "manual")) |>
-  knbs_download_finaccess("docs")
-}
+  knbs_download_finaccess(dir)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_finaccess_files]{knbs_finaccess_files()}}, \code{\link[=knbs_read_microdata]{knbs_read_microdata()}}

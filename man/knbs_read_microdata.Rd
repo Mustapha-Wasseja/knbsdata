@@ -49,14 +49,24 @@ such as \code{interview__key}, is repaired, and the repair is noted in the
 metadata.
 }
 \examples{
-\dontrun{
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+\dontshow{if (requireNamespace("haven", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+# Any Stata or SPSS file; labels survive the round trip
+path <- tempfile(fileext = ".dta")
+haven::write_dta(
+  tibble::tibble(id = 1:3,
+                 sex = haven::labelled(c(1, 2, 1), c(Male = 1, Female = 2))),
+  path
+)
+knbs_read_microdata(path)
+knbs_read_microdata(path, col_select = "sex")
+\dontshow{\}) # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+# A FinAccess survey, downloaded, verified and read with its provenance
+fa <- knbs_read_microdata(
+  knbs_download_finaccess("mse2023-stata", file.path(tempdir(), "finaccess"))
+)
 knbs_cite(fa)
-
-# Only some variables of a large file
-knbs_read_microdata("data/2024_Finaccess_Publicdata.dta",
-                    col_select = c(1:5))
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_download_finaccess]{knbs_download_finaccess()}}, \code{\link[=knbs_cite]{knbs_cite()}}

@@ -60,10 +60,10 @@ package are used instead; they are the census frame's own, and the
 package's tests hold them identical.
 }
 \examples{
-\dontrun{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 knbs_county_code(c("Murang'a", "MURANGA", "Nairobi", "taita/taveta", "47"))
 #> [1] "21" "21" "47" "06" "47"
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=knbs_match_counties]{knbs_match_counties()}}, \code{\link[=knbs_geographies]{knbs_geographies()}}

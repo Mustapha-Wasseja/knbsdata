@@ -147,6 +147,9 @@ print.knbs_survey <- function(x, ...) {
 #'
 #' @examples
 #' # Metadata accompany every object the package returns.
+#' meta <- knbs_metadata(knbs_finaccess_files())
+#' meta$producer
+#' meta$licence
 #' @export
 knbs_metadata <- function(x, ...) {
   UseMethod("knbs_metadata")

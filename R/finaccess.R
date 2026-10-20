@@ -124,7 +124,7 @@ knbs_finaccess_files <- function(year = NULL,
 #' **Already downloaded.** A file already in `destination` is not downloaded
 #' again if it is byte-identical to the catalogued one; its record is
 #' returned instead. That makes
-#' `knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))` safe to
+#' `knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))` safe to
 #' re-run. A file there that differs is left alone, and the call stops unless
 #' `overwrite = TRUE`.
 #'
@@ -143,7 +143,8 @@ knbs_finaccess_files <- function(year = NULL,
 #'
 #' @param file File ids from [knbs_finaccess_files()], such as
 #'   `"hh2024-stata"`, or that function's result.
-#' @param destination Directory to write into; created if needed.
+#' @param destination Directory to write into; created if needed. There is
+#'   no default: nothing is written anywhere you have not named.
 #' @param overwrite Whether to replace a file already in `destination`.
 #' @param verify Whether to hold each file to the catalogue. `FALSE`
 #'   downloads whatever the link serves now, under the name it is served
@@ -158,18 +159,18 @@ knbs_finaccess_files <- function(year = NULL,
 #'
 #' @seealso [knbs_finaccess_files()], [knbs_read_microdata()]
 #'
-#' @examples
-#' \dontrun{
-#' # The 2024 household survey, Stata format (160 MB)
-#' fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+#' @examplesIf interactive()
+#' dir <- file.path(tempdir(), "finaccess")
 #'
-#' # Every round's documentation
+#' # The 2024 household survey, Stata format (160 MB)
+#' fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", dir))
+#'
+#' # The questionnaires and manuals
 #' knbs_finaccess_files(content = c("questionnaire", "manual")) |>
-#'   knbs_download_finaccess("docs")
-#' }
+#'   knbs_download_finaccess(dir)
 #' @export
 knbs_download_finaccess <- function(file,
-                                    destination = ".",
+                                    destination,
                                     overwrite = FALSE,
                                     verify = TRUE,
                                     quiet = knbs_option("quiet")) {
@@ -186,6 +187,9 @@ knbs_download_finaccess <- function(file,
     file <- as.character(file$file_id)
   }
   check_character(file, "file")
+  if (missing(destination)) {
+    abort_no_destination()
+  }
   check_string(destination, "destination")
   check_bool(overwrite, "overwrite")
   check_bool(verify, "verify")
