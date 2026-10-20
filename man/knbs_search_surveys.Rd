@@ -28,7 +28,8 @@ warning that says how many, and names them in its \code{excluded} field.}
 
 \item{access}{Keep only these access types; see the \code{access_type} column.}
 
-\item{limit}{Maximum number of studies to return.}
+\item{limit}{Maximum number of studies to return, counted after the
+\code{year}, \code{producer} and \code{access} filters.}
 
 \item{source}{Source id. Defaults to the first verified source that supports
 survey search.}

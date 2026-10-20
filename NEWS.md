@@ -58,6 +58,23 @@ and the 2015 and 2020 Malaria Indicator Surveys, through the same
   the reasoning.
 * The test suite now fails any test that would reach the network.
 
+## Fixes found by a live run on 2026-10-15
+
+* `knbs_retail_prices()` refused the whole history with "duplicate keys"
+  for every user, although the source holds none (2,024 records, no
+  repeats). Its duplicate check paired each record's commodity with another
+  record's month once the rows were sorted. That went unnoticed while the
+  CPI Explorer sent its records already sorted, and broke when it stopped.
+  The check now reads both in the source's own order.
+* `knbs_search_surveys()` applied `producer` and `access` to the first page
+  only, a page `limit` sized, so it could silently return fewer studies than
+  exist: `producer = "Ministry of Health", limit = 20` returned 2 of the
+  archive's 48. Whenever `producer`, `access` or `year` is given, every match
+  is now fetched first and `limit` applied after filtering. The wider page is
+  cached under its own key, so an unfiltered search never picks it up.
+* `R/download.R` no longer begins with a UTF-8 byte-order mark, which older
+  installs (pkgload 1.3) could not parse.
+
 ## Open survey microdata: FinAccess
 
 The FinAccess household survey, Kenya's survey of financial inclusion by the

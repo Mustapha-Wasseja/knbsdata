@@ -22,7 +22,8 @@
 #'   warning that says how many, and names them in its `excluded` field.
 #' @param producer Keep only studies whose producing entity contains this text.
 #' @param access Keep only these access types; see the `access_type` column.
-#' @param limit Maximum number of studies to return.
+#' @param limit Maximum number of studies to return, counted after the
+#'   `year`, `producer` and `access` filters.
 #' @param source Source id. Defaults to the first verified source that supports
 #'   survey search.
 #' @param cache Whether to use the local cache.
@@ -66,23 +67,15 @@ knbs_search_surveys <- function(query = NULL,
     source = src$source_id
   )
 
-  results <- cache_fetch(
-    cache_key(src$source_id, "search_surveys", knbs_query),
-    fetch = function() {
-      out <- source_search(src, knbs_query)
-      if (!is.null(years$from)) {
-        out <- search_every_match(src, knbs_query, out)
-      }
-      out
-    },
-    cache = cache,
-    refresh = refresh,
-    ttl = knbs_cache_ttl("catalogue"),
-    info = list(source_id = src$source_id, operation = "search_surveys")
-  )
+  results <- cached_search(src, knbs_query, cache, refresh)
 
   # Filters the source cannot apply are applied here, on the standardised
   # columns, so that their meaning is the package's rather than the source's.
+  # They need every match, not the page `limit` sized: filtering one page would
+  # silently return fewer studies than exist.
+  if (!is.null(producer) || !is.null(access) || !is.null(years$from)) {
+    results <- search_every_match(src, knbs_query, results, cache, refresh)
+  }
   keep <- rep(TRUE, nrow(results))
   if (!is.null(producer)) {
     keep <- keep & grepl(producer, results$producer, ignore.case = TRUE)
@@ -436,23 +429,42 @@ survey_years_overlap <- function(reference_years, from, to) {
   out
 }
 
+#' A catalogue search, through the cache
+#' @noRd
+cached_search <- function(src, query, cache, refresh) {
+  cache_fetch(
+    cache_key(src$source_id, "search_surveys", query),
+    fetch = function() source_search(src, query),
+    cache = cache,
+    refresh = refresh,
+    ttl = knbs_cache_ttl("catalogue"),
+    info = list(source_id = src$source_id, operation = "search_surveys")
+  )
+}
+
 #' Every study the source matched, when one page did not hold them all
 #'
-#' A year-filtered search is filtered again client-side, dropping the studies
-#' the source holds no year for (see `nada_year()`). The page is sized by
-#' `limit`, so when the source matched more studies than fit, the dropped ones
-#' would be undercounted. In that case every match is asked for in one page,
-#' and `limit` is applied afterwards. The archive honours page sizes well
-#' beyond its catalogue (observed 2026-10-05).
+#' The producer, access and year filters are applied client-side, and the
+#' page is sized by `limit`. When the source matched more studies than fit,
+#' filtering that page would miss matches beyond it: `producer = "Ministry of
+#' Health", limit = 20` once returned 2 of 48 studies. It would also
+#' undercount the studies a year filter drops for having no year (see
+#' `nada_year()`). So every match is asked for in one page, and `limit` is
+#' applied afterwards. The archive honours page sizes well beyond its
+#' catalogue (observed 2026-10-05).
+#'
+#' The wider page is cached under its own query. `producer` and `access` are
+#' not part of the cache key, so caching it under the caller's query would let
+#' an unfiltered search later find a different page there.
 #'
 #' @noRd
-search_every_match <- function(src, query, first) {
+search_every_match <- function(src, query, first, cache, refresh) {
   found <- json_int(knbs_metadata(first)$raw, "found")
   if (is.na(found) || found <= nrow(first)) {
     return(first)
   }
   query$filters$limit <- found
-  source_search(src, query)
+  cached_search(src, query, cache, refresh)
 }
 
 #' Resolve a user-supplied study reference to its metadata

@@ -126,12 +126,47 @@ test_that("a year-filtered page short of the source's matches is widened first",
 
   results <- suppressWarnings(knbs_search_surveys(year = 2016, limit = 1))
   expect_identical(results$survey_id, "DDI-KEN-KNBS-MSME-2016-v1.0")
-  # The widened answer was cached under the original query.
+  # Both pages were cached, so the second search made no request.
   expect_identical(page_sizes, c("1", "5"))
 
-  # Without a year filter nothing is dropped, so the page is not widened.
+  # Without a client-side filter nothing is dropped, so the page is not widened.
   knbs_search_surveys(limit = 1)
   expect_identical(page_sizes, c("1", "5", "1"))
+})
+
+test_that("producer and access filters see every match, not one page", {
+  # Live on 2026-10-15, `producer = "Ministry of Health", limit = 20` returned
+  # 2 of the archive's 48 Ministry of Health studies: the filter only saw the
+  # first page of 20. The fixture's one Ministry study is fourth of five.
+  local_cache()
+  full <- kenada_fixture("catalog-search-year-zero.json")
+  page_sizes <- character(0)
+  testthat::local_mocked_bindings(
+    nada_get = function(source, path, query = list(), call = NULL) {
+      page_sizes <<- c(page_sizes, query$ps)
+      page <- full
+      page$result$rows <- page$result$rows[seq_len(min(as.integer(query$ps), 5L))]
+      page
+    },
+    .package = "knbsdata"
+  )
+
+  # An unfiltered search first, so its one-row page is already cached.
+  expect_identical(knbs_search_surveys(limit = 1)$survey_id, "DDI-KEN-KNBS-MSME-2016-v1.0")
+  expect_identical(page_sizes, "1")
+
+  moh <- knbs_search_surveys(producer = "Ministry of Health", limit = 1)
+  expect_identical(moh$survey_id, "DDI-KEN-MOH-SMS-WRK-2016-V001")
+  expect_identical(page_sizes, c("1", "5"))
+
+  expect_identical(nrow(knbs_search_surveys(access = "public_use", limit = 10)), 5L)
+  expect_identical(nrow(knbs_search_surveys(access = "licensed", limit = 1)), 0L)
+
+  # The wider page has its own cache entry: the unfiltered search still gets
+  # its own one-row page, without a request.
+  n_requests <- length(page_sizes)
+  expect_identical(knbs_search_surveys(limit = 1)$survey_id, "DDI-KEN-KNBS-MSME-2016-v1.0")
+  expect_identical(length(page_sizes), n_requests)
 })
 
 test_that("survey metadata come back as a printable knbs_survey", {

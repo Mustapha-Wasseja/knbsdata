@@ -93,6 +93,23 @@ test_that("a listing that loses its shape is a schema change", {
                class = "knbs_error_schema_changed")
 })
 
+test_that("records arriving in any order give the same history", {
+  # The live listing stopped arriving sorted by commodity and month (observed
+  # 2026-10-15). Interleaving the two commodities is enough to show it.
+  local_cache()
+  local_cpix_api()
+  sorted <- tibble::as_tibble(knbs_retail_prices())
+
+  base <- cpix_fixture("retail-page.json")
+  local_cpix_api(list("^retail-prices/$" = function(path, query) {
+    list(count = 6L, `next` = NULL, previous = NULL,
+         results = base$results[c(1, 5, 2, 6, 3, 4)])
+  }))
+  interleaved <- knbs_retail_prices(refresh = TRUE)
+
+  expect_identical(tibble::as_tibble(interleaved), sorted)
+})
+
 test_that("duplicate commodity-months are refused", {
   local_cache()
   base <- cpix_fixture("retail-page.json")

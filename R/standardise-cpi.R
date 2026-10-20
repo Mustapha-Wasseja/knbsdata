@@ -139,7 +139,11 @@ standardise_cpix_retail <- function(records, register, source_id,
   )
   out <- out[order(out$commodity_code, out$period), ]
 
-  keys <- paste(ids, out$period, sep = "\r")
+  # Keyed in the source's own record order: `ids` and `periods` were never
+  # reordered. Pairing `ids` with the sorted `out$period` once matched records
+  # to the wrong months, and refused the whole history as soon as the source
+  # stopped sending it pre-sorted (observed 2026-10-15).
+  keys <- paste(ids, periods, sep = "\r")
   if (anyDuplicated(keys) > 0L) {
     knbs_abort(
       c("The retail-price history contains duplicate keys.",
