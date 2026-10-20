@@ -81,20 +81,27 @@ knbs_perform <- function(req,
                          body_check = NULL,
                          path = NULL,
                          call = rlang::caller_env()) {
-  resp <- tryCatch(
-    httr2::req_perform(req, path = path),
-    error = function(cnd) {
-      knbs_abort(
-        c(
-          "Could not reach {.val {source_id %||% 'the source'}}.",
-          "x" = "{conditionMessage(cnd)}",
-          "i" = "The source may be unavailable, or the network may be blocked."
-        ),
-        class = "knbs_error_source_unavailable",
-        call = call
-      )
-    }
-  )
+  perform <- function(req) {
+    tryCatch(httr2::req_perform(req, path = path), error = function(cnd) cnd)
+  }
+  supplement <- knbs_tls_supplement(req$url)
+  resp <- if (is.null(supplement)) {
+    perform(req)
+  } else {
+    perform_supplemented(req, supplement, perform)
+  }
+
+  if (inherits(resp, "error")) {
+    knbs_abort(
+      c(
+        "Could not reach {.val {source_id %||% 'the source'}}.",
+        "x" = "{conditionMessage(resp)}",
+        "i" = "The source may be unavailable, or the network may be blocked."
+      ),
+      class = "knbs_error_source_unavailable",
+      call = call
+    )
+  }
 
   check_auth_gate(resp, source_id = source_id, call = call)
   if (!is.null(body_check)) {
@@ -105,6 +112,85 @@ knbs_perform <- function(req,
     check_content_type(resp, expect = expect, source_id = source_id, call = call)
   }
   resp
+}
+
+#' Certificates a server fails to send, for the hosts known to need them
+#'
+#' www.knbs.or.ke serves its certificate without the intermediates linking it
+#' to a trusted root: audit F-06, resolved by F-11, and back since a renewal
+#' (F-43). Browsers fetch missing intermediates themselves; libcurl with
+#' OpenSSL does not, so every request failed with "unable to get local issuer
+#' certificate". The package ships Let's Encrypt's Generation Y
+#' intermediates, the cross-signed Generation Y roots, and ISRG Root X1 and X2
+#' (`inst/extdata/tls/`). A request to these hosts that fails certificate
+#' verification is retried once with that bundle as its trust store, and the
+#' session remembers which store worked (`perform_supplemented()`).
+#'
+#' Verification is never switched off. The bundle verifies only a certificate
+#' that names the host and chains through Let's Encrypt to an ISRG root. A host
+#' that verifies normally never needs the bundle, so a server that is fixed, or
+#' moves to another authority, needs no change here.
+#'
+#' @return The bundle's path, or `NULL` for any other host.
+#' @noRd
+knbs_tls_supplement <- function(url) {
+  host <- tolower(httr2::url_parse(url)$hostname %||% "")
+  if (!host %in% c("knbs.or.ke", "www.knbs.or.ke")) {
+    return(NULL)
+  }
+  path <- system.file("extdata", "tls", "knbs-or-ke-chain.pem", package = "knbsdata")
+  if (nzchar(path)) path else NULL
+}
+
+#' Perform a request to a host with shipped intermediates
+#'
+#' One trust store is tried, and on a certificate failure the other: the
+#' default store, or the shipped bundle. Certificates are verified either way.
+#' Whichever worked is remembered for the session, so later requests to the
+#' host start there instead of failing first. On an older httr2 that retries
+#' failed connections with backoff, a failing first attempt cost about ten
+#' seconds per request, and `knbs_releases()` makes dozens.
+#'
+#' @param perform The caller's `perform()`, which returns an error condition
+#'   rather than throwing it.
+#' @noRd
+perform_supplemented <- function(req, supplement, perform) {
+  host <- tolower(httr2::url_parse(req$url)$hostname)
+  bundle_first <- host %in% the$tls_bundle_hosts
+  stores <- list(req, httr2::req_options(req, cainfo = supplement))
+  if (bundle_first) stores <- rev(stores)
+
+  resp <- perform(stores[[1]])
+  if (inherits(resp, "error") && is_certificate_failure(resp)) {
+    resp <- perform(stores[[2]])
+    if (!inherits(resp, "error")) {
+      # The other store worked: start with it from now on.
+      the$tls_bundle_hosts <- if (bundle_first) {
+        setdiff(the$tls_bundle_hosts, host)
+      } else {
+        union(the$tls_bundle_hosts, host)
+      }
+    }
+  }
+  resp
+}
+
+#' Whether a failed request failed certificate verification
+#'
+#' Some versions of the curl package class the error
+#' (`curl_error_peer_failed_verification`); others raise a plain error, so its
+#' message, or a parent's, is read as well.
+#'
+#' @noRd
+is_certificate_failure <- function(cnd) {
+  while (!is.null(cnd)) {
+    if (inherits(cnd, "curl_error_peer_failed_verification") ||
+        grepl("certificate", conditionMessage(cnd), ignore.case = TRUE)) {
+      return(TRUE)
+    }
+    cnd <- cnd$parent
+  }
+  FALSE
 }
 
 #' Detect a login gate that does not use a redirect status

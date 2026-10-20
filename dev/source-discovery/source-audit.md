@@ -391,6 +391,15 @@ an *unknown* region silently falls back to national (the F-24 family). The
 package therefore exposes retail prices as national only, with no region
 argument to defend.
 
+**F-44 — The retail-price listing no longer arrives sorted.**
+Seen live 2026-10-15: 2,024 records, 22 commodities, 2019-02 to 2026-09, with
+no repeated commodity-month, but no longer ordered by commodity and month as
+the 2026-08-08 capture was. That exposed a package bug rather than a source
+fault: the duplicate check paired each record's commodity with another
+record's month after sorting, found 1,012 false duplicates, and refused the
+whole history. The check now reads both in the source's order, and a test
+feeds the fixture interleaved. Nothing about the order is assumed.
+
 **F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
 Traced 2026-08-08 after a direct question exposed that this portal — probed
 only superficially during the Phase 5 audit — had never been enumerated. The
@@ -856,6 +865,32 @@ Reproducible example (public endpoint, no credentials):
 curl -sS "https://www.knbs.or.ke/wp-json/wp/v2/media?media_type=application&search=economic+survey&per_page=5"
 ```
 
+**F-43 — The incomplete TLS chain is back (F-06 again).**
+Since the certificate renewed on 2026-08-21, `www.knbs.or.ke` sends its leaf
+(`CN = knbs.or.ke`, issued by Let's Encrypt `YE2`) and nothing else. `YE2`
+chains through `ISRG Root YE`, a Generation Y root that system stores do not
+yet hold, so a client must also be sent `Root YE` cross-signed by
+`ISRG Root X2`. OpenSSL-based clients fail with verify error 21 ("unable to
+get local issuer certificate"): the weekly source monitor on 2026-10-12, and a
+live run on 2026-10-15, where `knbs_publications()`, `knbs_releases()` and
+`knbs_abstract_table()` all failed. Browsers, and probably Windows, fetch the
+missing certificates themselves from the leaf's issuer URL. Everything else
+under `knbs.or.ke` serves full chains.
+
+The package now ships the missing certificates (`inst/extdata/tls/`): the six
+Generation Y intermediates (`YE1`-`YE3`, `YR1`-`YR3`) from Let's Encrypt's own
+issuer URLs, `Root YE` and `Root YR` cross-signed by ISRG Root X2 and X1, and
+those two roots. Each intermediate was verified to chain to X1 or X2, and both
+roots matched against letsencrypt.org. A request to `knbs.or.ke` that fails
+certificate verification is retried once with that bundle as its trust store.
+Verification stays on; a server that is fixed never reaches the bundle.
+
+Reproducible check (shows only the leaf, then verify error 21):
+
+```bash
+openssl s_client -connect www.knbs.or.ke:443 -servername www.knbs.or.ke -showcerts </dev/null
+```
+
 ## 3. Aggregate indicators — registry id `knbs_indicators`
 
 **Not audited — source unavailable (F-05).** Remains at `discovery`.
@@ -947,3 +982,6 @@ Copy this block for each new candidate source.
 | 2026-10-08 | finaccess | F-40 the FinAccess portal links open, anonymised microdata for six household rounds (2006-2024) and two MSE Tracker waves on Google Drive; four portal labels wrong; no licence stated; the Dataverse copy of 2013 behind a guestbook | 21 files catalogued with name, size and SHA-256; downloads probed with a range request, then size- and checksum-verified; the guestbook copy listed, never fetched |
 | 2026-10-08 | portals page | F-41 KDHS Shiny portal errors, visualisations page 500, Open Data for Africa challenged again, NIPFN data links 404 | KDHS to come from the DHS Program API instead; the others left alone |
 | 2026-10-08 | dhs_program | F-42 the DHS Program's Indicator Data API serves the KDHS 1989-2022 and MIS 2015/2020 (4,115 indicators, counties from 2014); robots.txt bars /rest/dhs/ while the docs invite applications; ids reused; counties nested under provinces with inconsistent LevelRank | Adapter built: on-demand requests only, throttled and cached; census codes for counties; reused-id conflicts refused; robots reading recorded and the README's access conditions reworded |
+| 2026-10-15 | knbs_publications | F-43 F-06 is back: `www.knbs.or.ke` sends its Let's Encrypt `YE2` leaf without `YE2` or the cross-signed `Root YE`; verify error 21 on the weekly monitor (2026-10-12) and live | The missing Generation Y intermediates and cross-signs ship with the package, verified to ISRG Root X1/X2; a failed verification to `knbs.or.ke` is retried once with them; verification never switched off |
+| 2026-10-15 | knbs_cpi | F-44 the retail-price listing arrives unsorted; the package's duplicate check misread that as 1,012 duplicates | Check reads commodity and month in source order; test with interleaved records |
+| 2026-10-15 | opendataforafrica | F-41 continues: still HTTP 403 | Left alone: identity is never disguised and challenges are never solved (F-34); the 403 surfaces as the classed access error |

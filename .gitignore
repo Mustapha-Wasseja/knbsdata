@@ -15,6 +15,8 @@ dev/notebooks/*_files/
 .Renviron
 .env
 *.pem
+# Public CA certificates only, no keys: see knbs_tls_supplement() in R/http.R.
+!inst/extdata/tls/knbs-or-ke-chain.pem
 *_token*
 *cookies*
 

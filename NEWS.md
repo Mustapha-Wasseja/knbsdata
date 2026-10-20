@@ -72,6 +72,16 @@ and the 2015 and 2020 Malaria Indicator Surveys, through the same
   archive's 48. Whenever `producer`, `access` or `year` is given, every match
   is now fetched first and `limit` applied after filtering. The wider page is
   cached under its own key, so an unfiltered search never picks it up.
+* `knbs_publications()`, `knbs_releases()` and `knbs_abstract_table()` work
+  again where they had failed with "unable to get local issuer certificate",
+  as they did on Linux and on the weekly source check. Since its certificate
+  renewed in August, www.knbs.or.ke sends its certificate without the Let's
+  Encrypt intermediates that link it to a trusted root (audit F-43, the F-06
+  fault back). Browsers fetch those themselves; R's curl does not. The
+  package now ships them, each verified to chain to ISRG Root X1 or X2, and
+  retries a request to `knbs.or.ke` that fails certificate verification once
+  with them as its trust store. Verification is never switched off, other
+  hosts never use them, and once KNBS fixes its server they go unused.
 * `R/download.R` no longer begins with a UTF-8 byte-order mark, which older
   installs (pkgload 1.3) could not parse.
 

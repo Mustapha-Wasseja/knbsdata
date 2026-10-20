@@ -1,4 +1,6 @@
-# Session state that is not configuration: what has already been said once.
+# Session state that is not configuration: what has already been said once,
+# and which hosts verified only with the shipped intermediates
+# (perform_supplemented()).
 the <- new.env(parent = emptyenv())
 
 .onLoad <- function(libname, pkgname) {
