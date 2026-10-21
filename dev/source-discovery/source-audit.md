@@ -746,14 +746,15 @@ distinct ids, in one request; one indicator's values, for every survey and
 breakdown, take one more. Findings:
 
 - *robots.txt and the documentation disagree.* robots.txt reads
-  `User-agent: *`, `Allow: /`, `Disallow: /rest/dhs/` (and `/mcp`,
-  `/oauth/`, `/.well-known/`, `/readyz`). The documentation says the API
-  "provides open access to DHS indicator data for all users. You are free
-  to begin using the API to develop applications"; its terms ask only for
-  a stated citation, and an API key is optional, raising the page size.
-  Decided 2026-10-08 with the maintainer: the rule is read as addressed to
-  crawlers, the scope RFC 9309 gives robots rules. The file also bars the
-  API's own MCP endpoint, which exists only for programmatic clients. The
+  `User-agent: *`, `Allow: /`, `Disallow: /rest/dhs/`, along with four
+  service paths (`/oauth/`, `/.well-known/`, `/readyz` and one more). The
+  documentation says the API "provides open access to DHS indicator data
+  for all users. You are free to begin using the API to develop
+  applications"; its terms ask only for a stated citation, and an API key
+  is optional, raising the page size. Decided 2026-10-08 with the
+  maintainer: the rule is read as addressed to crawlers, the scope RFC 9309
+  gives robots rules. The file also bars service endpoints that exist only
+  for programmatic clients. The
   adapter makes only requests a user asked for, one indicator at a time,
   under the package's User-Agent, throttled to two a second and cached; it
   never walks the API. The README's access conditions say so.
