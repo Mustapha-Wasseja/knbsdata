@@ -103,7 +103,7 @@ haven package; you are asked to install them if they are missing.
 files <- knbs_finaccess_files(content = "data")
 path <- file.path(tempdir(), "finaccess-files.csv")
 knbs_write(files, path)                        # + finaccess-files.csv.metadata.json
-#> ✔ Wrote /tmp/RtmpUK8VJT/finaccess-files.csv (14 rows), provenance in finaccess-files.csv.metadata.json.
+#> ✔ Wrote /tmp/RtmpUVZNuQ/finaccess-files.csv (14 rows), provenance in finaccess-files.csv.metadata.json.
 if (FALSE) { # interactive()
 gdp <- knbs_abstract_table("2.2")
 knbs_write(gdp, file.path(tempdir(), "gdp-by-activity.xlsx"))   # data + about sheet

@@ -157,13 +157,69 @@ The archive puts every download behind a login. The package does not
 automate sign-in, licence acceptance or approval workflows, so the
 function exists purely to fail clearly and point you at the official
 process. Complete that process, download the files yourself, and read
-them with `readr`, `haven` or whatever suits the format.
+them with
+[`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md),
+which reads Stata, SPSS and Excel files and the data inside a `.zip`,
+keeping value labels.
 
 This matters for a subtler reason too. The gate is signalled by an HTTP
 `Refresh` header rather than a redirect status, so a client that only
 checks the status code sees `200 OK` and an empty body — and could
 report “no data” where the honest answer is “you need an account”. The
 package treats that as an authentication error.
+
+## Open microdata: the FinAccess surveys
+
+Some surveys’ microdata are published for anyone to download. The
+FinAccess household survey, Kenya’s survey of financial inclusion by the
+Central Bank of Kenya, KNBS and FSD Kenya, is one: six rounds from 2006
+to 2024, plus two waves of the FinAccess MSE Tracker Survey of micro and
+small enterprises. The archive catalogues these studies (and a 2019
+round the portal has no files for), but lists no data files or variables
+for any of them, and gates its downloads behind an account as it does
+everywhere. The FinAccess portal publishes the files themselves, so they
+have their own functions.
+
+``` r
+
+# The catalogue ships with the package: listing it contacts nothing
+knbs_finaccess_files(content = "data")
+
+# Download and read the 2024 household survey (Stata, 160 MB)
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+knbs_cite(fa)
+```
+
+The portal is a web page linking files on Google Drive, so the package
+keeps its own catalogue of them — names, sizes and SHA-256 checksums,
+every file opened and checked by hand — and holds each download to it: a
+file that has changed since is refused before anything large moves, and
+a transfer that arrives damaged is not kept. Running the same line again
+finds the file already downloaded, confirms its checksum and reads it
+without a request.
+
+Each file gets a sidecar recording where it came from and the producers’
+terms. The portal states no licence; FSD Kenya’s terms for the 2013
+survey restrict the data to research and forbid redistribution without
+written agreement, so assume nothing wider.
+
+[`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md)
+keeps Stata and SPSS value labels as
+[`haven::labelled()`](https://haven.tidyverse.org/reference/labelled.html)
+columns, and each variable’s question text in its `"label"` attribute.
+The 2024 file has 20,871 respondents and 3,816 variables, so
+`col_select` is worth knowing:
+
+``` r
+
+fa <- knbs_read_microdata("data/2024_Finaccess_Publicdata.dta",
+                          col_select = c("county", "A13", "A18"))
+attr(fa$A18, "label")                  # "A18. AGE OF RESPONDENT"
+table(haven::as_factor(fa$A13))        # value labels as factor levels
+
+# Respondents' counties as census codes, ready to join census tables
+fa$geo_code <- knbs_county_code(haven::as_factor(fa$county))
+```
 
 ## Handling errors
 

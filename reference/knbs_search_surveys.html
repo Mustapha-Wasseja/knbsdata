@@ -11,7 +11,7 @@ row per study."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,7 @@ row per study."></head><body>
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -41,7 +42,7 @@ row per study."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Search official survey and census studies</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/v0.4.0/R/surveys.R" class="external-link"><code>R/surveys.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/R/surveys.R" class="external-link"><code>R/surveys.R</code></a></small>
       <div class="d-none name"><code>knbs_search_surveys.Rd</code></div>
     </div>
 
@@ -75,7 +76,10 @@ row per study.</p>
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
 <dd><p>A single year, or <code>c(from, to)</code> for a range. Matched against the
-study's reference years.</p></dd>
+study's reference years; a study spanning several years matches if any of
+them falls in the range. Studies the source records no reference year for
+cannot match, so they are excluded with a <code>knbs_warning_missing_metadata</code>
+warning that says how many, and names them in its <code>excluded</code> field.</p></dd>
 
 
 <dt id="arg-producer">producer<a class="anchor" aria-label="anchor" href="#arg-producer"></a></dt>
@@ -87,7 +91,8 @@ study's reference years.</p></dd>
 
 
 <dt id="arg-limit">limit<a class="anchor" aria-label="anchor" href="#arg-limit"></a></dt>
-<dd><p>Maximum number of studies to return.</p></dd>
+<dd><p>Maximum number of studies to return, counted after the
+<code>year</code>, <code>producer</code> and <code>access</code> filters.</p></dd>
 
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
@@ -124,10 +129,10 @@ Filling them here would mean one extra request per row.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
 <span class="r-in"><span><span class="fu">knbs_search_surveys</span><span class="op">(</span><span class="st">"household budget"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">knbs_search_surveys</span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2015</span>, <span class="fl">2020</span><span class="op">)</span>, access <span class="op">=</span> <span class="st">"public_use"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -135,7 +140,7 @@ Filling them here would mean one extra request per row.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -40,9 +41,25 @@
     </div>
 
     <div class="section level2">
+      <h2 id="search">Search<a class="anchor" aria-label="anchor" href="#search"></a></h2>
+
+      <div class="section-desc"><p>One search across every catalogue the package reads, each result with the call that retrieves it.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="knbs_search.html">knbs_search()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Search everything the package can retrieve</dd>
+      </dl></div><div class="section level2">
       <h2 id="surveys">Surveys<a class="anchor" aria-label="anchor" href="#surveys"></a></h2>
 
-      <div class="section-desc"><p>Discovering studies and their documentation. Metadata only: no supported source permits programmatic download of microdata.</p></div>
+      <div class="section-desc"><p>Discovering studies and their documentation in the Kenya National Data Archive. Metadata only: the archive gates its microdata behind an account.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -84,6 +101,36 @@
         </dt>
         <dd>Download public-use microdata</dd>
       </dl></div><div class="section level2">
+      <h2 id="open-microdata">Open microdata<a class="anchor" aria-label="anchor" href="#open-microdata"></a></h2>
+
+      <div class="section-desc"><p>The FinAccess household and MSE Tracker surveys, whose anonymised, weighted microdata are published openly: verified downloads and a reader that keeps labels and provenance.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="knbs_finaccess_files.html">knbs_finaccess_files()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>List the FinAccess survey files</dd>
+
+        <dt>
+
+          <code><a href="knbs_download_finaccess.html">knbs_download_finaccess()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Download FinAccess survey files</dd>
+
+        <dt>
+
+          <code><a href="knbs_read_microdata.html">knbs_read_microdata()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Read a microdata file into R</dd>
+      </dl></div><div class="section level2">
       <h2 id="publications">Publications<a class="anchor" aria-label="anchor" href="#publications"></a></h2>
 
       <div class="section-desc"><p>Statistical releases, reports and workbooks from the KNBS website, with verified, checksummed downloads.</p></div>
@@ -106,6 +153,43 @@
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Download a publication and verify what arrived</dd>
+
+        <dt>
+
+          <code><a href="knbs_releases.html">knbs_releases()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>What KNBS has released lately</dd>
+
+        <dt>
+
+          <code><a href="knbs_release_series.html">knbs_release_series()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>KNBS's regular release series</dd>
+      </dl></div><div class="section level2">
+      <h2 id="statistical-abstract-tables">Statistical Abstract tables<a class="anchor" aria-label="anchor" href="#statistical-abstract-tables"></a></h2>
+
+      <div class="section-desc"><p>Curated, validated extraction of the Statistical Abstract’s chapter workbooks into tidy tables.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="knbs_abstract_tables.html">knbs_abstract_tables()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>List the curated Statistical Abstract tables</dd>
+
+        <dt>
+
+          <code><a href="knbs_abstract_table.html">knbs_abstract_table()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Retrieve one Statistical Abstract table as tidy observations</dd>
       </dl></div><div class="section level2">
       <h2 id="indicators-and-prices">Indicators and prices<a class="anchor" aria-label="anchor" href="#indicators-and-prices"></a></h2>
 
@@ -139,7 +223,7 @@
       </dl></div><div class="section level2">
       <h2 id="geography">Geography<a class="anchor" aria-label="anchor" href="#geography"></a></h2>
 
-      <div class="section-desc"><p>The coded territorial hierarchy of the 2019 census frame — the join keys the census tables themselves use.</p></div>
+      <div class="section-desc"><p>The coded territorial hierarchy of the 2019 census frame — the join keys the census tables themselves use — and official county codes for county names written any way.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -152,6 +236,20 @@
           <span class="badge lifecycle lifecycle-experimental">experimental</span>
         </dt>
         <dd>Kenya's geographic reference codes</dd>
+
+        <dt>
+
+          <code><a href="knbs_county_code.html">knbs_county_code()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Official county codes for county names written any way</dd>
+
+        <dt>
+
+          <code><a href="knbs_match_counties.html">knbs_match_counties()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>See how county names were matched</dd>
       </dl></div><div class="section level2">
       <h2 id="sources">Sources<a class="anchor" aria-label="anchor" href="#sources"></a></h2>
 
@@ -178,7 +276,7 @@
       </dl></div><div class="section level2">
       <h2 id="provenance">Provenance<a class="anchor" aria-label="anchor" href="#provenance"></a></h2>
 
-      <div class="section-desc"><p>Every object the package returns carries where it came from, when it was retrieved and how to cite it.</p></div>
+      <div class="section-desc"><p>Every object the package returns carries where it came from, when it was retrieved and how to cite it — and keeps it when written to Excel, CSV, Stata or SPSS.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -198,6 +296,13 @@
 
         </dt>
         <dd>Cite a knbsdata object</dd>
+
+        <dt>
+
+          <code><a href="knbs_write.html">knbs_write()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Write KNBS data to a file, with its provenance</dd>
       </dl></div><div class="section level2">
       <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h2>
 
@@ -264,7 +369,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">

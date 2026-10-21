@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,7 @@
     <li><a class="dropdown-item" href="articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="articles/county-data.html">County codes and joins</a></li>
+    <li><a class="dropdown-item" href="articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="articles/source-status.html">Source status and limitations</a></li>
   </ul>
 </li>
@@ -66,69 +67,104 @@
 <div class="section level2">
 <h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
 </h2>
-<p><strong>Implemented: survey discovery, publications, and census tables.</strong></p>
+<p><strong>Implemented: surveys and open microdata, publications, and indicators — census, prices, the economy, Gross County Product, and health and demography from the KDHS.</strong></p>
 <ul>
 <li>
+<strong>One search across everything</strong>: <code><a href="reference/knbs_search.html">knbs_search()</a></code> ranks indicators, Abstract tables, surveys, open microdata and publications together, and hands back the call that retrieves each one.</li>
+<li>
 <strong>Surveys</strong>, against the Kenya National Data Archive: search studies, read their full documentation, search their variables, and list their data files — with provenance and citations attached throughout.</li>
+<li>
+<strong>Open survey microdata</strong>, from the FinAccess portal: the anonymised, weighted microdata of the FinAccess household surveys (six rounds, 2006–2024) and the MSE Tracker Survey, published by the Central Bank of Kenya, KNBS and FSD Kenya — downloaded with name, size and SHA-256 verified against a catalogue, and read into R with their labels and a citation.</li>
 <li>
 <strong>Publications</strong>, against the KNBS website’s media library: search roughly 1,600 statistical releases, reports and workbooks, and download them with verification, SHA-256 checksums and a provenance sidecar.</li>
 <li>
 <strong>Census tables</strong>, against the KNBS census data service: the 2019 Population and Housing Census as tidy observations, with geography down to sub-county and an explicit CC BY 4.0 licence.</li>
 <li>
-<strong>Consumer prices</strong>, against the KNBS CPI Explorer: the monthly index and inflation from January 2009, nationally and by the CPI collection strata.</li>
+<strong>Consumer prices</strong>, against the KNBS CPI Explorer: the monthly index and inflation from January 2009, nationally and by the CPI collection strata, plus the retail prices of the CPI basket commodities.</li>
 <li>
-<strong>Geographic reference codes</strong>: Kenya, its 47 counties and their sub-counties in the 2019 census frame, with names, parent codes and an explicit vintage — the join keys the census tables themselves use.</li>
+<strong>The economy</strong>, against the KNBS Data Portal: 323 SDMX dataflows — GDP by activity and expenditure, trade, balance of payments, county government finance, employment and more.</li>
+<li>
+<strong>Gross County Product and the republished datasets</strong>, against Kenya Open Data for Africa: GCP for all 47 counties (2013–2020, constant and current prices) plus 200 more datasets from KNBS, the Central Bank of Kenya and partner agencies — with republisher provenance stated on every result.</li>
+<li>
+<strong>Health and demography from the KDHS</strong>, against the DHS Program’s Indicator Data API: 4,000-odd indicators from the Kenya Demographic and Health Surveys (1989–2022) and the Malaria Indicator Surveys — stunting, fertility, vaccination, family planning, HIV, malaria — by wealth, residence and education, and for the 47 counties from 2014, with census county codes so they join the census tables.</li>
+<li>
+<strong>Statistical Abstract tables as tidy data</strong>: 48 tables of the 2025 edition across 13 chapters — the whole National Accounts chapter, and wage employment, prices, trade, agriculture, energy, manufacturing, construction, tourism, transport, education, and registered births and deaths — extracted from the official workbooks by hand-verified recipes that are re-checked on every read. County tables carry census codes, so they join everything else.</li>
+<li>
+<strong>Geographic reference codes</strong>: Kenya, its 47 counties and their sub-counties in the 2019 census frame, with names, parent codes and an explicit vintage — the join keys the census tables themselves use — and <code><a href="reference/knbs_county_code.html">knbs_county_code()</a></code>, which turns county names spelled any way (census, Data Portal, Treasury, your own spreadsheet) into those codes.</li>
 </ul>
 <p>Not implemented:</p>
 <ul>
 <li>
-<strong>Other running series — GDP, trade.</strong> No machine-readable source for them has been verified; their monthly and quarterly releases are available as documents through <code><a href="reference/knbs_publications.html">knbs_publications()</a></code>.</li>
+<strong>The newest Gross County Product years as data.</strong> The data version is the 2021 edition (through 2020); the editions since exist only as PDF reports — find and download them through <code>knbs_publications("gross county product")</code>.</li>
 <li>
 <strong>Boundary geometries, other geographic vintages, crosswalks and classifications</strong> — nothing verified, so nothing served.</li>
 <li>
-<strong>Microdata downloads.</strong> The survey archive requires an account for every download. <code><a href="reference/knbs_download_microdata.html">knbs_download_microdata()</a></code> explains the official process and stops; the package does not automate sign-in or licence acceptance.</li>
+<strong>Microdata from the national data archive.</strong> KeNADA requires an account for every download. <code><a href="reference/knbs_download_microdata.html">knbs_download_microdata()</a></code> explains the official process and stops; the package does not automate sign-in or licence acceptance. (FinAccess, above, is published openly.)</li>
 <li>
 <strong>Survey documentation files.</strong> The archive publishes no machine-readable listing of questionnaires or reports.</li>
 </ul>
-<p><code><a href="articles/source-status.html">vignette("source-status")</a></code> states all of this in full. Findings are in <a href="dev/source-discovery/source-audit.html"><code>dev/source-discovery/source-audit.md</code></a>.</p>
+<p><code><a href="articles/source-status.html">vignette("source-status")</a></code> states all of this in full. Findings are in <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/dev/source-discovery/source-audit.md" class="external-link"><code>dev/source-discovery/source-audit.md</code></a>.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>Ready-built for Windows, macOS and Linux from R-universe, so no compiler or Rtools is needed:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"knbsdata"</span>,</span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://mustapha-wasseja.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Or the development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"Mustapha-Wasseja/knbsdata"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="what-works-today">What works today<a class="anchor" aria-label="anchor" href="#what-works-today"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Mustapha-Wasseja/knbsdata" class="external-link">knbsdata</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Which sources does the package know about, and how far are they verified?</span></span>
 <span><span class="fu"><a href="reference/knbs_sources.html">knbs_sources</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 5 × 8</span></span>
+<span><span class="co">#&gt; # A tibble: 9 × 8</span></span>
 <span><span class="co">#&gt;   source_id         source_name  source_type operations stability authentication</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;        &lt;chr&gt;       &lt;list&gt;     &lt;chr&gt;     &lt;chr&gt;         </span></span>
 <span><span class="co">#&gt; 1 kenada            Kenya Natio… survey_cat… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 2 knbs_publications KNBS Public… publicatio… &lt;chr [3]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 3 knbs_indicators   KNBS Census… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 4 knbs_cpi          KNBS CPI Ex… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
-<span><span class="co">#&gt; 5 fake_source       Offline tes… fake        &lt;chr [6]&gt;  discovery none          </span></span>
+<span><span class="co">#&gt; 2 finaccess         FinAccess H… static_fil… &lt;chr [1]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 3 knbs_publications KNBS Public… publicatio… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 4 knbs_indicators   KNBS Census… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 5 knbs_cpi          KNBS CPI Ex… indicator_… &lt;chr [4]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 6 knbs_opendata     KNBS Data P… indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 7 opendataforafrica Kenya Open … indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 8 dhs_program       The DHS Pro… indicator_… &lt;chr [3]&gt;  experime… none          </span></span>
+<span><span class="co">#&gt; 9 fake_source       Offline tes… fake        &lt;chr [6]&gt;  discovery none          </span></span>
 <span><span class="co">#&gt; # ℹ 2 more variables: last_verified &lt;date&gt;, base_url &lt;chr&gt;</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Is anything answering? This form contacts nothing; knbs_status(live = TRUE) does.</span></span>
 <span><span class="fu"><a href="reference/knbs_status.html">knbs_status</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"source_id"</span>, <span class="st">"status"</span>, <span class="st">"message"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span><span class="co">#&gt; # A tibble: 9 × 3</span></span>
 <span><span class="co">#&gt;   source_id         status      message                                   </span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;       &lt;chr&gt;                                     </span></span>
 <span><span class="co">#&gt; 1 kenada            not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 2 knbs_publications not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 3 knbs_indicators   not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 4 knbs_cpi          not_checked Set live = TRUE to contact the source.    </span></span>
-<span><span class="co">#&gt; 5 fake_source       unverified  Endpoint not verified; nothing to contact.</span></span></code></pre></div>
+<span><span class="co">#&gt; 2 finaccess         not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 3 knbs_publications not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 4 knbs_indicators   not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 5 knbs_cpi          not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 6 knbs_opendata     not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 7 opendataforafrica not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 8 dhs_program       not_checked Set live = TRUE to contact the source.    </span></span>
+<span><span class="co">#&gt; 9 fake_source       unverified  Endpoint not verified; nothing to contact.</span></span></code></pre></div>
+<p>Search everything at once — indicators, Statistical Abstract tables, surveys and publications. Each result carries the call that retrieves it (live requests, not run here):</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span>
+<span><span class="va">hits</span><span class="op">$</span><span class="va">get</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "knbs_get_indicator(\"CPI_ALL_ITEMS\", source = \"knbs_cpi\")"</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"gdp"</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"indicator"</span>, <span class="st">"table"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"kdhs"</span>, type <span class="op">=</span> <span class="st">"survey"</span><span class="op">)</span></span></code></pre></div>
 <p>Surveys (these contact the archive, so they are not run here):</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find a study</span></span>
 <span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_search_surveys.html">knbs_search_surveys</a></span><span class="op">(</span><span class="st">"household budget"</span><span class="op">)</span></span>
 <span></span>
@@ -141,38 +177,77 @@
 <span></span>
 <span><span class="co"># See what it holds, and on what terms</span></span>
 <span><span class="fu"><a href="reference/knbs_survey_files.html">knbs_survey_files</a></span><span class="op">(</span><span class="st">"KEN-KNBS-KIHBS-2015-2016-v01"</span><span class="op">)</span></span></code></pre></div>
+<p>Open microdata (live requests, not run here):</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Every FinAccess file: six household rounds, 2006-2024, and the MSE Tracker</span></span>
+<span><span class="fu"><a href="reference/knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span>content <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The 2024 household survey (Stata, 160 MB): downloaded once, verified,</span></span>
+<span><span class="co"># and read with its value labels; re-running reuses the file</span></span>
+<span><span class="va">fa</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_read_microdata.html">knbs_read_microdata</a></span><span class="op">(</span><span class="fu"><a href="reference/knbs_download_finaccess.html">knbs_download_finaccess</a></span><span class="op">(</span><span class="st">"hh2024-stata"</span>, <span class="st">"data"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">fa</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The 2024 and 2021 questionnaires and manuals</span></span>
+<span><span class="fu"><a href="reference/knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span>content <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"questionnaire"</span>, <span class="st">"manual"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/knbs_download_finaccess.html">knbs_download_finaccess</a></span><span class="op">(</span><span class="st">"data/docs"</span><span class="op">)</span></span></code></pre></div>
 <p>Publications (also live requests, not run here):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find publications</span></span>
 <span><span class="va">pubs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_publications.html">knbs_publications</a></span><span class="op">(</span><span class="st">"economic survey"</span>, year <span class="op">=</span> <span class="fl">2026</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Download one: verified, checksummed, with a provenance sidecar</span></span>
-<span><span class="fu"><a href="reference/knbs_download_publication.html">knbs_download_publication</a></span><span class="op">(</span><span class="va">pubs</span><span class="op">$</span><span class="va">publication_id</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"data/publications"</span><span class="op">)</span></span></code></pre></div>
-<p>Indicators (live requests, not run here):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Monthly CPI and inflation, from 2009</span></span>
-<span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, geo_level <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_download_publication.html">knbs_download_publication</a></span><span class="op">(</span><span class="va">pubs</span><span class="op">$</span><span class="va">publication_id</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"data/publications"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># What has KNBS released lately? Series and period read from each title</span></span>
+<span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span><span class="op">)</span>                      <span class="co"># last 30 days, tenders and adverts left out</span></span>
+<span><span class="fu"><a href="reference/knbs_releases.html">knbs_releases</a></span><span class="op">(</span>series <span class="op">=</span> <span class="st">"cpi"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>   <span class="co"># the latest CPI release</span></span></code></pre></div>
+<p>Indicators and tables (live requests, not run here):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The Statistical Abstract's tables, tidy: GDP by activity, county births...</span></span>
+<span><span class="fu"><a href="reference/knbs_abstract_tables.html">knbs_abstract_tables</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span></span>
+<span><span class="va">births</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"16.11"</span><span class="op">)</span>      <span class="co"># by county, with census codes</span></span>
 <span></span>
 <span><span class="co"># County populations from the 2019 census, leading-zero codes intact</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># The matching reference codes, for joins</span></span>
-<span><span class="fu"><a href="reference/knbs_geographies.html">knbs_geographies</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="what-it-will-look-like">What it will look like<a class="anchor" aria-label="anchor" href="#what-it-will-look-like"></a>
-</h2>
-<p>Specified but not yet implemented:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/knbs_geographies.html">knbs_geographies</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># County names written any way, as census codes - for joining anyone's data</span></span>
+<span><span class="fu"><a href="reference/knbs_county_code.html">knbs_county_code</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murang'a"</span>, <span class="st">"MURANGA"</span>, <span class="st">"Nairobi City County"</span>, <span class="st">"47"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "21" "21" "47" "47"</span></span>
+<span></span>
+<span><span class="co"># GDP, trade, county finance and more from the KNBS Data Portal (SDMX)</span></span>
+<span><span class="va">gdp_flow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span>, source <span class="op">=</span> <span class="st">"knbs_opendata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Monthly CPI and inflation, from 2009, from the CPI Explorer</span></span>
+<span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, geo_level <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Gross County Product, all 47 counties, 2013-2020, from Open Data for Africa</span></span>
+<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Child stunting from the KDHS, every survey since 1993, counties from 2014</span></span>
+<span><span class="va">stunting</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CN_NUTS_C_HA2"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ...joined to 2019 census populations by their shared county codes</span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0002"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="va">pop</span><span class="op">[</span><span class="va">pop</span><span class="op">$</span><span class="va">age_type</span> <span class="op">==</span> <span class="st">"total"</span> <span class="op">&amp;</span> <span class="va">pop</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"total"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">stunting</span><span class="op">[</span><span class="va">stunting</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2022</span>, <span class="op">]</span>, <span class="va">pop</span>, by <span class="op">=</span> <span class="st">"geo_code"</span>,</span>
+<span>      suffixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"_population"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Each source is a separate KNBS (or partner) service, and any of them can be down for a while. <code>knbs_status(live = TRUE)</code> shows which are answering. A call to a source that is down fails with a clear <code>knbs_error_source_unavailable</code> rather than partial data, and where another source publishes the same series the error names it: during a CPI Explorer outage, for instance, it points to the Data Portal’s <code>DF_CPI_R</code> index.</p>
+<p>Hand the data to colleagues in Excel, Stata or SPSS without losing where it came from:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.xlsx"</span><span class="op">)</span>  <span class="co"># data sheet + "about" sheet with source and citation</span></span>
+<span><span class="fu"><a href="reference/knbs_write.html">knbs_write</a></span><span class="op">(</span><span class="va">gdp</span>, <span class="st">"gdp-by-activity.dta"</span><span class="op">)</span>   <span class="co"># + gdp-by-activity.dta.metadata.json beside it</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="access-conditions">Access conditions<a class="anchor" aria-label="anchor" href="#access-conditions"></a>
 </h2>
-<p><code>knbsdata</code> will not circumvent registration requirements, licence agreements, approval processes, authentication, rate limits or robots exclusions. Datasets that require authorised access are represented in the catalogue with their access conditions, but are not downloaded: the package points you at the official access process instead.</p>
-<p>Retrieved data and publications remain subject to KNBS terms and licences. The MIT licence in this repository covers the software only.</p>
+<p><code>knbsdata</code> will not circumvent registration requirements, licence agreements, approval processes, authentication or rate limits. It does not crawl: it requests only what you ask for, under its own name, throttled and cached. Robots exclusions are honoured as the rules for crawlers they are — where a site bars automated clients from one route and permits another, the package uses the permitted one; where a publisher’s robots file bars its own API while its documentation invites applications to use it, as the DHS Program’s does, the package follows the documentation, and the source audit records why. Datasets that require authorised access are represented in the catalogue with their access conditions, but are not downloaded: the package points you at the official access process instead. Microdata are downloaded only where the producers publish them for anyone, as FinAccess does, and never bundled with the package; the terms the producers state travel with each file.</p>
+<p>Retrieved data and publications remain subject to their producers’ terms and licences. The MIT licence in this repository covers the software only.</p>
 </div>
 <div class="section level2">
 <h2 id="sources-change">Sources change<a class="anchor" aria-label="anchor" href="#sources-change"></a>
@@ -182,7 +257,7 @@
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>See <a href="CONTRIBUTING.html">CONTRIBUTING.md</a>, including the checklist for adding a new source adapter. Please note that this project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>.</p>
+<p>See <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CONTRIBUTING.md" class="external-link">CONTRIBUTING.md</a>, including the checklist for adding a new source adapter. Please note that this project is released with a <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CODE_OF_CONDUCT.md" class="external-link">Contributor Code of Conduct</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
@@ -224,7 +299,9 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Mustapha Wasseja <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Mustapha Wasseja Mohammed <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Pascal Ochieng Owiti <br><small class="roles"> Author </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -233,6 +310,7 @@
 <ul class="list-unstyled">
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://github.com/Mustapha-Wasseja/knbsdata/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/Mustapha-Wasseja/knbsdata/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://mustapha-wasseja.r-universe.dev/knbsdata" class="external-link"><img src="https://mustapha-wasseja.r-universe.dev/badges/knbsdata" alt="R-universe"></a></li>
 </ul>
 </div>
 
@@ -241,7 +319,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">

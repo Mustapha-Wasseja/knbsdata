@@ -9,7 +9,7 @@ retrieved, which release it represents and how it should be cited."></head><body
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,7 @@ retrieved, which release it represents and how it should be cited."></head><body
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -39,7 +40,7 @@ retrieved, which release it represents and how it should be cited."></head><body
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Inspect the provenance of a knbsdata object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/v0.4.0/R/metadata.R" class="external-link"><code>R/metadata.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/R/metadata.R" class="external-link"><code>R/metadata.R</code></a></small>
       <div class="d-none name"><code>knbs_metadata.Rd</code></div>
     </div>
 
@@ -77,6 +78,11 @@ retrieved, which release it represents and how it should be cited.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Metadata accompany every object the package returns.</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">knbs_metadata</span><span class="op">(</span><span class="fu"><a href="knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">producer</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya"</span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">licence</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not stated by the source"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -84,7 +90,7 @@ retrieved, which release it represents and how it should be cited.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -59,8 +59,8 @@ to cite it.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 meta <- knbs_survey_metadata("KEN-KNBS-KIHBS-2015-2016-v01")
 knbs_cite(meta)
-} # }
+}
 ```

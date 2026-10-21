@@ -1,4 +1,4 @@
 # License
 
     YEAR: 2026
-    COPYRIGHT HOLDER: Mustapha Wasseja
+    COPYRIGHT HOLDER: Mustapha Wasseja Mohammed

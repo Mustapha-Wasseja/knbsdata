@@ -8,20 +8,81 @@ library(knbsdata)
 [`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
 lists what every verified indicator source serves, and
 [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
-returns one indicator as tidy observations. Two families exist today:
-tables from the **2019 Population and Housing Census** (CC BY 4.0), and
-the **monthly consumer price series** from the KNBS CPI Explorer — index
-level and inflation from January 2009 onwards.
+returns one indicator as tidy observations. Three families exist today:
+tables from the **2019 Population and Housing Census** (CC BY 4.0), the
+**monthly consumer price series** from the KNBS CPI Explorer, the **323
+economic dataflows of the KNBS Data Portal** — GDP, trade, balance of
+payments, county government finance and much else, in SDMX form — and
+the **202 datasets republished by Kenya Open Data for Africa**, which
+carry the one thing no first-party portal serves as data: Gross County
+Product.
 
 ``` r
 
-knbs_indicators()                  # both families, source_id says which
+knbs_indicators()                  # all families, source_id says which
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
+gdp <- knbs_get_indicator("DF_NAT_GDPCP")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
+gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product, 2013-2020
 ```
+
+## The Data Portal (SDMX)
+
+Every dataflow keeps its SDMX id (`DF_NAT_GDPCP`, `DF_BOP_A`,
+`DF_CPI_R`…); `knbs_indicators(source = "knbs_opendata")` lists all 323
+with their statistical domain as `topic`. Annual flows carry
+integer-year periods; monthly and quarterly ones carry first-of-period
+`Date`s, so `start` and `end` behave as everywhere else. Dimensions vary
+per flow; each becomes a pair of columns named by its SDMX id in lower
+case — `na_indic` holding the labels (“Accommodation and food service
+activities”) and `na_indic_code` the codes — and a Sex dimension becomes
+`sex`, lower-cased as in the census tables. The ids name the columns,
+not the portal’s labels, because the portal labels ten different
+dimensions just “Indicator”. Single-category dimensions (“Prices =
+Current prices”, “Unit = Kenya Shillings”) are facts about the whole
+dataflow and fold into
+[`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+notes instead of constant columns.
+
+Two cautions: the portal states **no licence**, and its geography codes
+are **SDMX area codes, not census territories** — `geo_level` is `NA`
+there, and they must never be joined against
+[`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md).
 
 Chunks that contact the services are shown but not run, so building this
 vignette never depends on them.
+
+## Open Data for Africa (the republisher)
+
+`knbs_indicators(source = "opendataforafrica")` lists the 202 datasets
+of `kenya.opendataforafrica.org`, the Knoema-operated portal on KNBS’s
+own portals page — 169 sourced from KNBS, the rest from the Central Bank
+of Kenya, ministries and agencies. Dataset ids are the portal’s own
+opaque slugs, so name search is the natural way in:
+
+``` r
+
+knbs_indicators(source = "opendataforafrica", search = "county product")
+gcp <- knbs_get_indicator("jhbzkjc")
+gcp[gcp$table_code == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
+```
+
+Three behaviours to know:
+
+- **Mixed frequencies.** One dataset may hold annual, quarterly and
+  monthly series side by side. Annual periods are integer years and
+  sub-annual ones are `Date`s, which cannot share a column, so a mixed
+  dataset refuses to pick silently — say `frequency = "annual"` (or
+  `"quarterly"`, `"monthly"`) to choose.
+- **Republished provenance.**
+  [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+  names the portal, the original producer, the dataset’s own licence
+  label (most KNBS-sourced datasets state “Public Domain”) and the
+  portal’s publication and update dates — the data vintage is visible,
+  and can lag the producer’s newest PDFs.
+- **Geography codes are the portal’s region codes** (`KE`, `KE-110-NA`,
+  …), `geo_level` is `NA`, and they must never be joined against
+  [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md).
 
 ## Consumer prices
 
@@ -139,10 +200,22 @@ The result has one row per cell:
   says which (`"national"`, `"county"`, `"subcounty"`).
 - **Sex**, where the table has it, using the source’s own categories
   (the 2019 census enumerated intersex as well as female and male).
-- **Every other dimension** keeps its source id: a code column named for
-  the dimension (for example `p18_vs1`) and a matching `<id>_label`
-  column (“Marital Status”). The dimension names are in
-  `knbs_metadata(pop)$notes`.
+- **Every other dimension** becomes a pair of columns under a short,
+  readable name: `marital_status` holding the source’s labels (“Never
+  Married”, “Total”) and `marital_status_code` its codes (`"1"`, `"T"`).
+  The census API names its dimensions by questionnaire variable
+  (`p18_vs1`) and labels them in long prose, so the names are curated,
+  one per dimension the 2019 tables carry: `age`, `religion`,
+  `schooling_status`, `internet_use`, `household_head_sex` and so on. A
+  dimension added later that has no curated name keeps its source id.
+  The source’s own dimension labels are in `knbs_metadata(pop)$notes`.
+- **Age** mixes single years (`"0"` to `"99"`) with five-year groups
+  (`"0-4"` … `"95-99"`, `"100-120"`) and a total, so summing every row
+  counts people twice. `age_type` says which is which — `"total"`,
+  `"single_year"`, `"age_group"` or `"other"` — and the groups are
+  checked, on every read, to add up to the total and the single years to
+  their group. `filter(age_type == "age_group")` gives a population
+  pyramid that adds up.
 
 ### Filtering geography
 
@@ -163,7 +236,7 @@ County population aged 12+, both sexes, all marital statuses:
 ``` r
 
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-totals <- pop[pop$sex == "total" & pop$p18_vs1 == "T",
+totals <- pop[pop$sex == "total" & pop$marital_status == "Total",
               c("geo_code", "geo_name", "value")]
 totals[order(-totals$value), ]
 ```

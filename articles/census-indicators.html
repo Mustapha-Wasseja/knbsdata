@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul>
 </li>
@@ -63,7 +64,7 @@
       <h1>Indicators: census tables and consumer prices</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/v0.4.0/vignettes/census-indicators.Rmd" class="external-link"><code>vignettes/census-indicators.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/vignettes/census-indicators.Rmd" class="external-link"><code>vignettes/census-indicators.Rmd</code></a></small>
       <div class="d-none name"><code>census-indicators.Rmd</code></div>
     </div>
 
@@ -73,16 +74,82 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Mustapha-Wasseja/knbsdata" class="external-link">knbsdata</a></span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/knbs_indicators.html">knbs_indicators()</a></code> lists what every verified indicator
 source serves, and <code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> returns one
-indicator as tidy observations. Two families exist today: tables from
-the <strong>2019 Population and Housing Census</strong> (CC BY 4.0), and
-the <strong>monthly consumer price series</strong> from the KNBS CPI
-Explorer — index level and inflation from January 2009 onwards.</p>
+indicator as tidy observations. Three families exist today: tables from
+the <strong>2019 Population and Housing Census</strong> (CC BY 4.0), the
+<strong>monthly consumer price series</strong> from the KNBS CPI
+Explorer, the <strong>323 economic dataflows of the KNBS Data
+Portal</strong> — GDP, trade, balance of payments, county government
+finance and much else, in SDMX form — and the <strong>202 datasets
+republished by Kenya Open Data for Africa</strong>, which carry the one
+thing no first-party portal serves as data: Gross County Product.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span><span class="op">)</span>                  <span class="co"># both families, source_id says which</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span><span class="op">)</span>                  <span class="co"># all families, source_id says which</span></span>
 <span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
-<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span><span class="op">)</span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
+<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span> <span class="co"># Gross County Product, 2013-2020</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="the-data-portal-sdmx">The Data Portal (SDMX)<a class="anchor" aria-label="anchor" href="#the-data-portal-sdmx"></a>
+</h2>
+<p>Every dataflow keeps its SDMX id (<code>DF_NAT_GDPCP</code>,
+<code>DF_BOP_A</code>, <code>DF_CPI_R</code>…);
+<code>knbs_indicators(source = "knbs_opendata")</code> lists all 323
+with their statistical domain as <code>topic</code>. Annual flows carry
+integer-year periods; monthly and quarterly ones carry first-of-period
+<code>Date</code>s, so <code>start</code> and <code>end</code> behave as
+everywhere else. Dimensions vary per flow; each becomes a pair of
+columns named by its SDMX id in lower case — <code>na_indic</code>
+holding the labels (“Accommodation and food service activities”) and
+<code>na_indic_code</code> the codes — and a Sex dimension becomes
+<code>sex</code>, lower-cased as in the census tables. The ids name the
+columns, not the portal’s labels, because the portal labels ten
+different dimensions just “Indicator”. Single-category dimensions
+(“Prices = Current prices”, “Unit = Kenya Shillings”) are facts about
+the whole dataflow and fold into <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code> notes
+instead of constant columns.</p>
+<p>Two cautions: the portal states <strong>no licence</strong>, and its
+geography codes are <strong>SDMX area codes, not census
+territories</strong> — <code>geo_level</code> is <code>NA</code> there,
+and they must never be joined against
+<code><a href="../reference/knbs_geographies.html">knbs_geographies()</a></code>.</p>
 <p>Chunks that contact the services are shown but not run, so building
 this vignette never depends on them.</p>
+</div>
+<div class="section level2">
+<h2 id="open-data-for-africa-the-republisher">Open Data for Africa (the republisher)<a class="anchor" aria-label="anchor" href="#open-data-for-africa-the-republisher"></a>
+</h2>
+<p><code>knbs_indicators(source = "opendataforafrica")</code> lists the
+202 datasets of <code>kenya.opendataforafrica.org</code>, the
+Knoema-operated portal on KNBS’s own portals page — 169 sourced from
+KNBS, the rest from the Central Bank of Kenya, ministries and agencies.
+Dataset ids are the portal’s own opaque slugs, so name search is the
+natural way in:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span>source <span class="op">=</span> <span class="st">"opendataforafrica"</span>, search <span class="op">=</span> <span class="st">"county product"</span><span class="op">)</span></span>
+<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span>
+<span><span class="va">gcp</span><span class="op">[</span><span class="va">gcp</span><span class="op">$</span><span class="va">table_code</span> <span class="op">==</span> <span class="st">"T3"</span> <span class="op">&amp;</span> <span class="va">gcp</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span>, <span class="op">]</span>  <span class="co"># current-price GCP, 2020</span></span></code></pre></div>
+<p>Three behaviours to know:</p>
+<ul>
+<li>
+<strong>Mixed frequencies.</strong> One dataset may hold annual,
+quarterly and monthly series side by side. Annual periods are integer
+years and sub-annual ones are <code>Date</code>s, which cannot share a
+column, so a mixed dataset refuses to pick silently — say
+<code>frequency = "annual"</code> (or <code>"quarterly"</code>,
+<code>"monthly"</code>) to choose.</li>
+<li>
+<strong>Republished provenance.</strong>
+<code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code> names the portal, the original producer,
+the dataset’s own licence label (most KNBS-sourced datasets state
+“Public Domain”) and the portal’s publication and update dates — the
+data vintage is visible, and can lag the producer’s newest PDFs.</li>
+<li>
+<strong>Geography codes are the portal’s region codes</strong>
+(<code>KE</code>, <code>KE-110-NA</code>, …), <code>geo_level</code> is
+<code>NA</code>, and they must never be joined against
+<code><a href="../reference/knbs_geographies.html">knbs_geographies()</a></code>.</li>
+</ul>
+</div>
 <div class="section level2">
 <h2 id="consumer-prices">Consumer prices<a class="anchor" aria-label="anchor" href="#consumer-prices"></a>
 </h2>
@@ -115,7 +182,7 @@ this vignette never depends on them.</p>
 with a <code>period_label</code> like <code>"2026-06"</code>.
 <code>start</code> and <code>end</code> take a year, a
 <code>"YYYY-MM"</code> month, or a date.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, start <span class="op">=</span> <span class="fl">2015</span>, end <span class="op">=</span> <span class="fl">2020</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="cpi-geography-is-not-census-geography">CPI geography is not census geography<a class="anchor" aria-label="anchor" href="#cpi-geography-is-not-census-geography"></a>
@@ -123,7 +190,7 @@ with a <code>period_label</code> like <code>"2026-06"</code>.
 <p>The default is the national series. The other level is
 <code>"region"</code> — the CPI collection strata: the Nairobi income
 bands, Nairobi Combined, and Rest of Urban.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, geo_level <span class="op">=</span> <span class="st">"region"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, geo_code <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"national"</span>, <span class="st">"1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>These region codes are the source’s own and mean nothing outside it.
@@ -148,7 +215,7 @@ vignette.</li>
 <p>The same portal publishes the monthly <strong>national average retail
 prices</strong> of the 22 commodities tracked for the CPI basket, in
 Kenya Shillings per stated unit:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_retail_prices.html">knbs_retail_prices</a></span><span class="op">(</span>commodity <span class="op">=</span> <span class="st">"petrol"</span>, start <span class="op">=</span> <span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_retail_prices.html">knbs_retail_prices</a></span><span class="op">(</span>start <span class="op">=</span> <span class="st">"2026-06"</span>, end <span class="op">=</span> <span class="st">"2026-06"</span><span class="op">)</span>   <span class="co"># one month, all 22</span></span></code></pre></div>
 <p>One row per commodity per month: <code>commodity_code</code>
@@ -187,7 +254,7 @@ from KNBS’s own portals page.</li>
 <div class="section level3">
 <h3 id="finding-a-table">Finding a table<a class="anchor" aria-label="anchor" href="#finding-a-table"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span>topic <span class="op">=</span> <span class="st">"Population"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span>search <span class="op">=</span> <span class="st">"marital"</span><span class="op">)</span></span></code></pre></div>
@@ -197,7 +264,7 @@ writing.</p>
 <div class="section level3">
 <h3 id="getting-observations">Getting observations<a class="anchor" aria-label="anchor" href="#getting-observations"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span><span class="op">)</span></span>
 <span><span class="va">pop</span></span></code></pre></div>
 <p>You can pass a name instead of an id; if several tables match you get
@@ -220,16 +287,34 @@ says which (<code>"national"</code>, <code>"county"</code>,
 categories (the 2019 census enumerated intersex as well as female and
 male).</li>
 <li>
-<strong>Every other dimension</strong> keeps its source id: a code
-column named for the dimension (for example <code>p18_vs1</code>) and a
-matching <code>&lt;id&gt;_label</code> column (“Marital Status”). The
-dimension names are in <code>knbs_metadata(pop)$notes</code>.</li>
+<strong>Every other dimension</strong> becomes a pair of columns
+under a short, readable name: <code>marital_status</code> holding the
+source’s labels (“Never Married”, “Total”) and
+<code>marital_status_code</code> its codes (<code>"1"</code>,
+<code>"T"</code>). The census API names its dimensions by questionnaire
+variable (<code>p18_vs1</code>) and labels them in long prose, so the
+names are curated, one per dimension the 2019 tables carry:
+<code>age</code>, <code>religion</code>, <code>schooling_status</code>,
+<code>internet_use</code>, <code>household_head_sex</code> and so on. A
+dimension added later that has no curated name keeps its source id. The
+source’s own dimension labels are in
+<code>knbs_metadata(pop)$notes</code>.</li>
+<li>
+<strong>Age</strong> mixes single years (<code>"0"</code> to
+<code>"99"</code>) with five-year groups (<code>"0-4"</code> …
+<code>"95-99"</code>, <code>"100-120"</code>) and a total, so summing
+every row counts people twice. <code>age_type</code> says which is which
+— <code>"total"</code>, <code>"single_year"</code>,
+<code>"age_group"</code> or <code>"other"</code> — and the groups are
+checked, on every read, to add up to the total and the single years to
+their group. <code>filter(age_type == "age_group")</code> gives a
+population pyramid that adds up.</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="filtering-geography">Filtering geography<a class="anchor" aria-label="anchor" href="#filtering-geography"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counties</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
 <span><span class="va">nairobi</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_code <span class="op">=</span> <span class="st">"47"</span><span class="op">)</span></span></code></pre></div>
 <p>Filters are applied after retrieval — the API serves whole tables —
@@ -240,9 +325,9 @@ cached for seven days by default.</p>
 <h3 id="a-worked-example">A worked example<a class="anchor" aria-label="anchor" href="#a-worked-example"></a>
 </h3>
 <p>County population aged 12+, both sexes, all marital statuses:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
-<span><span class="va">totals</span> <span class="op">&lt;-</span> <span class="va">pop</span><span class="op">[</span><span class="va">pop</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"total"</span> <span class="op">&amp;</span> <span class="va">pop</span><span class="op">$</span><span class="va">p18_vs1</span> <span class="op">==</span> <span class="st">"T"</span>,</span>
+<span><span class="va">totals</span> <span class="op">&lt;-</span> <span class="va">pop</span><span class="op">[</span><span class="va">pop</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"total"</span> <span class="op">&amp;</span> <span class="va">pop</span><span class="op">$</span><span class="va">marital_status</span> <span class="op">==</span> <span class="st">"Total"</span>,</span>
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"geo_name"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">totals</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">totals</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="op">]</span></span></code></pre></div>
 <p>Because <code>geo_code</code> is character with leading zeros intact,
@@ -252,7 +337,7 @@ way.</p>
 <div class="section level3">
 <h3 id="provenance-and-citation">Provenance and citation<a class="anchor" aria-label="anchor" href="#provenance-and-citation"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_metadata.html">knbs_metadata</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span></span></code></pre></div>
 <p>The metadata carry the licence statement, the release date
@@ -283,7 +368,7 @@ plausible-looking wrong table.</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">
