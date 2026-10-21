@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Mustapha Wasseja \email{muswaseja@gmail.com}
+\strong{Maintainer}: Mustapha Wasseja Mohammed \email{muswaseja@gmail.com}
 
 Authors:
 \itemize{
