@@ -10,6 +10,7 @@ portals, the FinAccess survey portal and the DHS Program's indicator API.
 ## Test environments
 
 * Local: Windows 11, R 4.5.2 (`R CMD check --as-cran`)
+* win-builder: R-devel (2026-10-20 r90728 ucrt)
 * GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1),
   macos-latest (R-release), windows-latest (R-release)
 
@@ -18,6 +19,9 @@ portals, the FinAccess survey portal and the DHS Program's indicator API.
 0 errors | 0 warnings | 1 note
 
 * This is a new submission.
+* Possibly misspelled words in DESCRIPTION: KNBS is the acronym of the Kenya
+  National Bureau of Statistics, spelled out in the same sentence;
+  "checksums" and "schemas" are correct.
 
 ## Notes for the reviewer
 

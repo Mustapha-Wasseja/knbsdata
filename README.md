@@ -92,7 +92,7 @@ Not implemented:
   machine-readable listing of questionnaires or reports.
 
 `vignette("source-status")` states all of this in full. Findings are in
-[`dev/source-discovery/source-audit.md`](dev/source-discovery/source-audit.md).
+[`dev/source-discovery/source-audit.md`](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/dev/source-discovery/source-audit.md).
 
 ## Installation
 
@@ -298,9 +298,9 @@ issue](https://github.com/Mustapha-Wasseja/knbsdata/issues/new/choose).
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), including the checklist for
+See [CONTRIBUTING.md](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CONTRIBUTING.md), including the checklist for
 adding a new source adapter. Please note that this project is released
-with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+with a [Contributor Code of Conduct](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CODE_OF_CONDUCT.md).
 
 ## Disclaimer
 
