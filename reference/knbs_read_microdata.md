@@ -77,12 +77,32 @@ metadata.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+# Any Stata or SPSS file; labels survive the round trip
+path <- tempfile(fileext = ".dta")
+haven::write_dta(
+  tibble::tibble(id = 1:3,
+                 sex = haven::labelled(c(1, 2, 1), c(Male = 1, Female = 2))),
+  path
+)
+knbs_read_microdata(path)
+#> # A tibble: 3 × 2
+#>      id sex       
+#>   <dbl> <dbl+lbl> 
+#> 1     1 1 [Male]  
+#> 2     2 2 [Female]
+#> 3     3 1 [Male]  
+knbs_read_microdata(path, col_select = "sex")
+#> # A tibble: 3 × 1
+#>   sex       
+#>   <dbl+lbl> 
+#> 1 1 [Male]  
+#> 2 2 [Female]
+#> 3 1 [Male]  
+if (FALSE) { # interactive()
+# A FinAccess survey, downloaded, verified and read with its provenance
+fa <- knbs_read_microdata(
+  knbs_download_finaccess("mse2023-stata", file.path(tempdir(), "finaccess"))
+)
 knbs_cite(fa)
-
-# Only some variables of a large file
-knbs_read_microdata("data/2024_Finaccess_Publicdata.dta",
-                    col_select = c(1:5))
-} # }
+}
 ```

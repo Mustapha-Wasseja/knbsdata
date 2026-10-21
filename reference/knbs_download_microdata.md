@@ -12,7 +12,7 @@ approval workflows, so the function reports what is required and stops.
 knbs_download_microdata(
   survey,
   files = NULL,
-  destination = ".",
+  destination,
   overwrite = FALSE,
   verify = TRUE,
   manifest = TRUE,
@@ -32,7 +32,7 @@ knbs_download_microdata(
 
 - destination:
 
-  Directory to write to.
+  Directory to write to. Unused: nothing is downloaded.
 
 - overwrite:
 
@@ -78,8 +78,15 @@ for open microdata.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Raises an error explaining the official access process:
-knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
-} # }
+# Raises an error explaining the official access process; contacts nothing.
+try(knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01"))
+#> Error in knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01") : 
+#>   Microdata from "kenada" cannot be downloaded programmatically.
+#> ✖ Every download requires an account with the archive.
+#> ℹ Register and request access at
+#>   <https://statistics.knbs.or.ke/nada/index.php/home>.
+#> ℹ knbsdata does not automate sign-in, licence acceptance or approval workflows.
+#> ℹ Use `knbs_survey_files()` to see what the study holds and on what terms.
+#> ℹ Open microdata, the FinAccess surveys, are listed by
+#>   `knbs_finaccess_files()`.
 ```

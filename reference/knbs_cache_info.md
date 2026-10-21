@@ -23,9 +23,12 @@ Zero rows if nothing is cached.
 ## Examples
 
 ``` r
+# A throwaway cache, so the example leaves yours alone
+op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
 knbs_cache_info()
 #> # A tibble: 0 × 8
 #> # ℹ 8 variables: cache_key <chr>, source_id <chr>, operation <chr>,
 #> #   resource_id <chr>, retrieved_at <chr>, expires_at <chr>, expired <lgl>,
 #> #   size_bytes <dbl>
+options(op)
 ```

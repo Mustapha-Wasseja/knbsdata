@@ -88,8 +88,8 @@ The publications library is listed once a day and cached, as for
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 knbs_releases(since = "2026-09-01")
 knbs_releases(series = c("cpi", "lei"), since = "2026-01-01")
-} # }
+}
 ```

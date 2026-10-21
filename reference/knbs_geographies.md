@@ -72,8 +72,8 @@ whose observations carry the same codes.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 counties <- knbs_geographies(level = "county")
 knbs_geographies(parent = "01")
-} # }
+}
 ```

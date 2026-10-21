@@ -9,7 +9,7 @@ retrieved, which release it represents and how it should be cited."></head><body
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,6 +78,11 @@ retrieved, which release it represents and how it should be cited.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Metadata accompany every object the package returns.</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">knbs_metadata</span><span class="op">(</span><span class="fu"><a href="knbs_finaccess_files.html">knbs_finaccess_files</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">producer</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya"</span>
+<span class="r-in"><span><span class="va">meta</span><span class="op">$</span><span class="va">licence</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Not stated by the source"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -85,7 +90,7 @@ retrieved, which release it represents and how it should be cited.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">

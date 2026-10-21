@@ -86,8 +86,8 @@ would be worse than an honest error.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 gdp <- knbs_abstract_table("2.2")
 expenditure <- knbs_abstract_table("expenditure on the gross domestic")
-} # }
+}
 ```

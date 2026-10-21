@@ -45,7 +45,8 @@ knbs_search_surveys(
 
 - limit:
 
-  Maximum number of studies to return.
+  Maximum number of studies to return, counted after the `year`,
+  `producer` and `access` filters.
 
 - source:
 
@@ -84,8 +85,8 @@ retrieves. Filling them here would mean one extra request per row.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 knbs_search_surveys("household budget")
 knbs_search_surveys(year = c(2015, 2020), access = "public_use")
-} # }
+}
 ```

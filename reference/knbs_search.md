@@ -89,11 +89,43 @@ Geographic codes are not searched here; see
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# The microdata and table catalogues ship with the package: no request
+knbs_search("financial inclusion", type = "microdata")
+#> <knbs_catalogue>
+#> Title: KNBS search results for "financial inclusion"
+#> Rows: 8
+#> Source: Kenya National Bureau of Statistics
+#> 
+#> # A tibble: 8 × 10
+#>   resource_type resource_id title     topic period release_date access source_id
+#>   <chr>         <chr>       <chr>     <chr> <chr>  <date>       <chr>  <chr>    
+#> 1 microdata     hh2024      FinAcces… Fina… 2024   NA           open   finaccess
+#> 2 microdata     hh2021      FinAcces… Fina… 2021   NA           open   finaccess
+#> 3 microdata     hh2016      FinAcces… Fina… 2016   NA           open   finaccess
+#> 4 microdata     hh2013      FinAcces… Fina… 2013   NA           open   finaccess
+#> 5 microdata     hh2009      FinAcces… Fina… 2009   NA           open   finaccess
+#> 6 microdata     hh2006      FinAcces… Fina… 2006   NA           open   finaccess
+#> 7 microdata     mse2022     FinAcces… Fina… 2022   NA           open   finaccess
+#> 8 microdata     mse2023     FinAcces… Fina… 2023   NA           open   finaccess
+#> # ℹ 2 more variables: url <chr>, get <chr>
+knbs_search("capital formation", type = "table")
+#> <knbs_catalogue>
+#> Title: KNBS search results for "capital formation"
+#> Rows: 4
+#> Source: Kenya National Bureau of Statistics
+#> 
+#> # A tibble: 4 × 10
+#>   resource_type resource_id title     topic period release_date access source_id
+#>   <chr>         <chr>       <chr>     <chr> <chr>  <date>       <chr>  <chr>    
+#> 1 table         2.7b        Table 2.… Chap… 2015-… NA           open   knbs_pub…
+#> 2 table         2.7d        Table 2.… Chap… 2015-… NA           open   knbs_pub…
+#> 3 table         2.7a        Table 2.… Chap… 2015-… NA           open   knbs_pub…
+#> 4 table         2.7c        Table 2.… Chap… 2015-… NA           open   knbs_pub…
+#> # ℹ 2 more variables: url <chr>, get <chr>
+if (FALSE) { # interactive()
 knbs_search("consumer price index")
 knbs_search("gdp", type = c("indicator", "table"))
-knbs_search("financial inclusion", type = "microdata")
 hits <- knbs_search("county population")
 hits$get[[1]] # the call that fetches the top result
-} # }
+}
 ```

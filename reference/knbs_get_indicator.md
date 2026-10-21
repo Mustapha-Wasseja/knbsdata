@@ -133,11 +133,11 @@ summing.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
 gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
 stunting <- knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county") # KDHS
-} # }
+}
 ```

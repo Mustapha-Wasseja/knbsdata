@@ -1,6 +1,37 @@
 # Changelog
 
-## knbsdata (development version)
+## knbsdata 0.5.0
+
+First release prepared for CRAN.
+
+### Breaking change: downloads name their destination
+
+[`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md)
+and
+[`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)
+no longer default `destination` to the working directory: the package
+writes only where you say. A call without one stops with a classed error
+that says so. The `get` calls
+[`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+and
+[`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
+hand back now name `destination = "."` explicitly.
+
+### Packaging
+
+- Pascal Ochieng Owiti (Kenya National Bureau of Statistics) joins as an
+  author. `citation("knbsdata")` names both authors and reads the
+  version from the package rather than a hard-coded one.
+- Examples that contact a source run only in an interactive session, and
+  those that need nothing but the package now run everywhere: citing and
+  reading the FinAccess catalogue, writing it with
+  [`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md),
+  reading a Stata file with
+  [`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md),
+  and the cache functions, which work on a throwaway cache rather than
+  yours.
+- The tests give every test a temporary cache, so no test can write to
+  the user’s own.
 
 ### Health and demography from the KDHS
 
@@ -43,6 +74,40 @@ as every other source.
   read, and the audit records the reasoning.
 - The test suite now fails any test that would reach the network.
 
+### Fixes found by a live run on 2026-10-15
+
+- [`knbs_retail_prices()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_retail_prices.md)
+  refused the whole history with “duplicate keys” for every user,
+  although the source holds none (2,024 records, no repeats). Its
+  duplicate check paired each record’s commodity with another record’s
+  month once the rows were sorted. That went unnoticed while the CPI
+  Explorer sent its records already sorted, and broke when it stopped.
+  The check now reads both in the source’s own order.
+- [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
+  applied `producer` and `access` to the first page only, a page `limit`
+  sized, so it could silently return fewer studies than exist:
+  `producer = "Ministry of Health", limit = 20` returned 2 of the
+  archive’s 48. Whenever `producer`, `access` or `year` is given, every
+  match is now fetched first and `limit` applied after filtering. The
+  wider page is cached under its own key, so an unfiltered search never
+  picks it up.
+- [`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md),
+  [`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
+  and
+  [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
+  work again where they had failed with “unable to get local issuer
+  certificate”, as they did on Linux and on the weekly source check.
+  Since its certificate renewed in August, www.knbs.or.ke sends its
+  certificate without the Let’s Encrypt intermediates that link it to a
+  trusted root (audit F-43, the F-06 fault back). Browsers fetch those
+  themselves; R’s curl does not. The package now ships them, each
+  verified to chain to ISRG Root X1 or X2, and retries a request to
+  `knbs.or.ke` that fails certificate verification once with them as its
+  trust store. Verification is never switched off, other hosts never use
+  them, and once KNBS fixes its server they go unused.
+- `R/download.R` no longer begins with a UTF-8 byte-order mark, which
+  older installs (pkgload 1.3) could not parse.
+
 ### Open survey microdata: FinAccess
 
 The FinAccess household survey, Kenya’s survey of financial inclusion by
@@ -63,9 +128,9 @@ weighted microdata for anyone to download. The package now reaches it.
   SHA-256 are checked after, against checksums taken from full downloads
   of every file. A file already downloaded and identical is reused
   without a request, so
-  `knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))` is safe
-  to re-run. The 2013 survey’s Stata copy, behind a registration form on
-  Harvard Dataverse, is listed and never fetched.
+  `knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))`
+  is safe to re-run. The 2013 survey’s Stata copy, behind a registration
+  form on Harvard Dataverse, is listed and never fetched.
 - [`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md)
   reads Stata, SPSS and Excel files and the data inside a `.zip`,
   keeping value and variable labels, and attaches the provenance in the

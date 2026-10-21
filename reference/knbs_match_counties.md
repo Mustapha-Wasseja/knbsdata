@@ -50,7 +50,7 @@ name), `matched_by` (`"name"`, `"number"`, `"national"`, or `NA`) and
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 knbs_match_counties(c("Nairobi City County", "Kakamenga", "12"))
-} # }
+}
 ```

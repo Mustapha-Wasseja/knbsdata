@@ -66,9 +66,9 @@ so; the error comes only when no source answers.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 knbs_indicators()
 knbs_indicators(topic = "prices")
 knbs_indicators(search = "marital")
-} # }
+}
 ```

@@ -80,8 +80,8 @@ them identical.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (FALSE) { # interactive()
 knbs_county_code(c("Murang'a", "MURANGA", "Nairobi", "taita/taveta", "47"))
 #> [1] "21" "21" "47" "06" "47"
-} # }
+}
 ```

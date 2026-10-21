@@ -21,7 +21,7 @@ can say so later.
 ``` r
 knbs_download_finaccess(
   file,
-  destination = ".",
+  destination,
   overwrite = FALSE,
   verify = TRUE,
   quiet = knbs_option("quiet")
@@ -38,7 +38,8 @@ knbs_download_finaccess(
 
 - destination:
 
-  Directory to write into; created if needed.
+  Directory to write into; created if needed. There is no default:
+  nothing is written anywhere you have not named.
 
 - overwrite:
 
@@ -76,9 +77,9 @@ bundles these files. The first download in a session says so.
 **Already downloaded.** A file already in `destination` is not
 downloaded again if it is byte-identical to the catalogued one; its
 record is returned instead. That makes
-`knbs_read_microdata(knbs_download_finaccess("hh2024-stata"))` safe to
-re-run. A file there that differs is left alone, and the call stops
-unless `overwrite = TRUE`.
+`knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))`
+safe to re-run. A file there that differs is left alone, and the call
+stops unless `overwrite = TRUE`.
 
 **Large files.** The 2024 files are 160 to 290 MB. Downloads stream to
 disk and show progress unless `quiet`. They are not held to the
@@ -101,12 +102,14 @@ does not automate sign-in, licence acceptance or approval workflows.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# The 2024 household survey, Stata format (160 MB)
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+if (FALSE) { # interactive()
+dir <- file.path(tempdir(), "finaccess")
 
-# Every round's documentation
+# The 2024 household survey, Stata format (160 MB)
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", dir))
+
+# The questionnaires and manuals
 knbs_finaccess_files(content = c("questionnaire", "manual")) |>
-  knbs_download_finaccess("docs")
-} # }
+  knbs_download_finaccess(dir)
+}
 ```

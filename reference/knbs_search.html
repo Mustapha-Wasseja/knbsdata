@@ -21,7 +21,7 @@ paste apart."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,13 +142,45 @@ catalogue answers.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The microdata and table catalogues ship with the package: no request</span></span></span>
+<span class="r-in"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"financial inclusion"</span>, type <span class="op">=</span> <span class="st">"microdata"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;knbs_catalogue&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Title: KNBS search results for "financial inclusion"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source: Kenya National Bureau of Statistics</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   resource_type resource_id title     topic period release_date access source_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> microdata     hh2024      FinAcces… Fina… 2024   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> microdata     hh2021      FinAcces… Fina… 2021   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> microdata     hh2016      FinAcces… Fina… 2016   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> microdata     hh2013      FinAcces… Fina… 2013   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> microdata     hh2009      FinAcces… Fina… 2009   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> microdata     hh2006      FinAcces… Fina… 2006   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> microdata     mse2022     FinAcces… Fina… 2022   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> microdata     mse2023     FinAcces… Fina… 2023   <span style="color: #BB0000;">NA</span>           open   finaccess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: url &lt;chr&gt;, get &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"capital formation"</span>, type <span class="op">=</span> <span class="st">"table"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">&lt;knbs_catalogue&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Title: KNBS search results for "capital formation"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Source: Kenya National Bureau of Statistics</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   resource_type resource_id title     topic period release_date access source_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> table         2.7b        Table 2.… Chap… 2015-… <span style="color: #BB0000;">NA</span>           open   knbs_pub…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> table         2.7d        Table 2.… Chap… 2015-… <span style="color: #BB0000;">NA</span>           open   knbs_pub…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> table         2.7a        Table 2.… Chap… 2015-… <span style="color: #BB0000;">NA</span>           open   knbs_pub…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> table         2.7c        Table 2.… Chap… 2015-… <span style="color: #BB0000;">NA</span>           open   knbs_pub…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: url &lt;chr&gt;, get &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
 <span class="r-in"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"gdp"</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"indicator"</span>, <span class="st">"table"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">knbs_search</span><span class="op">(</span><span class="st">"financial inclusion"</span>, type <span class="op">=</span> <span class="st">"microdata"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu">knbs_search</span><span class="op">(</span><span class="st">"county population"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">hits</span><span class="op">$</span><span class="va">get</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="co"># the call that fetches the top result</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -156,7 +188,7 @@ catalogue answers.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja.</p>
+  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
 </div>
 
 <div class="pkgdown-footer-right">
