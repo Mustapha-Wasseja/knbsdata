@@ -11,7 +11,7 @@ and writing a `<file>.metadata.json` provenance sidecar next to it.
 ``` r
 knbs_download_publication(
   publication_id,
-  destination,
+  destination = ".",
   overwrite = FALSE,
   verify = TRUE,
   sidecar = TRUE,
@@ -29,8 +29,7 @@ knbs_download_publication(
 
 - destination:
 
-  Directory to write into; created if needed. There is no default:
-  nothing is written anywhere you have not named.
+  Directory to write into.
 
 - overwrite:
 
@@ -69,8 +68,8 @@ to cite what you downloaded.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 pubs <- knbs_publications("economic survey", year = 2026)
-knbs_download_publication(pubs$publication_id[[1]], tempdir())
-}
+knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+} # }
 ```

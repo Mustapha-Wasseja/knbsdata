@@ -26,9 +26,7 @@ to remove everything.
 ## Examples
 
 ``` r
-# A throwaway cache, so the example leaves yours alone
-op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
+if (FALSE) { # \dontrun{
 knbs_cache_prune()
-#> ✔ Removed 0 expired cache entries.
-options(op)
+} # }
 ```

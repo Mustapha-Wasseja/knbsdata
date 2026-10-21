@@ -64,8 +64,8 @@ for the price *indices* the same portal serves.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 knbs_retail_prices(commodity = "petrol", start = 2024)
 knbs_retail_prices(start = "2026-06", end = "2026-06")
-}
+} # }
 ```

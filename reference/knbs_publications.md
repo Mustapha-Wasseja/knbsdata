@@ -85,9 +85,9 @@ filters only within the records retrieved.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 knbs_publications("economic survey")
 knbs_publications("consumer price", format = "xlsx")
 knbs_publications("census", year = c(2019, 2023))
-}
+} # }
 ```

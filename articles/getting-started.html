@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,6 @@
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul>
 </li>
@@ -64,7 +63,7 @@
       <h1>Getting started with knbsdata</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/v0.4.0/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -73,14 +72,13 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Mustapha-Wasseja/knbsdata" class="external-link">knbsdata</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>knbsdata</code> is a client for official statistics published
-by the Kenya National Bureau of Statistics. It covers six source
+by the Kenya National Bureau of Statistics. It covers five source
 families: <strong>survey and census study discovery</strong>,
 <strong>publications</strong> (statistical releases, reports and
 workbooks, downloadable with verification), <strong>census
 tables</strong> as tidy observations, <strong>monthly consumer
-prices</strong> from 2009 onwards, <strong>the economy as SDMX
-dataflows</strong> (GDP, trade, county finance and 320 more), and
-<strong>geographic reference codes</strong> for county-level joins.</p>
+prices</strong> from 2009 onwards, and <strong>geographic reference
+codes</strong> for county-level joins.</p>
 <p>Code that contacts the archive is shown but not run here, so building
 this vignette never depends on a live service.</p>
 <div class="section level2">
@@ -88,37 +86,28 @@ this vignette never depends on a live service.</p>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_sources.html">knbs_sources</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 8</span></span></span>
 <span><span class="co">#&gt;   source_id         source_name  source_type operations stability authentication</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> kenada            Kenya Natio… survey_cat… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> finaccess         FinAccess H… static_fil… <span style="color: #949494;">&lt;chr [1]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> knbs_publications KNBS Public… publicatio… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> knbs_indicators   KNBS Census… indicator_… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> knbs_cpi          KNBS CPI Ex… indicator_… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> knbs_opendata     KNBS Data P… indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> opendataforafrica Kenya Open … indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> dhs_program       The DHS Pro… indicator_… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> fake_source       Offline tes… fake        <span style="color: #949494;">&lt;chr [6]&gt;</span>  discovery none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> knbs_publications KNBS Public… publicatio… <span style="color: #949494;">&lt;chr [3]&gt;</span>  experime… none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> knbs_indicators   KNBS Census… indicator_… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> knbs_cpi          KNBS CPI Ex… indicator_… <span style="color: #949494;">&lt;chr [4]&gt;</span>  experime… none          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> fake_source       Offline tes… fake        <span style="color: #949494;">&lt;chr [6]&gt;</span>  discovery none          </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: last_verified &lt;date&gt;, base_url &lt;chr&gt;</span></span></span></code></pre></div>
-<p>Eight sources are verified and usable: <code>kenada</code>, the Kenya
-National Data Archive (surveys); <code>finaccess</code>, the FinAccess
-portal (open survey microdata); <code>knbs_publications</code>, the KNBS
-website’s media library; <code>knbs_indicators</code>, the KNBS census
-data service (2019 census tables, CC BY 4.0); <code>knbs_cpi</code>, the
-CPI Explorer (monthly consumer prices from 2009);
-<code>knbs_opendata</code>, the Data Portal (323 SDMX dataflows: GDP,
-trade, county finance and more); <code>opendataforafrica</code>, the
-Knoema-operated republisher that fills gaps no first-party portal serves
-as data — Gross County Product above all; and <code>dhs_program</code>,
-the DHS Program’s API for the Kenya Demographic and Health Survey
-indicators, by county from 2014. A source the audit has not verified
-stays at stability <code>discovery</code> and is never contacted — there
-is nothing there to call. The <code>source-status</code> vignette says
-exactly what is and is not covered, and why.</p>
+<p>Four sources are verified and usable: <code>kenada</code>, the Kenya
+National Data Archive (surveys); <code>knbs_publications</code>, the
+KNBS website’s media library; <code>knbs_indicators</code>, the KNBS
+census data service (2019 census tables, CC BY 4.0); and
+<code>knbs_cpi</code>, the CPI Explorer (monthly consumer prices from
+2009). A source the audit has not verified stays at stability
+<code>discovery</code> and is never contacted — there is nothing there
+to call. GDP and other running series are not yet available as data; the
+<code>source-status</code> vignette says exactly what is and is not
+covered, and why.</p>
 </div>
 <div class="section level2">
-<h2 id="five-ideas-worth-knowing">Five ideas worth knowing<a class="anchor" aria-label="anchor" href="#five-ideas-worth-knowing"></a>
+<h2 id="four-ideas-worth-knowing">Four ideas worth knowing<a class="anchor" aria-label="anchor" href="#four-ideas-worth-knowing"></a>
 </h2>
 <div class="section level3">
 <h3 id="everything-carries-its-provenance">1. Everything carries its provenance<a class="anchor" aria-label="anchor" href="#everything-carries-its-provenance"></a>
@@ -174,51 +163,11 @@ partial data dressed up as a result:</p>
 class — not <code>condition</code>, because httr2 signals a benign
 condition on every request.</p>
 </div>
-<div class="section level3">
-<h3 id="everything-is-a-tibble-that-speaks-tidyverse">5. Everything is a tibble that speaks tidyverse<a class="anchor" aria-label="anchor" href="#everything-is-a-tibble-that-speaks-tidyverse"></a>
-</h3>
-<p>Every data-carrying result is a tidy tibble — one row per
-observation, built on vctrs — so dplyr verbs work directly and keep the
-provenance attached: filter, mutate, arrange, join, and
-<code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code> still answers on the result. Aggregations
-(<code>summarise</code>) and reshapes (<code>pivot_wider</code>) return
-plain tibbles, because a derived table is your data, not the source’s;
-<code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">tibble::as_tibble()</a></code> drops the wrapper whenever you want
-out.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span> <span class="op">|&gt;</span>                    <span class="co"># Gross County Product</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">table_code</span> <span class="op">==</span> <span class="st">"T3"</span>, <span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">value</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span> <span class="op">|&gt;</span>                       <span class="co"># years across, like print</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">industry</span>, <span class="va">period</span>, <span class="va">value</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">period</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="a-first-session">A first session<a class="anchor" aria-label="anchor" href="#a-first-session"></a>
 </h2>
-<p>Not sure where something lives? Search everything at once —
-indicators, Statistical Abstract tables, surveys and publications — and
-each result comes with the call that retrieves it:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_search.html">knbs_search</a></span><span class="op">(</span><span class="st">"consumer price index"</span><span class="op">)</span></span>
-<span><span class="va">hits</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"resource_type"</span>, <span class="st">"resource_id"</span>, <span class="st">"title"</span>, <span class="st">"get"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;   resource_type resource_id   title                            get</span></span>
-<span><span class="co">#&gt; 1 indicator     CPI_ALL_ITEMS Consumer Price Index, all items  knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")</span></span>
-<span><span class="co">#&gt; 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052", destination = ".")</span></span>
-<span><span class="co">#&gt; ...</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">hits</span><span class="op">$</span><span class="va">get</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>   <span class="co"># or copy the call</span></span></code></pre></div>
-<p>Words match by stem (“index” finds “Indices”), and CPI, GDP, GCP,
-KDHS and a few other acronyms are understood both ways. The first search
-of the day lists the publications library, which takes a few seconds;
-after that searches are instant.</p>
-<p>Or go to one catalogue directly:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Find something</span></span>
 <span><span class="va">studies</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_search_surveys.html">knbs_search_surveys</a></span><span class="op">(</span><span class="st">"household budget"</span><span class="op">)</span></span>
 <span></span>
@@ -235,20 +184,17 @@ after that searches are instant.</p>
 <span><span class="fu"><a href="../reference/knbs_cite.html">knbs_cite</a></span><span class="op">(</span><span class="va">meta</span><span class="op">)</span></span></code></pre></div>
 <p>Publications work the same way, and these files <em>can</em> be
 downloaded — they are served openly by the KNBS website:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pubs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_publications.html">knbs_publications</a></span><span class="op">(</span><span class="st">"economic survey"</span>, year <span class="op">=</span> <span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_download_publication.html">knbs_download_publication</a></span><span class="op">(</span><span class="va">pubs</span><span class="op">$</span><span class="va">publication_id</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="st">"data/publications"</span><span class="op">)</span></span></code></pre></div>
 <p>The download is verified (a web page arriving where a document was
 expected is refused), checksummed with SHA-256, and given a
 <code>&lt;file&gt;.metadata.json</code> provenance sidecar.</p>
-<p>Indicators come back as tidy observations — consumer prices, the
-national accounts, Gross County Product, and census tables with
-geography down to sub-county:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Indicators come back as tidy observations — monthly consumer prices,
+and census tables with geography down to sub-county:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
-<span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span><span class="op">)</span>            <span class="co"># GDP by activity, SDMX</span></span>
-<span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_PF_CG_REV"</span><span class="op">)</span>                   <span class="co"># county govt revenue</span></span>
-<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span>                 <span class="co"># Gross County Product</span></span>
+<span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_INFLATION_YOY"</span>, start <span class="op">=</span> <span class="fl">2023</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span>topic <span class="op">=</span> <span class="st">"Population"</span><span class="op">)</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
@@ -261,7 +207,7 @@ geography down to sub-county:</p>
 </h2>
 <p>Options are ordinary R options under the <code>knbsdata.</code>
 prefix:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_options.html">knbs_options</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $cache</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -280,7 +226,7 @@ prefix:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $quiet</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_options.html">knbs_options</a></span><span class="op">(</span>timeout <span class="op">=</span> <span class="fl">60</span>, retries <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -290,7 +236,7 @@ prefix:</p>
 operation, the normalised query and the package’s parser version — so
 upgrading the package invalidates anything a new parser would read
 differently.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_cache_info.html">knbs_cache_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_search_surveys.html">knbs_search_surveys</a></span><span class="op">(</span><span class="st">"household budget"</span>, refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># ignore the cache</span></span>
 <span><span class="fu"><a href="../reference/knbs_cache_clear.html">knbs_cache_clear</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -322,7 +268,7 @@ and the limitations of this release</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
+  <p>Developed by Mustapha Wasseja.</p>
 </div>
 
 <div class="pkgdown-footer-right">

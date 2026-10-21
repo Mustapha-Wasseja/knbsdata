@@ -629,7 +629,7 @@ Tibble / sf / knbs_* S3 object
 
 Exported functions such as:
 
-- [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
+- `knbs_search()`
 - [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
 - [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
 - [`knbs_variables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_variables.md)

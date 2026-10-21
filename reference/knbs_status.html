@@ -13,7 +13,7 @@ reports what happened."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">knbsdata</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,6 @@ reports what happened."></head><body>
     <li><a class="dropdown-item" href="../articles/survey-catalogue.html">Working with the survey catalogue</a></li>
     <li><a class="dropdown-item" href="../articles/census-indicators.html">Indicators: census tables and consumer prices</a></li>
     <li><a class="dropdown-item" href="../articles/county-data.html">County codes and joins</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical-abstract.html">The Statistical Abstract as tidy tables</a></li>
     <li><a class="dropdown-item" href="../articles/source-status.html">Source status and limitations</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -44,7 +43,7 @@ reports what happened."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Report on the health of supported sources</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/main/R/status.R" class="external-link"><code>R/status.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Mustapha-Wasseja/knbsdata/blob/v0.4.0/R/status.R" class="external-link"><code>R/status.R</code></a></small>
       <div class="d-none name"><code>knbs_status.Rd</code></div>
     </div>
 
@@ -111,24 +110,21 @@ is nothing to contact. It is never checked live.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Offline: reports what the registry knows, contacts nothing.</span></span></span>
-<span class="r-in"><span><span class="fu">knbs_status</span><span class="op">(</span>live <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 7</span></span>
+<span class="r-in"><span><span class="fu">knbs_status</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   source_id    operation status http_status response_time_ms checked_at         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> kenada       search_s… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> finaccess    download… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> knbs_public… search_p… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> knbs_indica… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> knbs_cpi     list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> knbs_openda… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> opendatafor… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> dhs_program  list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> fake_source  search_s… unver…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:46:08</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> kenada       search_s… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:48:22</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> knbs_public… search_p… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:48:22</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> knbs_indica… list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:48:22</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> knbs_cpi     list_ind… not_c…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:48:22</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> fake_source  search_s… unver…          <span style="color: #BB0000;">NA</span>               <span style="color: #BB0000;">NA</span> 2026-10-21 <span style="color: #949494;">13:48:22</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: message &lt;chr&gt;</span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Contacts each verified source.</span></span></span>
 <span class="r-in"><span><span class="fu">knbs_status</span><span class="op">(</span>live <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -136,7 +132,7 @@ is nothing to contact. It is never checked live.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mustapha Wasseja Mohammed, Pascal Ochieng Owiti.</p>
+  <p>Developed by Mustapha Wasseja.</p>
 </div>
 
 <div class="pkgdown-footer-right">

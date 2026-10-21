@@ -2,9 +2,8 @@
 
 **\[experimental\]**
 
-Returns one row per observation, in one schema whichever source serves
-the indicator: a census table, a consumer price series, a Data Portal
-dataflow, a republished dataset or a DHS Program survey indicator.
+Returns one row per observation for a census table or a consumer price
+series, depending on the indicator asked for.
 
 ## Usage
 
@@ -15,7 +14,6 @@ knbs_get_indicator(
   end = NULL,
   geo_level = NULL,
   geo_code = NULL,
-  frequency = NULL,
   source = NULL,
   cache = knbs_option("cache"),
   refresh = FALSE
@@ -38,19 +36,11 @@ knbs_get_indicator(
 - geo_level:
 
   Keep only these levels. Census tables: `"national"`, `"county"`,
-  `"subcounty"`. CPI series: `"national"`, `"region"`. DHS Program
-  indicators: `"national"`, `"region"`, `"county"`.
+  `"subcounty"`. CPI series: `"national"`, `"region"`.
 
 - geo_code:
 
   Keep only these codes, as character, in the indicator's own geography.
-
-- frequency:
-
-  Keep only series of this frequency: `"annual"`, `"quarterly"` or
-  `"monthly"`. Only the Open Data for Africa source accepts it — its
-  datasets may carry annual and sub-annual series side by side, and a
-  mixed dataset asks you to choose rather than picking one silently.
 
 - source:
 
@@ -96,34 +86,7 @@ For the CPI family the default is the national series; ask for
 `geo_level = "region"` or name `geo_code`s for more. The CPI portal
 states no licence and no index base period;
 [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
-on the result says so. If the CPI Explorer is down, the error names the
-KNBS Data Portal series that stands in for the one asked for, and how
-closely: the portal's index has matched it, its rounded inflation rates
-have not always.
-
-DHS Program indicators (`source = "dhs_program"`) come with a row for
-every survey that measured them, 1989 to 2022, with `period` the survey
-year and `survey` naming it ("2022 DHS", "2020 MIS").
-`characteristic_type` and `characteristic` say which group a value
-describes: the `"Total"`, a background characteristic such as
-`"Wealth quintile"` or `"Residence"` (for Kenya as a whole), or a
-`"Region"`. Region rows are the former provinces, or malaria zones, at
-`geo_level` `"region"` with no code; from 2014 the 47 counties are
-`geo_level` `"county"` with 2019 census codes, so they join the census
-tables. Where the DHS Program gives a value for more than one reference
-period, every value is kept and `preferred` marks the one it prefers:
-keep `preferred` rows for one value per survey and group.
-
-Every other dimension of a table becomes a pair of columns, `<name>`
-holding the source's labels and `<name>_code` its codes, the way
-`geo_name` and `geo_code` pair up. Census tables use short curated names
-(`marital_status`, `age`, `religion`, ...); Data Portal flows use their
-SDMX dimension id in lower case (`na_indic`, `commodity`); Open Data for
-Africa datasets use the portal's dimension id (`table`, `indicator`). A
-Sex dimension is always `sex`, in lower case. The census age table mixes
-single years with five-year groups, so it carries `age_type` (`"total"`,
-`"single_year"`, `"age_group"`, `"other"`): keep one type before
-summing.
+on the result says so.
 
 ## See also
 
@@ -133,11 +96,9 @@ summing.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 inflation <- knbs_get_indicator("CPI_INFLATION_YOY", geo_level = "region")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product
-stunting <- knbs_get_indicator("CN_NUTS_C_HA2", geo_level = "county") # KDHS
-}
+} # }
 ```

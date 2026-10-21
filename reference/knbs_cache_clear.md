@@ -26,8 +26,7 @@ to remove only expired entries.
 ## Examples
 
 ``` r
-# A throwaway cache, so the example leaves yours alone
-op <- options(knbsdata.cache_dir = tempfile("knbs-cache-"))
+if (FALSE) { # \dontrun{
 knbs_cache_clear()
-options(op)
+} # }
 ```

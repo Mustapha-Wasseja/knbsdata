@@ -31,9 +31,4 @@ A `knbs_metadata` object.
 
 ``` r
 # Metadata accompany every object the package returns.
-meta <- knbs_metadata(knbs_finaccess_files())
-meta$producer
-#> [1] "Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya"
-meta$licence
-#> [1] "Not stated by the source"
 ```

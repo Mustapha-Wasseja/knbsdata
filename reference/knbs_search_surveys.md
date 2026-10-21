@@ -29,11 +29,7 @@ knbs_search_surveys(
 - year:
 
   A single year, or `c(from, to)` for a range. Matched against the
-  study's reference years; a study spanning several years matches if any
-  of them falls in the range. Studies the source records no reference
-  year for cannot match, so they are excluded with a
-  `knbs_warning_missing_metadata` warning that says how many, and names
-  them in its `excluded` field.
+  study's reference years.
 
 - producer:
 
@@ -45,8 +41,7 @@ knbs_search_surveys(
 
 - limit:
 
-  Maximum number of studies to return, counted after the `year`,
-  `producer` and `access` filters.
+  Maximum number of studies to return.
 
 - source:
 
@@ -85,8 +80,8 @@ retrieves. Filling them here would mean one extra request per row.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 knbs_search_surveys("household budget")
 knbs_search_surveys(year = c(2015, 2020), access = "public_use")
-}
+} # }
 ```

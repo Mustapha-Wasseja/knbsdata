@@ -2,9 +2,10 @@
 
 **\[experimental\]**
 
-The Kenya National Data Archive gates every download behind an account,
-and this package does not automate sign-in, licence acceptance or
-approval workflows, so the function reports what is required and stops.
+No supported source currently permits this. The Kenya National Data
+Archive gates every download behind an account, and this package does
+not automate sign-in, licence acceptance or approval workflows, so the
+function reports what is required and stops.
 
 ## Usage
 
@@ -12,7 +13,7 @@ approval workflows, so the function reports what is required and stops.
 knbs_download_microdata(
   survey,
   files = NULL,
-  destination,
+  destination = ".",
   overwrite = FALSE,
   verify = TRUE,
   manifest = TRUE,
@@ -32,7 +33,7 @@ knbs_download_microdata(
 
 - destination:
 
-  Directory to write to. Unused: nothing is downloaded.
+  Directory to write to.
 
 - overwrite:
 
@@ -60,33 +61,16 @@ It exists so that the refusal is explicit and points at the official
 process, rather than the operation appearing to be unsupported by
 oversight.
 
-Microdata that their producers publish for anyone are another matter:
-the FinAccess household and MSE Tracker surveys are listed by
-[`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md)
-and downloaded by
-[`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md).
-Files obtained through the archive's own process can be read with
-[`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md).
-
 ## See also
 
 [`knbs_survey_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_survey_files.md)
-to see what a study holds and on what terms;
-[`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md)
-for open microdata.
+to see what a study holds and on what terms.
 
 ## Examples
 
 ``` r
-# Raises an error explaining the official access process; contacts nothing.
-try(knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01"))
-#> Error in knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01") : 
-#>   Microdata from "kenada" cannot be downloaded programmatically.
-#> ✖ Every download requires an account with the archive.
-#> ℹ Register and request access at
-#>   <https://statistics.knbs.or.ke/nada/index.php/home>.
-#> ℹ knbsdata does not automate sign-in, licence acceptance or approval workflows.
-#> ℹ Use `knbs_survey_files()` to see what the study holds and on what terms.
-#> ℹ Open microdata, the FinAccess surveys, are listed by
-#>   `knbs_finaccess_files()`.
+if (FALSE) { # \dontrun{
+# Raises an error explaining the official access process:
+knbs_download_microdata("KEN-KNBS-KIHBS-2015-2016-v01")
+} # }
 ```

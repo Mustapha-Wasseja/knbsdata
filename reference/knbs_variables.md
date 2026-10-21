@@ -85,7 +85,7 @@ request per variable, so they are `NA` unless `details = TRUE`.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
-}
+} # }
 ```

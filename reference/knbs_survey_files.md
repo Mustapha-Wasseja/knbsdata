@@ -70,7 +70,7 @@ points to.
 ## Examples
 
 ``` r
-if (FALSE) { # interactive()
+if (FALSE) { # \dontrun{
 knbs_survey_files("KEN-KNBS-KIHBS-2015-2016-v01")
-}
+} # }
 ```

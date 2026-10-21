@@ -6,13 +6,11 @@ library(knbsdata)
 ```
 
 `knbsdata` is a client for official statistics published by the Kenya
-National Bureau of Statistics. It covers six source families: **survey
+National Bureau of Statistics. It covers five source families: **survey
 and census study discovery**, **publications** (statistical releases,
 reports and workbooks, downloadable with verification), **census
 tables** as tidy observations, **monthly consumer prices** from 2009
-onwards, **the economy as SDMX dataflows** (GDP, trade, county finance
-and 320 more), and **geographic reference codes** for county-level
-joins.
+onwards, and **geographic reference codes** for county-level joins.
 
 Code that contacts the archive is shown but not run here, so building
 this vignette never depends on a live service.
@@ -22,36 +20,28 @@ this vignette never depends on a live service.
 ``` r
 
 knbs_sources()
-#> # A tibble: 9 × 8
+#> # A tibble: 5 × 8
 #>   source_id         source_name  source_type operations stability authentication
 #>   <chr>             <chr>        <chr>       <list>     <chr>     <chr>         
 #> 1 kenada            Kenya Natio… survey_cat… <chr [4]>  experime… none          
-#> 2 finaccess         FinAccess H… static_fil… <chr [1]>  experime… none          
-#> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
-#> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
-#> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
-#> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
-#> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
-#> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          
+#> 2 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
+#> 3 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
+#> 4 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
+#> 5 fake_source       Offline tes… fake        <chr [6]>  discovery none          
 #> # ℹ 2 more variables: last_verified <date>, base_url <chr>
 ```
 
-Eight sources are verified and usable: `kenada`, the Kenya National Data
-Archive (surveys); `finaccess`, the FinAccess portal (open survey
-microdata); `knbs_publications`, the KNBS website’s media library;
-`knbs_indicators`, the KNBS census data service (2019 census tables, CC
-BY 4.0); `knbs_cpi`, the CPI Explorer (monthly consumer prices from
-2009); `knbs_opendata`, the Data Portal (323 SDMX dataflows: GDP, trade,
-county finance and more); `opendataforafrica`, the Knoema-operated
-republisher that fills gaps no first-party portal serves as data — Gross
-County Product above all; and `dhs_program`, the DHS Program’s API for
-the Kenya Demographic and Health Survey indicators, by county from 2014.
-A source the audit has not verified stays at stability `discovery` and
-is never contacted — there is nothing there to call. The `source-status`
-vignette says exactly what is and is not covered, and why.
+Four sources are verified and usable: `kenada`, the Kenya National Data
+Archive (surveys); `knbs_publications`, the KNBS website’s media
+library; `knbs_indicators`, the KNBS census data service (2019 census
+tables, CC BY 4.0); and `knbs_cpi`, the CPI Explorer (monthly consumer
+prices from 2009). A source the audit has not verified stays at
+stability `discovery` and is never contacted — there is nothing there to
+call. GDP and other running series are not yet available as data; the
+`source-status` vignette says exactly what is and is not covered, and
+why.
 
-## Five ideas worth knowing
+## Four ideas worth knowing
 
 ### 1. Everything carries its provenance
 
@@ -112,56 +102,7 @@ tryCatch(
 Catch `error`, or a specific `knbs_error_*` class — not `condition`,
 because httr2 signals a benign condition on every request.
 
-### 5. Everything is a tibble that speaks tidyverse
-
-Every data-carrying result is a tidy tibble — one row per observation,
-built on vctrs — so dplyr verbs work directly and keep the provenance
-attached: filter, mutate, arrange, join, and
-[`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
-still answers on the result. Aggregations (`summarise`) and reshapes
-(`pivot_wider`) return plain tibbles, because a derived table is your
-data, not the source’s;
-[`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
-drops the wrapper whenever you want out.
-
-``` r
-
-library(dplyr)
-library(tidyr)
-
-knbs_get_indicator("jhbzkjc") |>                    # Gross County Product
-  filter(table_code == "T3", period == 2020) |>
-  slice_max(value, n = 5)
-
-knbs_abstract_table("2.2") |>                       # years across, like print
-  select(industry, period, value) |>
-  pivot_wider(names_from = period, values_from = value)
-```
-
 ## A first session
-
-Not sure where something lives? Search everything at once — indicators,
-Statistical Abstract tables, surveys and publications — and each result
-comes with the call that retrieves it:
-
-``` r
-
-hits <- knbs_search("consumer price index")
-hits[, c("resource_type", "resource_id", "title", "get")]
-#>   resource_type resource_id   title                            get
-#> 1 indicator     CPI_ALL_ITEMS Consumer Price Index, all items  knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")
-#> 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052", destination = ".")
-#> ...
-
-eval(parse(text = hits$get[[1]]))   # or copy the call
-```
-
-Words match by stem (“index” finds “Indices”), and CPI, GDP, GCP, KDHS
-and a few other acronyms are understood both ways. The first search of
-the day lists the publications library, which takes a few seconds; after
-that searches are instant.
-
-Or go to one catalogue directly:
 
 ``` r
 
@@ -194,16 +135,13 @@ The download is verified (a web page arriving where a document was
 expected is refused), checksummed with SHA-256, and given a
 `<file>.metadata.json` provenance sidecar.
 
-Indicators come back as tidy observations — consumer prices, the
-national accounts, Gross County Product, and census tables with
-geography down to sub-county:
+Indicators come back as tidy observations — monthly consumer prices, and
+census tables with geography down to sub-county:
 
 ``` r
 
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
-gdp <- knbs_get_indicator("DF_NAT_GDPCP")            # GDP by activity, SDMX
-knbs_get_indicator("DF_PF_CG_REV")                   # county govt revenue
-gcp <- knbs_get_indicator("jhbzkjc")                 # Gross County Product
+knbs_get_indicator("CPI_INFLATION_YOY", start = 2023)
 
 knbs_indicators(topic = "Population")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")

@@ -1,18 +1,9 @@
 # Package index
 
-## Search
-
-One search across every catalogue the package reads, each result with
-the call that retrieves it.
-
-- [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
-  **\[experimental\]** : Search everything the package can retrieve
-
 ## Surveys
 
-Discovering studies and their documentation in the Kenya National Data
-Archive. Metadata only: the archive gates its microdata behind an
-account.
+Discovering studies and their documentation. Metadata only: no supported
+source permits programmatic download of microdata.
 
 - [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
   **\[experimental\]** : Search official survey and census studies
@@ -25,19 +16,6 @@ account.
 - [`knbs_download_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_microdata.md)
   **\[experimental\]** : Download public-use microdata
 
-## Open microdata
-
-The FinAccess household and MSE Tracker surveys, whose anonymised,
-weighted microdata are published openly: verified downloads and a reader
-that keeps labels and provenance.
-
-- [`knbs_finaccess_files()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_finaccess_files.md)
-  **\[experimental\]** : List the FinAccess survey files
-- [`knbs_download_finaccess()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_finaccess.md)
-  **\[experimental\]** : Download FinAccess survey files
-- [`knbs_read_microdata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_read_microdata.md)
-  **\[experimental\]** : Read a microdata file into R
-
 ## Publications
 
 Statistical releases, reports and workbooks from the KNBS website, with
@@ -47,21 +25,6 @@ verified, checksummed downloads.
   **\[experimental\]** : Search official KNBS publications
 - [`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md)
   **\[experimental\]** : Download a publication and verify what arrived
-- [`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
-  **\[experimental\]** : What KNBS has released lately
-- [`knbs_release_series()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_release_series.md)
-  **\[experimental\]** : KNBS's regular release series
-
-## Statistical Abstract tables
-
-Curated, validated extraction of the Statistical Abstract’s chapter
-workbooks into tidy tables.
-
-- [`knbs_abstract_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_tables.md)
-  **\[experimental\]** : List the curated Statistical Abstract tables
-- [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
-  **\[experimental\]** : Retrieve one Statistical Abstract table as tidy
-  observations
 
 ## Indicators and prices
 
@@ -79,16 +42,10 @@ retail prices of the CPI basket commodities.
 ## Geography
 
 The coded territorial hierarchy of the 2019 census frame — the join keys
-the census tables themselves use — and official county codes for county
-names written any way.
+the census tables themselves use.
 
 - [`knbs_geographies()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_geographies.md)
   **\[experimental\]** : Kenya's geographic reference codes
-- [`knbs_county_code()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_code.md)
-  **\[experimental\]** : Official county codes for county names written
-  any way
-- [`knbs_match_counties()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_match_counties.md)
-  **\[experimental\]** : See how county names were matched
 
 ## Sources
 
@@ -103,15 +60,12 @@ has been verified.
 ## Provenance
 
 Every object the package returns carries where it came from, when it was
-retrieved and how to cite it — and keeps it when written to Excel, CSV,
-Stata or SPSS.
+retrieved and how to cite it.
 
 - [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
   : Inspect the provenance of a knbsdata object
 - [`knbs_cite()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cite.md)
   : Cite a knbsdata object
-- [`knbs_write()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_write.md)
-  **\[experimental\]** : Write KNBS data to a file, with its provenance
 
 ## Configuration
 

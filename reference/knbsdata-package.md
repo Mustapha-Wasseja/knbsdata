@@ -20,8 +20,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Mustapha Wasseja Mohammed <muswaseja@gmail.com>
-
-Authors:
-
-- Pascal Ochieng Owiti (Kenya National Bureau of Statistics)
+**Maintainer**: Mustapha Wasseja <muswaseja@gmail.com>
