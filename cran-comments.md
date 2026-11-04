@@ -1,6 +1,24 @@
-## Submission
+## Resubmission
 
-This is a new submission.
+This is a resubmission. In response to the review of 3 November 2026:
+
+* The Description no longer starts with "An R client".
+* References: the package implements no statistical methods, so there is no
+  methods reference to cite. The Description now links each data source the
+  package reads, in the form <https:...>.
+* Writing files: no function writes by default.
+  `knbs_download_finaccess()` and `knbs_download_publication()` have no
+  default destination and stop with an informative error if none is given;
+  `knbs_write()` requires a path. The examples, vignettes, README and tests
+  write only to `tempdir()`, and the download calls that `knbs_search()`
+  suggests name `destination = tempdir()`. The one write without a path
+  argument is the response cache in `tools::R_user_dir()`, as the policy
+  allows for R >= 4.0 (the package depends on R >= 4.1). It is now actively
+  managed: the first write of each session removes expired entries and
+  those written by earlier versions, and it can be switched off with
+  `options(knbsdata.cache = FALSE)`.
+
+## Submission
 
 knbsdata is a client for the public web services of the Kenya National
 Bureau of Statistics (KNBS) and partner publishers: the national data archive,

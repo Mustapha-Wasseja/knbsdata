@@ -534,7 +534,7 @@ search_rows_microdata <- function() {
     access = "open",
     source_id = "finaccess",
     url = finaccess_registry()$portal,
-    get = sprintf('knbs_read_microdata(knbs_download_finaccess("%s", destination = "."))',
+    get = sprintf('knbs_read_microdata(knbs_download_finaccess("%s", destination = tempdir()))',
                   best$file_id),
     text = paste(best$title, best$round, "FinAccess financial inclusion survey microdata",
                  ifelse(best$survey == "mse_tracker", "micro small enterprises MSE", "household"),
@@ -556,7 +556,7 @@ search_rows_publications <- function(cache, refresh) {
     access = cat_$access,
     source_id = cat_$source_id,
     url = cat_$landing_page,
-    get = sprintf('knbs_download_publication("%s", destination = ".")', cat_$publication_id),
+    get = sprintf('knbs_download_publication("%s", destination = tempdir())', cat_$publication_id),
     text = paste(cat_$title, cat_$description, cat_$file_name)
   )
 }

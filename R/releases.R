@@ -93,7 +93,7 @@ knbs_releases <- function(since = NULL,
     format = listing$format,
     publication_id = listing$publication_id,
     landing_page = listing$landing_page,
-    get = sprintf('knbs_download_publication("%s", destination = ".")', listing$publication_id)
+    get = sprintf('knbs_download_publication("%s", destination = tempdir())', listing$publication_id)
   )[keep, ]
   # Newest upload first; among same-day uploads (the library's 2023
   # migration put years of releases on one date), the latest period first.

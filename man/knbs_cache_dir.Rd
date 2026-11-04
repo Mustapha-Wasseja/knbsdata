@@ -14,7 +14,12 @@ The cache directory path, invisibly when \code{create = TRUE}.
 }
 \description{
 The cache lives in \code{\link[tools:userdir]{tools::R_user_dir()}} unless the \code{knbsdata.cache_dir}
-option points elsewhere. Nothing is written until something is cached.
+option points elsewhere. Nothing is written until something is cached, and
+the cache looks after itself: the first write of each session removes
+entries that have expired, entries an earlier version of the package
+wrote, and Statistical Abstract workbooks no longer in use. Set
+\code{options(knbsdata.cache = FALSE)} to cache nothing at all, or point
+\code{knbsdata.cache_dir} at \code{\link[=tempdir]{tempdir()}} to keep the cache for one session only.
 }
 \examples{
 knbs_cache_dir(create = FALSE)

@@ -6,7 +6,7 @@
 \alias{knbsdata-package}
 \title{knbsdata: Discover, Retrieve and Cite Official Kenyan Statistics}
 \description{
-An R client and standardisation layer for official data and statistical products published by the Kenya National Bureau of Statistics (KNBS). Provides a consistent interface for discovering surveys, publications, aggregate indicators and geographic reference data, standardises them into documented schemas, preserves provenance metadata such as release dates and checksums, and generates reproducible citations. This is an independent open-source project and is not an official KNBS product.
+Provides a consistent interface for discovering and retrieving official data and statistical products of the Kenya National Bureau of Statistics (KNBS): its survey archive \url{https://statistics.knbs.or.ke/nada/}, publications library, census, consumer price and economic data portals \url{https://opendata.knbs.or.ke/beta/databrowser/}, the open FinAccess survey microdata \url{https://finaccess.knbs.or.ke/}, and the Kenya Demographic and Health Survey indicators published through the DHS Program API \url{https://api.dhsprogram.com/}. Standardises them into documented schemas, preserves provenance metadata such as release dates and checksums, and generates reproducible citations. This is an independent open-source project and is not an official KNBS product.
 }
 \seealso{
 Useful links:

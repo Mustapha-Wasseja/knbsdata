@@ -8,7 +8,7 @@ First release prepared for CRAN.
 default `destination` to the working directory: the package writes only
 where you say. A call without one stops with a classed error that says
 so. The `get` calls `knbs_search()` and `knbs_releases()` hand back now
-name `destination = "."` explicitly.
+name `destination = tempdir()` explicitly.
 
 ## Packaging
 
@@ -22,6 +22,13 @@ name `destination = "."` explicitly.
   work on a throwaway cache rather than yours.
 * The tests give every test a temporary cache, so no test can write to the
   user's own.
+* The cache looks after itself. The first write of each session removes
+  entries that have expired, entries an earlier version of the package
+  wrote, and Statistical Abstract workbooks no longer in use.
+  `knbs_cache_clear()` now removes the cached workbooks too.
+* The examples in the README and vignettes download and write to
+  `tempdir()`, and the DESCRIPTION links each data source the package
+  reads.
 
 ## Health and demography from the KDHS
 

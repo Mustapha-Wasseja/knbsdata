@@ -156,3 +156,52 @@ test_that("clearing an empty cache is harmless", {
   expect_identical(knbs_cache_clear(quiet = TRUE), 0L)
   expect_identical(knbs_cache_prune(quiet = TRUE), 0L)
 })
+
+test_that("the first write of a session tidies the cache without being asked", {
+  dir <- local_cache()
+  old <- the$cache_tidied
+  withr::defer(the$cache_tidied <- old)
+  the$cache_tidied <- NULL
+
+  expired <- cache_key("fake_source", "fetch", new_knbs_query("indicator", resource_id = "old"))
+  earlier <- cache_key("fake_source", "fetch", new_knbs_query("indicator", resource_id = "v1"))
+  kept <- cache_key("fake_source", "fetch", new_knbs_query("indicator", resource_id = "kept"))
+  cache_write(expired, "expired", ttl = -1)
+  cache_write(earlier, "earlier parser")
+  meta <- cache_paths(earlier, dir)$meta
+  record <- jsonlite::read_json(meta)
+  record$parser_version <- knbs_parser_version() - 1L
+  jsonlite::write_json(record, meta, auto_unbox = TRUE, null = "null")
+  cache_write(kept, "kept")
+
+  # A workbook the registry no longer names, beside one it does.
+  workbooks <- file.path(dir, "abstract")
+  dir.create(workbooks)
+  current <- abstract_registry()$workbooks[[1]]$publication_id
+  writeLines("x", file.path(workbooks, "99999-Retired-Abstract.xlsx"))
+  writeLines("x", file.path(workbooks, paste0(current, "-Current-Abstract.xlsx")))
+
+  # A new session: the next write tidies.
+  the$cache_tidied <- NULL
+  another <- cache_key("fake_source", "fetch", new_knbs_query("indicator", resource_id = "new"))
+  cache_write(another, "new")
+
+  expect_setequal(knbs_cache_info()$cache_key, c(kept, another))
+  expect_identical(list.files(workbooks), paste0(current, "-Current-Abstract.xlsx"))
+
+  # Only once a session.
+  cache_write(expired, "expired again", ttl = -1)
+  cache_write(another, "new again")
+  expect_true(expired %in% knbs_cache_info()$cache_key)
+})
+
+test_that("clearing the cache removes the cached workbooks too", {
+  dir <- local_cache()
+  workbooks <- file.path(dir, "abstract")
+  dir.create(workbooks, recursive = TRUE)
+  writeLines("x", file.path(workbooks, "16374-NA-Statistical-Abstract.xlsx"))
+  writeLines("{}", file.path(workbooks, "16374-NA-Statistical-Abstract.xlsx.provenance.json"))
+
+  expect_identical(knbs_cache_clear(quiet = TRUE), 1L)
+  expect_false(dir.exists(workbooks))
+})

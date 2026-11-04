@@ -189,13 +189,15 @@ Open microdata (live requests, not run here):
 knbs_finaccess_files(content = "data")
 
 # The 2024 household survey (Stata, 160 MB): downloaded once, verified,
-# and read with its value labels; re-running reuses the file
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+# and read with its value labels; re-running reuses the file. Downloads go
+# only where you say: here a session folder, or name your own.
+dir <- file.path(tempdir(), "finaccess")
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", dir))
 knbs_cite(fa)
 
 # The 2024 and 2021 questionnaires and manuals
 knbs_finaccess_files(content = c("questionnaire", "manual")) |>
-  knbs_download_finaccess("data/docs")
+  knbs_download_finaccess(dir)
 ```
 
 Publications (also live requests, not run here):
@@ -205,7 +207,7 @@ Publications (also live requests, not run here):
 pubs <- knbs_publications("economic survey", year = 2026)
 
 # Download one: verified, checksummed, with a provenance sidecar
-knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+knbs_download_publication(pubs$publication_id[[1]], tempdir())
 
 # What has KNBS released lately? Series and period read from each title
 knbs_releases()                      # last 30 days, tenders and adverts left out
@@ -263,8 +265,8 @@ Hand the data to colleagues in Excel, Stata or SPSS without losing where
 it came from:
 
 ``` r
-knbs_write(gdp, "gdp-by-activity.xlsx")  # data sheet + "about" sheet with source and citation
-knbs_write(gdp, "gdp-by-activity.dta")   # + gdp-by-activity.dta.metadata.json beside it
+knbs_write(gdp, file.path(tempdir(), "gdp-by-activity.xlsx"))  # data + "about" sheet
+knbs_write(gdp, file.path(tempdir(), "gdp-by-activity.dta"))   # + .dta.metadata.json
 ```
 
 ## Access conditions
@@ -298,9 +300,11 @@ issue](https://github.com/Mustapha-Wasseja/knbsdata/issues/new/choose).
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CONTRIBUTING.md), including the checklist for
-adding a new source adapter. Please note that this project is released
-with a [Contributor Code of Conduct](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CODE_OF_CONDUCT.md).
+See
+[CONTRIBUTING.md](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CONTRIBUTING.md),
+including the checklist for adding a new source adapter. Please note
+that this project is released with a [Contributor Code of
+Conduct](https://github.com/Mustapha-Wasseja/knbsdata/blob/main/CODE_OF_CONDUCT.md).
 
 ## Disclaimer
 

@@ -28,7 +28,12 @@ knbs_cache_ttl <- function(kind = c("catalogue", "data", "immutable")) {
 #' Where knbsdata stores cached responses
 #'
 #' The cache lives in [tools::R_user_dir()] unless the `knbsdata.cache_dir`
-#' option points elsewhere. Nothing is written until something is cached.
+#' option points elsewhere. Nothing is written until something is cached, and
+#' the cache looks after itself: the first write of each session removes
+#' entries that have expired, entries an earlier version of the package
+#' wrote, and Statistical Abstract workbooks no longer in use. Set
+#' `options(knbsdata.cache = FALSE)` to cache nothing at all, or point
+#' `knbsdata.cache_dir` at [tempdir()] to keep the cache for one session only.
 #'
 #' @param create Whether to create the directory if it does not exist.
 #'
@@ -87,6 +92,7 @@ cache_paths <- function(key, dir = knbs_cache_dir()) {
 #' @noRd
 cache_write <- function(key, value, ttl = knbs_cache_ttl("catalogue"), info = list()) {
   dir <- knbs_cache_dir(create = TRUE)
+  cache_tidy(dir)
   paths <- cache_paths(key, dir)
 
   now <- Sys.time()
@@ -115,6 +121,61 @@ cache_write <- function(key, value, ttl = knbs_cache_ttl("catalogue"), info = li
   jsonlite::write_json(meta, paths$meta, auto_unbox = TRUE, null = "null")
 
   invisible(key)
+}
+
+#' Remove what the cache no longer needs, once a session
+#'
+#' The cache lives in [tools::R_user_dir()], which CRAN's policy allows
+#' provided its size is kept small and its contents actively managed. So the
+#' first write of a session removes, without being asked: entries that have
+#' expired; entries an earlier parser or schema wrote, which no current key
+#' can reach; and Statistical Abstract workbooks the curated registry no
+#' longer refers to.
+#'
+#' @return The number of items removed, invisibly.
+#' @noRd
+cache_tidy <- function(dir) {
+  if (dir %in% the$cache_tidied) {
+    return(invisible(0L))
+  }
+  the$cache_tidied <- c(the$cache_tidied, dir)
+  removed <- 0L
+  now <- Sys.time()
+
+  for (meta_path in list.files(dir, pattern = "\\.json$", full.names = TRUE)) {
+    meta <- tryCatch(jsonlite::read_json(meta_path), error = function(cnd) NULL)
+    if (is.null(meta$cache_key)) {
+      next
+    }
+    expires <- if (is.character(meta$expires_at)) {
+      as.POSIXct(meta$expires_at, format = "%Y-%m-%dT%H:%M:%S%z")
+    } else {
+      NA
+    }
+    stale <- (!is.na(expires) && expires < now) ||
+      !identical(as.integer(meta$parser_version %||% NA), knbs_parser_version()) ||
+      !identical(as.integer(meta$schema_version %||% NA), knbs_schema_version())
+    if (stale) {
+      paths <- cache_paths(meta$cache_key, dir)
+      suppressWarnings(file.remove(c(paths$value, paths$meta)))
+      removed <- removed + 1L
+    }
+  }
+
+  workbooks <- file.path(dir, "abstract")
+  if (dir.exists(workbooks)) {
+    current <- tryCatch(
+      vapply(abstract_registry()$workbooks, function(w) as.character(w$publication_id), ""),
+      error = function(cnd) NULL
+    )
+    if (length(current) > 0L) {
+      files <- list.files(workbooks, full.names = TRUE)
+      old <- files[!sub("-.*$", "", basename(files)) %in% current]
+      suppressWarnings(file.remove(old))
+      removed <- removed + length(old)
+    }
+  }
+  invisible(removed)
 }
 
 #' Read a value from the cache
@@ -268,6 +329,9 @@ knbs_cache_info <- function() {
 
 #' Empty the cache
 #'
+#' Removes every cached response, and the Statistical Abstract workbooks the
+#' cache holds.
+#'
 #' @param quiet Suppress the summary message.
 #'
 #' @return The number of entries removed, invisibly.
@@ -289,6 +353,12 @@ knbs_cache_clear <- function(quiet = knbs_option("quiet")) {
   files <- list.files(dir, pattern = "\\.(rds|json)$", full.names = TRUE)
   n <- length(files) %/% 2L
   file.remove(files)
+  # The Statistical Abstract workbooks are cached too, in their own folder.
+  workbooks <- file.path(dir, "abstract")
+  if (dir.exists(workbooks)) {
+    n <- n + length(list.files(workbooks, pattern = "\\.xlsx?$"))
+    unlink(workbooks, recursive = TRUE)
+  }
   if (!quiet) {
     cli::cli_alert_success("Removed {n} cache entr{?y/ies} from {.path {dir}}.")
   }
