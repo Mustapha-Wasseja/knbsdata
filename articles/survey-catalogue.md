@@ -185,8 +185,10 @@ have their own functions.
 # The catalogue ships with the package: listing it contacts nothing
 knbs_finaccess_files(content = "data")
 
-# Download and read the 2024 household survey (Stata, 160 MB)
-fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", "data"))
+# Download and read the 2024 household survey (Stata, 160 MB). Name any folder
+# you like; tempdir() keeps it for this session only.
+dir <- file.path(tempdir(), "finaccess")
+fa <- knbs_read_microdata(knbs_download_finaccess("hh2024-stata", dir))
 knbs_cite(fa)
 ```
 
@@ -212,7 +214,7 @@ The 2024 file has 20,871 respondents and 3,816 variables, so
 
 ``` r
 
-fa <- knbs_read_microdata("data/2024_Finaccess_Publicdata.dta",
+fa <- knbs_read_microdata(file.path(dir, "2024_Finaccess_Publicdata.dta"),
                           col_select = c("county", "A13", "A18"))
 attr(fa$A18, "label")                  # "A18. AGE OF RESPONDENT"
 table(haven::as_factor(fa$A13))        # value labels as factor levels

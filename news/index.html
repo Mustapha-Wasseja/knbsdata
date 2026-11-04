@@ -46,13 +46,15 @@
 <p>First release prepared for CRAN.</p>
 <div class="section level3">
 <h3 id="breaking-change-downloads-name-their-destination-0-5-0">Breaking change: downloads name their destination<a class="anchor" aria-label="anchor" href="#breaking-change-downloads-name-their-destination-0-5-0"></a></h3>
-<p><code><a href="../reference/knbs_download_finaccess.html">knbs_download_finaccess()</a></code> and <code><a href="../reference/knbs_download_publication.html">knbs_download_publication()</a></code> no longer default <code>destination</code> to the working directory: the package writes only where you say. A call without one stops with a classed error that says so. The <code>get</code> calls <code><a href="../reference/knbs_search.html">knbs_search()</a></code> and <code><a href="../reference/knbs_releases.html">knbs_releases()</a></code> hand back now name <code>destination = "."</code> explicitly.</p>
+<p><code><a href="../reference/knbs_download_finaccess.html">knbs_download_finaccess()</a></code> and <code><a href="../reference/knbs_download_publication.html">knbs_download_publication()</a></code> no longer default <code>destination</code> to the working directory: the package writes only where you say. A call without one stops with a classed error that says so. The <code>get</code> calls <code><a href="../reference/knbs_search.html">knbs_search()</a></code> and <code><a href="../reference/knbs_releases.html">knbs_releases()</a></code> hand back now name <code>destination = tempdir()</code> explicitly.</p>
 </div>
 <div class="section level3">
 <h3 id="packaging-0-5-0">Packaging<a class="anchor" aria-label="anchor" href="#packaging-0-5-0"></a></h3>
 <ul><li>Pascal Ochieng Owiti (Kenya National Bureau of Statistics) joins as an author. <code>citation("knbsdata")</code> names both authors and reads the version from the package rather than a hard-coded one.</li>
 <li>Examples that contact a source run only in an interactive session, and those that need nothing but the package now run everywhere: citing and reading the FinAccess catalogue, writing it with <code><a href="../reference/knbs_write.html">knbs_write()</a></code>, reading a Stata file with <code><a href="../reference/knbs_read_microdata.html">knbs_read_microdata()</a></code>, and the cache functions, which work on a throwaway cache rather than yours.</li>
 <li>The tests give every test a temporary cache, so no test can write to the user’s own.</li>
+<li>The cache looks after itself. The first write of each session removes entries that have expired, entries an earlier version of the package wrote, and Statistical Abstract workbooks no longer in use. <code><a href="../reference/knbs_cache_clear.html">knbs_cache_clear()</a></code> now removes the cached workbooks too.</li>
+<li>The examples in the README and vignettes download and write to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>, and the DESCRIPTION links each data source the package reads.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="health-and-demography-from-the-kdhs-0-5-0">Health and demography from the KDHS<a class="anchor" aria-label="anchor" href="#health-and-demography-from-the-kdhs-0-5-0"></a></h3>

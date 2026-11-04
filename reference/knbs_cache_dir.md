@@ -3,7 +3,13 @@
 The cache lives in
 [`tools::R_user_dir()`](https://rdrr.io/r/tools/userdir.html) unless the
 `knbsdata.cache_dir` option points elsewhere. Nothing is written until
-something is cached.
+something is cached, and the cache looks after itself: the first write
+of each session removes entries that have expired, entries an earlier
+version of the package wrote, and Statistical Abstract workbooks no
+longer in use. Set `options(knbsdata.cache = FALSE)` to cache nothing at
+all, or point `knbsdata.cache_dir` at
+[`tempdir()`](https://rdrr.io/r/base/tempfile.html) to keep the cache
+for one session only.
 
 ## Usage
 

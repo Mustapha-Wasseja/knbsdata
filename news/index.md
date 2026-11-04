@@ -15,7 +15,7 @@ that says so. The `get` calls
 [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md)
 and
 [`knbs_releases()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_releases.md)
-hand back now name `destination = "."` explicitly.
+hand back now name `destination = tempdir()` explicitly.
 
 ### Packaging
 
@@ -32,6 +32,14 @@ hand back now name `destination = "."` explicitly.
   yours.
 - The tests give every test a temporary cache, so no test can write to
   the user’s own.
+- The cache looks after itself. The first write of each session removes
+  entries that have expired, entries an earlier version of the package
+  wrote, and Statistical Abstract workbooks no longer in use.
+  [`knbs_cache_clear()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_cache_clear.md)
+  now removes the cached workbooks too.
+- The examples in the README and vignettes download and write to
+  [`tempdir()`](https://rdrr.io/r/base/tempfile.html), and the
+  DESCRIPTION links each data source the package reads.
 
 ### Health and demography from the KDHS
 

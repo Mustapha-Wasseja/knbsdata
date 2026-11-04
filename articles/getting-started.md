@@ -150,7 +150,7 @@ hits <- knbs_search("consumer price index")
 hits[, c("resource_type", "resource_id", "title", "get")]
 #>   resource_type resource_id   title                            get
 #> 1 indicator     CPI_ALL_ITEMS Consumer Price Index, all items  knbs_get_indicator("CPI_ALL_ITEMS", source = "knbs_cpi")
-#> 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052", destination = ".")
+#> 2 publication   17052         Kenya-Consumer-Price-Indices-…   knbs_download_publication("17052", destination = tempdir())
 #> ...
 
 eval(parse(text = hits$get[[1]]))   # or copy the call
@@ -187,7 +187,7 @@ they are served openly by the KNBS website:
 ``` r
 
 pubs <- knbs_publications("economic survey", year = 2026)
-knbs_download_publication(pubs$publication_id[[1]], "data/publications")
+knbs_download_publication(pubs$publication_id[[1]], tempdir())
 ```
 
 The download is verified (a web page arriving where a document was

@@ -1,6 +1,7 @@
 # Empty the cache
 
-Empty the cache
+Removes every cached response, and the Statistical Abstract workbooks
+the cache holds.
 
 ## Usage
 
