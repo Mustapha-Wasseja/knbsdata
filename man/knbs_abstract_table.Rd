@@ -8,7 +8,10 @@ knbs_abstract_table(table, cache = knbs_option("cache"), refresh = FALSE)
 }
 \arguments{
 \item{table}{A table id from \code{\link[=knbs_abstract_tables]{knbs_abstract_tables()}} (for example
-\code{"2.2"}), or enough of a table title to identify one unambiguously.}
+\code{"2.2"}), or a table's title: in full, or enough of it to pick out one
+table. Case and punctuation do not matter, and a title can be given with
+its id in front, as printed (\code{"Table 2.2: Gross Domestic Product by Activity"}). If several tables match, the error lists them with the call
+for each.}
 
 \item{cache}{Whether to use the local cache.}
 
@@ -64,7 +67,10 @@ would be worse than an honest error.
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 gdp <- knbs_abstract_table("2.2")
-expenditure <- knbs_abstract_table("expenditure on the gross domestic")
+expenditure <- knbs_abstract_table("2.6a")
+
+# Or by enough of a title to pick out one table:
+saving <- knbs_abstract_table("national disposable income")
 \dontshow{\}) # examplesIf}
 }
 \seealso{

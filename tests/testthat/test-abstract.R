@@ -168,6 +168,46 @@ test_that("a table resolves by id or by enough of its title", {
   )
 })
 
+test_that("a title is found however it is pasted", {
+  registry <- abstract_registry()
+  id_of <- function(table) abstract_resolve_table(table, registry)$table_id
+
+  # In full, brackets and all; as listed after its id; as printed.
+  expect_identical(
+    id_of("Expenditure on the Gross Domestic Product, 2015 - 2024 (current prices)"),
+    "2.6a"
+  )
+  expect_identical(id_of("2.6a - Expenditure on the Gross Domestic Product"), "2.6a")
+  expect_identical(id_of("Table 2.2: Gross Domestic Product by Activity, 2015 - 2024"), "2.2")
+  expect_identical(id_of("table 2.6A"), "2.6a")
+  expect_identical(id_of("2.6A"), "2.6a")
+  # A complete title wins over a longer one it begins.
+  expect_identical(id_of("Gross Domestic Product by Activity, 2015 - 2024"), "2.2")
+  expect_identical(id_of("fuel sales 2015 - 2024"), "9.7")
+  # Whole words only: "13.1" is not the start of 13.17b or 13.18.
+  expect_error(abstract_resolve_table("13.1", registry),
+               class = "knbs_error_resource_not_found")
+})
+
+test_that("an ambiguous title lists each match with the call that gets it", {
+  registry <- abstract_registry()
+  cnd <- expect_error(
+    abstract_resolve_table("expenditure on the gross domestic", registry),
+    class = "knbs_error_ambiguous_resource"
+  )
+  expect_identical(cnd$matches, c("2.6a", "2.6b", "2.6c", "2.6d"))
+  text <- cli::ansi_strip(conditionMessage(cnd))
+  expect_match(text, paste0('`knbs_abstract_table("2.6a")`: Expenditure on the ',
+                            "Gross Domestic Product, 2015 - 2024 (current prices)"),
+               fixed = TRUE)
+  expect_match(text, '`knbs_abstract_table("2.6d")`: Growth in Expenditure', fixed = TRUE)
+
+  many <- expect_error(abstract_resolve_table("2015", registry),
+                       class = "knbs_error_ambiguous_resource")
+  expect_gt(length(many$matches), 10L)
+  expect_match(cli::ansi_strip(conditionMessage(many)), "... and [0-9]+ more")
+})
+
 test_that("provenance names the workbook, the sheet and the flags", {
   local_cache()
   local_abstract_workbook()

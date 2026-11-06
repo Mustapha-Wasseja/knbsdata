@@ -116,7 +116,11 @@ knbs_abstract_tables <- function() {
 #' would be worse than an honest error.
 #'
 #' @param table A table id from [knbs_abstract_tables()] (for example
-#'   `"2.2"`), or enough of a table title to identify one unambiguously.
+#'   `"2.2"`), or a table's title: in full, or enough of it to pick out one
+#'   table. Case and punctuation do not matter, and a title can be given with
+#'   its id in front, as printed (`"Table 2.2: Gross Domestic Product by
+#'   Activity"`). If several tables match, the error lists them with the call
+#'   for each.
 #' @param cache Whether to use the local cache.
 #' @param refresh Whether to re-download the workbook and re-extract.
 #'
@@ -128,7 +132,10 @@ knbs_abstract_tables <- function() {
 #'
 #' @examplesIf interactive()
 #' gdp <- knbs_abstract_table("2.2")
-#' expenditure <- knbs_abstract_table("expenditure on the gross domestic")
+#' expenditure <- knbs_abstract_table("2.6a")
+#'
+#' # Or by enough of a title to pick out one table:
+#' saving <- knbs_abstract_table("national disposable income")
 #' @export
 knbs_abstract_table <- function(table,
                                 cache = knbs_option("cache"),
@@ -380,23 +387,43 @@ abstract_resolve_table <- function(table, registry,
                                    call = rlang::caller_env()) {
   ids <- vapply(registry$tables, function(t) as.character(t$table_id),
                 character(1))
-  exact <- which(ids == table)
+  exact <- which(tolower(ids) == tolower(trimws(table)))
   if (length(exact) == 1L) {
     return(registry$tables[[exact]])
   }
 
+  # Titles are matched as plain words, so punctuation, case and spacing do
+  # not matter, and a title pasted as listed ("2.6a - Expenditure on ..."),
+  # as printed ("Table 2.2: Gross ...") or in full, brackets and all, is
+  # understood. A complete title beats one it is merely the start of.
   titles <- vapply(registry$tables, function(t) as.character(t$title),
                    character(1))
-  hits <- which(grepl(table, titles, ignore.case = TRUE, fixed = FALSE))
+  key <- abstract_lookup_key(table)
+  named <- cbind(abstract_lookup_key(titles),
+                 abstract_lookup_key(paste(ids, titles)),
+                 abstract_lookup_key(paste("Table", ids, titles)))
+  hits <- which(rowSums(named == key) > 0L)
+  if (length(hits) == 0L) {
+    hits <- which(grepl(key, named[, 3], fixed = TRUE))
+  }
   if (length(hits) == 1L) {
     return(registry$tables[[hits]])
   }
   if (length(hits) > 1L) {
+    # Titles are the registry's, not templates: braces are doubled so the
+    # message formatter prints them.
+    literal <- function(s) gsub("([{}])", "\\1\\1", s)
+    shown <- utils::head(hits, 10L)
     knbs_abort(
       c(
         "{.val {table}} matches {length(hits)} curated tables.",
-        "i" = "Use an exact {.field table_id}:",
-        "*" = "{paste(ids[hits], ' - ', substr(titles[hits], 1, 55))}"
+        "i" = "Choose one by its {.field table_id}:",
+        stats::setNames(
+          sprintf("{.code knbs_abstract_table(\"%s\")}: %s",
+                  literal(ids[shown]), literal(titles[shown])),
+          rep("*", length(shown))
+        ),
+        if (length(hits) > 10L) c(" " = "... and {length(hits) - 10L} more.")
       ),
       class = "knbs_error_ambiguous_resource",
       call = call,
@@ -411,6 +438,17 @@ abstract_resolve_table <- function(table, registry,
     class = "knbs_error_resource_not_found",
     call = call
   )
+}
+
+#' A table reference reduced to its words, for matching
+#'
+#' Lower case, every run of punctuation or space one space, and a space at
+#' each end, so that a match within a key is always a match of whole words:
+#' "2.2" finds "Table 2.2" but not "Table 2.21".
+#'
+#' @noRd
+abstract_lookup_key <- function(x) {
+  paste0(" ", trimws(gsub("[^a-z0-9]+", " ", tolower(x))), " ")
 }
 
 #' The workbook entry a table belongs to

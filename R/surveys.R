@@ -184,7 +184,7 @@ knbs_survey_metadata <- function(survey,
 #' @seealso [knbs_survey_files()], [knbs_survey_metadata()]
 #'
 #' @examplesIf interactive()
-#' knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
+#' knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 #' @export
 knbs_variables <- function(survey,
                            search = NULL,

@@ -57,7 +57,7 @@ per variable, so they are \code{NA} unless \code{details = TRUE}.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
+knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 \dontshow{\}) # examplesIf}
 }
 \seealso{
