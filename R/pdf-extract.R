@@ -64,11 +64,11 @@ pdf_pages <- function(path, pages = NULL, call = rlang::caller_env()) {
 # a mark for no figure. Thousands commas must come in threes, so a stray
 # "12,34" is not a figure.
 pdf_figure_re <- function() {
-  "^\\(?[-−]?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)(\\.[0-9]+)?\\)?[*+]?$"
+  "^\\(?[-\u2212]?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)(\\.[0-9]+)?\\)?[*+]?$"
 }
 
 pdf_missing_marks <- function() {
-  c("-", "–", "—", "..", "...", "…", "n.a", "n.a.", "na", "N/A")
+  c("-", "\u2013", "\u2014", "..", "...", "\u2026", "n.a", "n.a.", "na", "N/A")
 }
 
 #' Is each token a figure, or a mark standing for one?
@@ -81,8 +81,8 @@ pdf_is_figure <- function(tokens) {
 #' @noRd
 pdf_value <- function(tokens) {
   x <- gsub("[*+]$", "", tokens)
-  negative <- grepl("^\\(.*\\)$", x) | grepl("^[-−][0-9]", x)
-  x <- gsub("[(),−-]", "", x)
+  negative <- grepl("^\\(.*\\)$", x) | grepl("^[-\u2212][0-9]", x)
+  x <- gsub("[(),\u2212-]", "", x)
   out <- suppressWarnings(as.numeric(x))
   out[tokens %in% pdf_missing_marks()] <- NA_real_
   out[negative & !is.na(out)] <- -out[negative & !is.na(out)]
