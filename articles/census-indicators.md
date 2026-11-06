@@ -135,9 +135,9 @@ Two more honesty notes, both from the source audit:
 
 ### Retail prices
 
-The same portal publishes the monthly **national average retail prices**
-of the 22 commodities tracked for the CPI basket, in Kenya Shillings per
-stated unit:
+KNBS also publishes the monthly **national average retail prices** of
+the 22 commodities tracked for the CPI basket, from February 2019, in
+Kenya Shillings per stated unit:
 
 ``` r
 
@@ -145,10 +145,18 @@ knbs_retail_prices(commodity = "petrol", start = 2024)
 knbs_retail_prices(start = "2026-06", end = "2026-06")   # one month, all 22
 ```
 
+Two KNBS sources carry these prices and publish the same figures: the
+KNBS Data Portal (dataflow `DF_CPI_NA`) and the CPI Explorer. The Data
+Portal is asked first, and the CPI Explorer only if the portal does not
+answer, with a message saying so; `source = "knbs_cpi"` asks the
+Explorer alone. The Explorer has been the less reliable of the two: its
+API failed in October 2026 and its host stopped answering in November.
+
 One row per commodity per month: `commodity_code` (`CPI001`–`CPI022`),
-`commodity`, `unit`, `quantity`, `period`, `price`. National only — the
-source holds no regional retail prices — and the licence caveat above
-applies here too.
+`coicop_code` (the international COICOP item code), `commodity`, `unit`,
+`quantity`, `period`, `price` and `source_id`, the source that answered.
+National only — neither source holds regional retail prices — and
+neither states a licence.
 
 ## Census tables
 

@@ -2,10 +2,10 @@
 
 **\[experimental\]**
 
-Returns the monthly national average retail prices the KNBS CPI Explorer
-publishes for the 22 commodities it tracks — maize flour, bread, milk,
-petrol, house rent and the rest — one row per commodity per month, in
-Kenya Shillings per the stated unit and quantity.
+Returns the monthly national average retail prices KNBS publishes for
+the 22 commodities tracked for the CPI basket — maize flour, bread,
+milk, petrol, house rent and the rest — one row per commodity per month
+from February 2019, in Kenya Shillings per the stated unit and quantity.
 
 ## Usage
 
@@ -24,8 +24,8 @@ knbs_retail_prices(
 
 - commodity:
 
-  Keep only these commodities, by `CPI001`-style code (exact) or by name
-  (matched as text).
+  Keep only these commodities, by `CPI001`-style code or COICOP code
+  (exact), or by name (matched as text).
 
 - start, end:
 
@@ -33,7 +33,9 @@ knbs_retail_prices(
 
 - source:
 
-  Source id.
+  Ask only this source: `"knbs_opendata"` (the KNBS Data Portal) or
+  `"knbs_cpi"` (the CPI Explorer). By default the Data Portal is asked
+  first and the CPI Explorer if it does not answer.
 
 - cache:
 
@@ -45,21 +47,32 @@ knbs_retail_prices(
 
 ## Value
 
-A `knbs_prices` tibble with columns `commodity_code`, `commodity`,
-`unit`, `quantity`, `period`, `period_label`, `price` and `source_id`.
+A `knbs_prices` tibble with columns `commodity_code`, `coicop_code`,
+`commodity`, `unit`, `quantity`, `period`, `period_label`, `price` and
+`source_id`.
 
 ## Details
 
-These are national averages only: the source holds no regional retail
-prices. The portal states no licence;
+Two KNBS sources publish these prices, and they publish the same
+figures: the KNBS Data Portal (dataflow `DF_CPI_NA`) and the CPI
+Explorer. The Data Portal is asked first; if it does not answer, the CPI
+Explorer is, and a message says so. The `source_id` column and
 [`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
-on the result says so. A range query retrieves the full history once (a
-few seconds, then cached); an exact single month is fetched directly.
+name the source that answered. Commodities carry the CPI Explorer's
+codes, names and units whichever source answered, and `coicop_code` is
+the international COICOP item code.
+
+These are national averages only: neither source holds regional retail
+prices. Neither states a licence;
+[`knbs_metadata()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_metadata.md)
+on the result says so. The full history is retrieved once (a few
+seconds, then cached).
 
 ## See also
 
 [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
-for the price *indices* the same portal serves.
+for the price *indices*: the CPI by region (`"CPI_ALL_ITEMS"`, or
+`"DF_CPI_R"` on the Data Portal) and by division (`"DF_CPI_IX"`).
 
 ## Examples
 

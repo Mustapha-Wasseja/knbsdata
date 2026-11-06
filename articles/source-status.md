@@ -22,7 +22,7 @@ knbs_sources()
 #> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
 #> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [4]>  experime… none          
 #> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
 #> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
 #> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          
@@ -35,15 +35,15 @@ knbs_status()
 #> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 08:30:28
-#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 08:30:28
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 08:30:28
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 08:30:28
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 08:30:28
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 08:30:28
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 08:30:28
-#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 08:30:28
-#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 08:30:28
+#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 09:51:54
+#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 09:51:54
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 09:51:54
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 09:51:54
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 09:51:54
+#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 09:51:54
 #> # ℹ 1 more variable: message <chr>
 ```
 
@@ -151,10 +151,12 @@ notes rather than arriving as constant columns.
 (`cpiexplorer.knbs.or.ke`): `knbs_get_indicator("CPI_ALL_ITEMS")`,
 `"CPI_INFLATION_YOY"` and `"CPI_INFLATION_MOM"` — monthly from January
 2009, nationally and by the CPI collection strata (the Nairobi income
-bands, Nairobi Combined, Rest of Urban) — plus
+bands, Nairobi Combined, Rest of Urban).
 [`knbs_retail_prices()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_retail_prices.md),
 the monthly national average retail prices of the 22 CPI basket
-commodities. See
+commodities, asks the KNBS Data Portal first and the CPI Explorer only
+if the portal does not answer: the two publish the same figures, and the
+Explorer has been the less reliable. See
 [`vignette("census-indicators")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/census-indicators.md).
 
 Three properties of this source to keep in mind, all carried in

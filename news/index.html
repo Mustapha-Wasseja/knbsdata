@@ -43,10 +43,20 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="knbsdata-development-version">knbsdata (development version)<a class="anchor" aria-label="anchor" href="#knbsdata-development-version"></a></h2>
+<div class="section level3">
+<h3 id="sources-that-go-down-development-version">Sources that go down<a class="anchor" aria-label="anchor" href="#sources-that-go-down-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/knbs_retail_prices.html">knbs_retail_prices()</a></code> reads the KNBS Data Portal first (dataflow <code>DF_CPI_NA</code>), and the CPI Explorer only if the portal does not answer, with a message saying so. The two publish the same 22 prices: the portal’s equal the Explorer’s to its two decimals, and the monthly CPI release’s retail table to the cent. The CPI Explorer’s host has closed every connection since early November 2026. Results carry the Explorer’s commodity codes, names and units whichever source answered, a new <code>coicop_code</code> column, and <code>source_id</code> naming the source. <code>source = "knbs_cpi"</code> asks the Explorer alone.</li>
+<li>A source that does not answer a catalogue search across every source (<code><a href="../reference/knbs_indicators.html">knbs_indicators()</a></code>, <code><a href="../reference/knbs_search.html">knbs_search()</a></code>, and the lookup in <code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code>) is now skipped by the later ones in the same session, instead of being asked, and warned about, every time. The first warning says so; the result’s notes name it; <code>knbs_status(live = FALSE)</code> reports when it failed and why; <code>refresh = TRUE</code>, a named <code>source</code>, or <code>knbs_status(live = TRUE)</code> asks it again. A changed shape is never mistaken for an outage: it is reported every time.</li>
+<li>A source answering with a Cloudflare challenge now says so, rather than that it refused access.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-development-version">Fixes<a class="anchor" aria-label="anchor" href="#fixes-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/knbs_abstract_table.html">knbs_abstract_table()</a></code> finds a table by its full title even when the title has brackets, such as “(current prices)”: titles were matched as regular expressions, so the brackets broke the match. A complete title now wins over a longer one that begins with it, and a title pasted with its id in front (“2.6a - Expenditure on …”, “Table 2.2: …”) is understood. When several tables match, the error lists each one, in full, with the call that gets it.</li>
 <li>Examples that could not run as written are fixed: the <code><a href="../reference/knbs_abstract_table.html">knbs_abstract_table()</a></code> example asked for a title four tables share, the <code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> example used a Kenya Open Data for Africa series (that portal has answered programs with a Cloudflare challenge since October 2026), and the <code><a href="../reference/knbs_variables.html">knbs_variables()</a></code> example searched for a word no KIHBS variable contains.</li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="knbsdata-050">knbsdata 0.5.0<a class="anchor" aria-label="anchor" href="#knbsdata-050"></a></h2>
 <p>First release prepared for CRAN.</p>

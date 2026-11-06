@@ -35,6 +35,13 @@ row per source and columns `source_id`, `operation`, `status`,
 
 ## Details
 
+A source that does not answer a catalogue search across every source
+([`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md),
+[`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md))
+is skipped by the later ones in the same session, so that it is not
+asked, and warned about, every time. A live check asks it again, and a
+source that answers is searched again.
+
 The `status` column is one of:
 
 - `ok`:
@@ -44,7 +51,9 @@ The `status` column is one of:
 - `unavailable`:
 
   The source was contacted and did not answer usefully. The `message`
-  column says why.
+  column says why. With `live = FALSE`, a source that did not answer
+  earlier in the session is reported this way, with the time and the
+  reason.
 
 - `unverified`:
 
@@ -68,15 +77,15 @@ knbs_status(live = FALSE)
 #> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 08:30:19
-#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 08:30:19
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 08:30:19
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 08:30:19
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
-#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 08:30:19
-#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 08:30:19
+#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 09:51:48
+#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 09:51:48
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 09:51:48
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 09:51:48
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 09:51:48
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 09:51:48
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 09:51:48
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 09:51:48
+#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 09:51:48
 #> # ℹ 1 more variable: message <chr>
 if (FALSE) { # interactive()
 # Contacts each verified source.

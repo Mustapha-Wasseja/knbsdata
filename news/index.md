@@ -2,6 +2,34 @@
 
 ## knbsdata (development version)
 
+### Sources that go down
+
+- [`knbs_retail_prices()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_retail_prices.md)
+  reads the KNBS Data Portal first (dataflow `DF_CPI_NA`), and the CPI
+  Explorer only if the portal does not answer, with a message saying so.
+  The two publish the same 22 prices: the portal’s equal the Explorer’s
+  to its two decimals, and the monthly CPI release’s retail table to the
+  cent. The CPI Explorer’s host has closed every connection since early
+  November 2026. Results carry the Explorer’s commodity codes, names and
+  units whichever source answered, a new `coicop_code` column, and
+  `source_id` naming the source. `source = "knbs_cpi"` asks the Explorer
+  alone.
+- A source that does not answer a catalogue search across every source
+  ([`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md),
+  [`knbs_search()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search.md),
+  and the lookup in
+  [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md))
+  is now skipped by the later ones in the same session, instead of being
+  asked, and warned about, every time. The first warning says so; the
+  result’s notes name it; `knbs_status(live = FALSE)` reports when it
+  failed and why; `refresh = TRUE`, a named `source`, or
+  `knbs_status(live = TRUE)` asks it again. A changed shape is never
+  mistaken for an outage: it is reported every time.
+- A source answering with a Cloudflare challenge now says so, rather
+  than that it refused access.
+
+### Fixes
+
 - [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
   finds a table by its full title even when the title has brackets, such
   as “(current prices)”: titles were matched as regular expressions, so

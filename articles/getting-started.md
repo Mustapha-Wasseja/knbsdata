@@ -30,7 +30,7 @@ knbs_sources()
 #> 3 knbs_publications KNBS Public… publicatio… <chr [3]>  experime… none          
 #> 4 knbs_indicators   KNBS Census… indicator_… <chr [4]>  experime… none          
 #> 5 knbs_cpi          KNBS CPI Ex… indicator_… <chr [4]>  experime… none          
-#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [3]>  experime… none          
+#> 6 knbs_opendata     KNBS Data P… indicator_… <chr [4]>  experime… none          
 #> 7 opendataforafrica Kenya Open … indicator_… <chr [3]>  experime… none          
 #> 8 dhs_program       The DHS Pro… indicator_… <chr [3]>  experime… none          
 #> 9 fake_source       Offline tes… fake        <chr [6]>  discovery none          

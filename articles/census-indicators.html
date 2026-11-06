@@ -212,17 +212,26 @@ vignette.</li>
 <div class="section level3">
 <h3 id="retail-prices">Retail prices<a class="anchor" aria-label="anchor" href="#retail-prices"></a>
 </h3>
-<p>The same portal publishes the monthly <strong>national average retail
-prices</strong> of the 22 commodities tracked for the CPI basket, in
-Kenya Shillings per stated unit:</p>
+<p>KNBS also publishes the monthly <strong>national average retail
+prices</strong> of the 22 commodities tracked for the CPI basket, from
+February 2019, in Kenya Shillings per stated unit:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_retail_prices.html">knbs_retail_prices</a></span><span class="op">(</span>commodity <span class="op">=</span> <span class="st">"petrol"</span>, start <span class="op">=</span> <span class="fl">2024</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/knbs_retail_prices.html">knbs_retail_prices</a></span><span class="op">(</span>start <span class="op">=</span> <span class="st">"2026-06"</span>, end <span class="op">=</span> <span class="st">"2026-06"</span><span class="op">)</span>   <span class="co"># one month, all 22</span></span></code></pre></div>
+<p>Two KNBS sources carry these prices and publish the same figures: the
+KNBS Data Portal (dataflow <code>DF_CPI_NA</code>) and the CPI Explorer.
+The Data Portal is asked first, and the CPI Explorer only if the portal
+does not answer, with a message saying so;
+<code>source = "knbs_cpi"</code> asks the Explorer alone. The Explorer
+has been the less reliable of the two: its API failed in October 2026
+and its host stopped answering in November.</p>
 <p>One row per commodity per month: <code>commodity_code</code>
-(<code>CPI001</code>–<code>CPI022</code>), <code>commodity</code>,
+(<code>CPI001</code>–<code>CPI022</code>), <code>coicop_code</code> (the
+international COICOP item code), <code>commodity</code>,
 <code>unit</code>, <code>quantity</code>, <code>period</code>,
-<code>price</code>. National only — the source holds no regional retail
-prices — and the licence caveat above applies here too.</p>
+<code>price</code> and <code>source_id</code>, the source that answered.
+National only — neither source holds regional retail prices — and
+neither states a licence.</p>
 </div>
 </div>
 <div class="section level2">
