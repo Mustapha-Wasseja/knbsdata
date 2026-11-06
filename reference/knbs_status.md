@@ -68,15 +68,15 @@ knbs_status(live = FALSE)
 #> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-11-04 08:14:47
-#> 2 finaccess    download… not_c…          NA               NA 2026-11-04 08:14:47
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-04 08:14:47
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-04 08:14:47
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-04 08:14:47
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-04 08:14:47
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-04 08:14:47
-#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-04 08:14:47
-#> 9 fake_source  search_s… unver…          NA               NA 2026-11-04 08:14:47
+#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 08:30:19
+#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 08:30:19
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 08:30:19
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 08:30:19
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 08:30:19
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 08:30:19
+#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 08:30:19
 #> # ℹ 1 more variable: message <chr>
 if (FALSE) { # interactive()
 # Contacts each verified source.

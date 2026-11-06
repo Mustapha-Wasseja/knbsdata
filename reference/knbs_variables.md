@@ -86,6 +86,6 @@ request per variable, so they are `NA` unless `details = TRUE`.
 
 ``` r
 if (FALSE) { # interactive()
-knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "consumption")
+knbs_variables("KEN-KNBS-KIHBS-2015-2016-v01", search = "expenditure")
 }
 ```

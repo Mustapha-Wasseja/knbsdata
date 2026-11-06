@@ -42,6 +42,12 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="knbsdata-development-version">knbsdata (development version)<a class="anchor" aria-label="anchor" href="#knbsdata-development-version"></a></h2>
+<ul><li>
+<code><a href="../reference/knbs_abstract_table.html">knbs_abstract_table()</a></code> finds a table by its full title even when the title has brackets, such as “(current prices)”: titles were matched as regular expressions, so the brackets broke the match. A complete title now wins over a longer one that begins with it, and a title pasted with its id in front (“2.6a - Expenditure on …”, “Table 2.2: …”) is understood. When several tables match, the error lists each one, in full, with the call that gets it.</li>
+<li>Examples that could not run as written are fixed: the <code><a href="../reference/knbs_abstract_table.html">knbs_abstract_table()</a></code> example asked for a title four tables share, the <code><a href="../reference/knbs_get_indicator.html">knbs_get_indicator()</a></code> example used a Kenya Open Data for Africa series (that portal has answered programs with a Cloudflare challenge since October 2026), and the <code><a href="../reference/knbs_variables.html">knbs_variables()</a></code> example searched for a word no KIHBS variable contains.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="knbsdata-050">knbsdata 0.5.0<a class="anchor" aria-label="anchor" href="#knbsdata-050"></a></h2>
 <p>First release prepared for CRAN.</p>
 <div class="section level3">

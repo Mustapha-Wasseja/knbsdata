@@ -1,5 +1,25 @@
 # Changelog
 
+## knbsdata (development version)
+
+- [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
+  finds a table by its full title even when the title has brackets, such
+  as “(current prices)”: titles were matched as regular expressions, so
+  the brackets broke the match. A complete title now wins over a longer
+  one that begins with it, and a title pasted with its id in front
+  (“2.6a - Expenditure on …”, “Table 2.2: …”) is understood. When
+  several tables match, the error lists each one, in full, with the call
+  that gets it.
+- Examples that could not run as written are fixed: the
+  [`knbs_abstract_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_abstract_table.md)
+  example asked for a title four tables share, the
+  [`knbs_get_indicator()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_get_indicator.md)
+  example used a Kenya Open Data for Africa series (that portal has
+  answered programs with a Cloudflare challenge since October 2026), and
+  the
+  [`knbs_variables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_variables.md)
+  example searched for a word no KIHBS variable contains.
+
 ## knbsdata 0.5.0
 
 First release prepared for CRAN.

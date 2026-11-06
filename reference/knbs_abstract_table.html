@@ -69,7 +69,10 @@ printed table.</p>
 
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
 <dd><p>A table id from <code><a href="knbs_abstract_tables.html">knbs_abstract_tables()</a></code> (for example
-<code>"2.2"</code>), or enough of a table title to identify one unambiguously.</p></dd>
+<code>"2.2"</code>), or a table's title: in full, or enough of it to pick out one
+table. Case and punctuation do not matter, and a title can be given with
+its id in front, as printed (<code>"Table 2.2: Gross Domestic Product by Activity"</code>). If several tables match, the error lists them with the call
+for each.</p></dd>
 
 
 <dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
@@ -127,7 +130,10 @@ would be worse than an honest error.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
 <span class="r-in"><span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu">knbs_abstract_table</span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">expenditure</span> <span class="op">&lt;-</span> <span class="fu">knbs_abstract_table</span><span class="op">(</span><span class="st">"expenditure on the gross domestic"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">expenditure</span> <span class="op">&lt;-</span> <span class="fu">knbs_abstract_table</span><span class="op">(</span><span class="st">"2.6a"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Or by enough of a title to pick out one table:</span></span></span>
+<span class="r-in"><span><span class="va">saving</span> <span class="op">&lt;-</span> <span class="fu">knbs_abstract_table</span><span class="op">(</span><span class="st">"national disposable income"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
