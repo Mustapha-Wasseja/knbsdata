@@ -4,7 +4,7 @@
 # it has since 2026-10-05, is the case in point.
 
 local_gated_portal <- function(calls, env = parent.frame()) {
-  local_knoema_api(list("." = function(path, query) {
+  local_knoema_api(list("." = function(path, query) { # nolint: object_usage_linter. Defined in helper-knoema.R.
     calls$n <- calls$n + 1L
     knbs_abort("The source answered with a human-verification challenge (Cloudflare).",
                class = "knbs_error_access_restricted")
