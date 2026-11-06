@@ -10,6 +10,9 @@ inst/doc/
 *.Rcheck/
 dev/fixtures/scratch/
 dev/notebooks/*_files/
+# Working files built from data that is not published, such as files sent
+# to the maintainers privately: never committed, never built into the package.
+dev/private/
 
 # Never commit credentials, cookies or session state (see SECURITY.md)
 .Renviron
