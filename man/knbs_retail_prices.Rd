@@ -14,35 +14,45 @@ knbs_retail_prices(
 )
 }
 \arguments{
-\item{commodity}{Keep only these commodities, by \code{CPI001}-style code
-(exact) or by name (matched as text).}
+\item{commodity}{Keep only these commodities, by \code{CPI001}-style code or
+COICOP code (exact), or by name (matched as text).}
 
 \item{start, end}{Keep only these months. A year, a \code{"YYYY-MM"} month, or a
 date.}
 
-\item{source}{Source id.}
+\item{source}{Ask only this source: \code{"knbs_opendata"} (the KNBS Data
+Portal) or \code{"knbs_cpi"} (the CPI Explorer). By default the Data Portal is
+asked first and the CPI Explorer if it does not answer.}
 
 \item{cache}{Whether to use the local cache.}
 
 \item{refresh}{Whether to bypass any cached response.}
 }
 \value{
-A \code{knbs_prices} tibble with columns \code{commodity_code}, \code{commodity},
-\code{unit}, \code{quantity}, \code{period}, \code{period_label}, \code{price} and \code{source_id}.
+A \code{knbs_prices} tibble with columns \code{commodity_code},
+\code{coicop_code}, \code{commodity}, \code{unit}, \code{quantity}, \code{period},
+\code{period_label}, \code{price} and \code{source_id}.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Returns the monthly national average retail prices the KNBS CPI Explorer
-publishes for the 22 commodities it tracks — maize flour, bread, milk,
-petrol, house rent and the rest — one row per commodity per month, in
-Kenya Shillings per the stated unit and quantity.
+Returns the monthly national average retail prices KNBS publishes for the
+22 commodities tracked for the CPI basket — maize flour, bread, milk,
+petrol, house rent and the rest — one row per commodity per month from
+February 2019, in Kenya Shillings per the stated unit and quantity.
 }
 \details{
-These are national averages only: the source holds no regional retail
-prices. The portal states no licence; \code{\link[=knbs_metadata]{knbs_metadata()}} on the result says
-so. A range query retrieves the full history once (a few seconds, then
-cached); an exact single month is fetched directly.
+Two KNBS sources publish these prices, and they publish the same figures:
+the KNBS Data Portal (dataflow \code{DF_CPI_NA}) and the CPI Explorer. The Data
+Portal is asked first; if it does not answer, the CPI Explorer is, and a
+message says so. The \code{source_id} column and \code{\link[=knbs_metadata]{knbs_metadata()}} name the
+source that answered. Commodities carry the CPI Explorer's codes, names
+and units whichever source answered, and \code{coicop_code} is the
+international COICOP item code.
+
+These are national averages only: neither source holds regional retail
+prices. Neither states a licence; \code{\link[=knbs_metadata]{knbs_metadata()}} on the result says so.
+The full history is retrieved once (a few seconds, then cached).
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
@@ -51,6 +61,7 @@ knbs_retail_prices(start = "2026-06", end = "2026-06")
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=knbs_get_indicator]{knbs_get_indicator()}} for the price \emph{indices} the same portal
-serves.
+\code{\link[=knbs_get_indicator]{knbs_get_indicator()}} for the price \emph{indices}: the CPI by
+region (\code{"CPI_ALL_ITEMS"}, or \code{"DF_CPI_R"} on the Data Portal) and by
+division (\code{"DF_CPI_IX"}).
 }

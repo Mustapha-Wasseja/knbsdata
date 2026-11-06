@@ -372,6 +372,9 @@ test_that("an unreachable portal is mentioned only where it could matter", {
   expect_warning(knbs_get_indicator("Marital Status"),
                  class = "knbs_warning_partial_failure")
 
-  # The catalogue itself still says what is missing.
-  expect_warning(knbs_indicators(), regexp = "opendataforafrica")
+  # Having said once that it would skip the portal, the catalogue does so
+  # quietly, and says what is missing in its notes; refresh asks again.
+  expect_no_warning(catalogue <- knbs_indicators())
+  expect_match(knbs_metadata(catalogue)$notes, "Skipped.*opendataforafrica", all = FALSE)
+  expect_warning(knbs_indicators(refresh = TRUE), regexp = "opendataforafrica")
 })

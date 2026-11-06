@@ -30,6 +30,20 @@ knbs_error_classes <- function() {
   )
 }
 
+#' A condition's message as one line of literal text
+#'
+#' Its first two lines - the headline and the reason - without their bullet
+#' marks, for listing one source's failure beside another's. Braces are
+#' doubled, so the result can go into another message unevaluated.
+#'
+#' @noRd
+condition_summary <- function(cnd) {
+  lines <- strsplit(cli::ansi_strip(conditionMessage(cnd)), "\n", fixed = TRUE)[[1]]
+  lines <- trimws(sub("^[^[:alnum:]\"'(]+", "", lines))
+  text <- paste(utils::head(lines[nzchar(lines)], 2L), collapse = " ")
+  gsub("([{}])", "\\1\\1", text)
+}
+
 #' Recognised knbsdata warning classes
 #'
 #' @return A character vector of condition classes.

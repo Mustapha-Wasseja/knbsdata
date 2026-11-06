@@ -50,10 +50,19 @@ knbs_indicators <- function(topic = NULL,
 
   sources <- resolve_indicator_sources(source)
 
+  # Across every source, one that did not answer earlier in the session is
+  # skipped (see knbs_status()); a named source is always asked.
+  every_source <- is.null(source)
   results <- list()
   failures <- character(0)
+  newly_down <- character(0)
+  skipped <- character(0)
   conditions <- list()
   for (src in sources) {
+    if (every_source && !refresh && !is.null(source_down(src$source_id))) {
+      skipped <- c(skipped, src$source_id)
+      next
+    }
     query <- new_knbs_query(
       "indicator",
       filters = compact_list(list(topic = topic, search = search)),
@@ -73,13 +82,18 @@ knbs_indicators <- function(topic = NULL,
     if (inherits(outcome, "knbs_error")) {
       failures <- c(failures, src$source_id)
       conditions[[src$source_id]] <- outcome
+      if (every_source && inherits(outcome, source_down_classes())) {
+        source_mark_down(src$source_id, condition_summary(outcome))
+        newly_down <- c(newly_down, src$source_id)
+      }
     } else {
       results[[src$source_id]] <- outcome
+      source_mark_up(src$source_id)
     }
   }
 
   if (length(results) == 0L) {
-    if (length(conditions) == 1L) {
+    if (length(conditions) == 1L && length(skipped) == 0L) {
       # A single source was asked and it failed: its own condition says why,
       # and flattening it to a generic "unreachable" would hide a schema
       # change behind an availability message.
@@ -88,7 +102,14 @@ knbs_indicators <- function(topic = NULL,
     knbs_abort(
       c(
         "No indicator source could be reached.",
-        "x" = paste0("Did not answer: ", paste(failures, collapse = ", "), ".")
+        if (length(failures) > 0L) {
+          c("x" = paste0("Did not answer: ", paste(failures, collapse = ", "), "."))
+        },
+        if (length(skipped) > 0L) {
+          c("x" = paste0("Did not answer earlier this session: ",
+                         paste(skipped, collapse = ", "), "."),
+            "i" = "{.code refresh = TRUE} asks them again.")
+        }
       ),
       class = "knbs_error_source_unavailable"
     )
@@ -97,7 +118,14 @@ knbs_indicators <- function(topic = NULL,
     knbs_warn(
       c(
         paste0("Could not reach: ", paste(failures, collapse = ", "), "."),
-        "i" = "The catalogue below is missing those indicators."
+        "i" = "The catalogue below is missing those indicators.",
+        if (length(newly_down) > 0L) {
+          c("i" = paste0(
+            "Catalogue searches skip ", paste(newly_down, collapse = ", "),
+            " for the rest of this session; {.code knbs_status(live = TRUE)} ",
+            "or {.code refresh = TRUE} asks again."
+          ))
+        }
       ),
       class = "knbs_warning_partial_failure",
       unreachable = failures
@@ -114,12 +142,18 @@ knbs_indicators <- function(topic = NULL,
       resource_type = "indicator",
       producer = first_meta$producer,
       access = "open",
-      notes = paste0(
-        "Sources: ", paste(names(results), collapse = ", "),
-        if (length(failures) > 0L) {
-          paste0(". Unreachable: ", paste(failures, collapse = ", "), ".")
-        } else {
-          "."
+      notes = c(
+        paste0(
+          "Sources: ", paste(names(results), collapse = ", "),
+          if (length(failures) > 0L) {
+            paste0(". Unreachable: ", paste(failures, collapse = ", "), ".")
+          } else {
+            "."
+          }
+        ),
+        if (length(skipped) > 0L) {
+          paste0("Skipped, having not answered earlier this session: ",
+                 paste(skipped, collapse = ", "), ".")
         }
       )
     )
@@ -321,6 +355,13 @@ resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
       rlang::cnd_muffle(cnd)
     }
   )
+  # A source skipped for having not answered earlier is as absent as one
+  # that failed just now.
+  if (is.null(source)) {
+    listing <- vapply(resolve_indicator_sources(NULL, call = call),
+                      function(s) s$source_id, character(1))
+    unreachable <- unique(c(unreachable, intersect(source_down_ids(), listing)))
+  }
 
   exact <- catalogue[catalogue$indicator_id == indicator, ]
   if (nrow(exact) == 1L) {
@@ -345,7 +386,8 @@ resolve_indicator <- function(indicator, source = NULL, cache = TRUE,
       c(
         "No indicator matches {.val {indicator}}.",
         if (length(unreachable) > 0L) {
-          c("!" = "Could not reach {.val {unreachable}}; it may be served there.")
+          c("!" = "Could not reach {.val {unreachable}}; it may be served there.",
+            "i" = "Ask it directly with {.code source = \"{unreachable[[1]]}\"}.")
         },
         "i" = "List what exists with {.fn knbs_indicators}."
       ),

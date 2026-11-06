@@ -185,6 +185,10 @@ sources:
         distinguishes regions.
       - CPI regions are collection strata, not census territories; their codes
         must never be joined against knbs_geographies().
+      - Unreliable. Its API answered 500 on 2026-10-05 (audit F-38), and from
+        2026-11-06 the host closed every connection on ports 443 and 80, from
+        two networks (audit F-45). Retail prices are asked of the Data Portal
+        first; this source is their fallback.
 
   - source_id: knbs_opendata
     source_name: KNBS Data Portal (SDMX hub)
@@ -197,6 +201,9 @@ sources:
       - list_indicators
       - get_indicator
       - indicator_metadata
+      # DF_CPI_NA, the CPI basket's national average retail prices: the same
+      # 22 commodities and figures as the CPI Explorer (audit F-45).
+      - retail_prices
     authentication: none
     formats:
       - json
@@ -214,6 +221,10 @@ sources:
         assumed.
       - Geography codes here (REF_AREA) are SDMX area codes, not census
         territory codes; they must never be joined against knbs_geographies().
+      - The first source asked for retail prices (DF_CPI_NA, audit F-45). Its
+        prices equal the CPI Explorer's to the Explorer's two decimals and
+        the monthly CPI release's retail table to the cent; it is matched to
+        the Explorer's commodity register so results line up.
 
   - source_id: opendataforafrica
     source_name: Kenya Open Data for Africa (Knoema)

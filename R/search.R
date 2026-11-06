@@ -147,6 +147,12 @@ knbs_search <- function(query,
   }
   hits$score <- NULL
   hits$text <- NULL
+  # Indicator sources skipped for having not answered earlier (knbs_status()).
+  skipped <- character(0)
+  if ("indicator" %in% names(rows)) {
+    listing <- vapply(resolve_indicator_sources(NULL), function(s) s$source_id, character(1))
+    skipped <- setdiff(intersect(source_down_ids(), listing), failures)
+  }
 
   new_knbs_catalogue(
     hits,
@@ -159,6 +165,10 @@ knbs_search <- function(query,
         paste0("Searched: ", paste(names(rows), collapse = ", "), "."),
         if (length(failures) > 0L) {
           paste0("Unreachable: ", paste(unique(failures), collapse = ", "), ".")
+        },
+        if (length(skipped) > 0L) {
+          paste0("Skipped, having not answered earlier this session: ",
+                 paste(skipped, collapse = ", "), ".")
         },
         "The get column holds the call that retrieves each result."
       )

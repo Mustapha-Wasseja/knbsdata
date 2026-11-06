@@ -47,7 +47,9 @@ demography from the KDHS.**
   down to sub-county and an explicit CC BY 4.0 licence.
 - **Consumer prices**, against the KNBS CPI Explorer: the monthly index
   and inflation from January 2009, nationally and by the CPI collection
-  strata, plus the retail prices of the CPI basket commodities.
+  strata. The retail prices of the CPI basket commodities come from the
+  KNBS Data Portal, with the CPI Explorer as a fallback; the two publish
+  the same figures.
 - **The economy**, against the KNBS Data Portal: 323 SDMX dataflows —
   GDP by activity and expenditure, trade, balance of payments, county
   government finance, employment and more.

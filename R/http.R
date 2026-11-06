@@ -247,10 +247,22 @@ check_http_status <- function(resp, source_id = NULL, call = rlang::caller_env()
     }
   )
 
+  # A Cloudflare challenge is a human-verification page, not a refusal of the
+  # request as such; saying which it is tells the user that waiting, or the
+  # portal in a browser, is the remedy (audit F-29).
+  challenged <- status == 403L &&
+    identical(tolower(httr2::resp_header(resp, "cf-mitigated") %||% ""), "challenge")
+  if (challenged) {
+    info[[2]] <- "The source answered with a human-verification challenge (Cloudflare)."
+  }
   bullets <- c(
     info[[2]],
     "x" = "HTTP {status} from {.url {url}}.",
-    "i" = "Source: {.val {source_id %||% 'unknown'}}."
+    "i" = "Source: {.val {source_id %||% 'unknown'}}.",
+    if (challenged) {
+      c("i" = paste0("knbsdata never tries to get past such checks. The source may ",
+                     "lift it later; meanwhile its pages open in a browser."))
+    }
   )
   if (status == 429L) {
     retry_after <- httr2::resp_header(resp, "Retry-After")

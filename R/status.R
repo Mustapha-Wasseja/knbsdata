@@ -5,6 +5,44 @@
 # 11.18). The default follows `interactive()`, so package checks, CRAN and CI
 # get the offline report and never depend on a live service.
 
+# Sources that did not answer earlier in the session --------------------------
+#
+# A catalogue search across every source asks each one in turn. A source that
+# is down, or blocking automated clients, would otherwise be asked again - and
+# warned about again - on every call. Its failure is remembered for the
+# session instead: later catalogue searches skip it without contacting it,
+# having said once that they will. An explicit `source =`, `refresh = TRUE` or
+# `knbs_status(live = TRUE)` asks it again.
+
+#' The failures that mean a source is not answering, rather than that the
+#' package or the request is wrong
+#' @noRd
+source_down_classes <- function() {
+  c("knbs_error_access_restricted", "knbs_error_source_unavailable")
+}
+
+source_mark_down <- function(source_id, message) {
+  down <- the$sources_down %||% list()
+  down[[source_id]] <- list(at = Sys.time(), message = as.character(message))
+  the$sources_down <- down
+  invisible()
+}
+
+source_mark_up <- function(source_id) {
+  down <- the$sources_down %||% list()
+  down[[source_id]] <- NULL
+  the$sources_down <- down
+  invisible()
+}
+
+source_down <- function(source_id) {
+  (the$sources_down %||% list())[[source_id]]
+}
+
+source_down_ids <- function() {
+  names(the$sources_down %||% list())
+}
+
 knbs_status_columns <- function() {
   c("source_id", "operation", "status", "http_status", "response_time_ms",
     "checked_at", "message")
@@ -21,12 +59,19 @@ knbs_status_values <- function() {
 #' With `live = TRUE` it asks each verified source to answer a small request and
 #' reports what happened.
 #'
+#' A source that does not answer a catalogue search across every source
+#' ([knbs_indicators()], [knbs_search()]) is skipped by the later ones in the
+#' same session, so that it is not asked, and warned about, every time. A live
+#' check asks it again, and a source that answers is searched again.
+#'
 #' The `status` column is one of:
 #'
 #' \describe{
 #'   \item{`ok`}{The source answered.}
 #'   \item{`unavailable`}{The source was contacted and did not answer usefully.
-#'     The `message` column says why.}
+#'     The `message` column says why. With `live = FALSE`, a source that did
+#'     not answer earlier in the session is reported this way, with the time
+#'     and the reason.}
 #'   \item{`unverified`}{The source's endpoint has not been verified, so there
 #'     is nothing to contact. It is never checked live.}
 #'   \item{`not_checked`}{The source could have been checked, but `live` was
@@ -88,6 +133,17 @@ status_row <- function(src, live) {
     ))
   }
   if (!live) {
+    down <- source_down(src$source_id)
+    if (!is.null(down)) {
+      return(status_tibble(
+        src$source_id, operation, "unavailable",
+        checked_at = down$at,
+        message = paste0(
+          "Did not answer at ", format(down$at, "%H:%M"), " this session, so catalogue ",
+          "searches skip it. Set live = TRUE to check again. ", down$message
+        )
+      ))
+    }
     return(status_tibble(
       src$source_id, operation, "not_checked",
       message = "Set live = TRUE to contact the source."
@@ -107,7 +163,14 @@ status_row <- function(src, live) {
       )
     }
   )
-  normalise_status(health, src$source_id, operation)
+  row <- normalise_status(health, src$source_id, operation)
+  # What a live check finds is what catalogue searches go by from now on.
+  if (identical(row$status, "ok")) {
+    source_mark_up(src$source_id)
+  } else {
+    source_mark_down(src$source_id, cli::ansi_strip(row$message))
+  }
+  row
 }
 
 #' Coerce an adapter's health report into the documented shape

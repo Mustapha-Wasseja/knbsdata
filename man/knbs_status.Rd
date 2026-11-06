@@ -26,12 +26,19 @@ With \code{live = TRUE} it asks each verified source to answer a small request a
 reports what happened.
 }
 \details{
+A source that does not answer a catalogue search across every source
+(\code{\link[=knbs_indicators]{knbs_indicators()}}, \code{\link[=knbs_search]{knbs_search()}}) is skipped by the later ones in the
+same session, so that it is not asked, and warned about, every time. A live
+check asks it again, and a source that answers is searched again.
+
 The \code{status} column is one of:
 
 \describe{
 \item{\code{ok}}{The source answered.}
 \item{\code{unavailable}}{The source was contacted and did not answer usefully.
-The \code{message} column says why.}
+The \code{message} column says why. With \code{live = FALSE}, a source that did
+not answer earlier in the session is reported this way, with the time
+and the reason.}
 \item{\code{unverified}}{The source's endpoint has not been verified, so there
 is nothing to contact. It is never checked live.}
 \item{\code{not_checked}}{The source could have been checked, but \code{live} was

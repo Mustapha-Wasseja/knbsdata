@@ -400,6 +400,50 @@ record's month after sorting, found 1,012 false duplicates, and refused the
 whole history. The check now reads both in the source's order, and a test
 feeds the fixture interleaved. Nothing about the order is assumed.
 
+**F-45 — The CPI Explorer is down, and the Data Portal carries its retail
+prices.** On 2026-11-06 `cpiexplorer.knbs.or.ke` (196.202.210.253) accepted
+TCP connections and closed them at once: TLS handshakes ended with an
+unexpected EOF under both Schannel and OpenSSL, TLS 1.2 and 1.3 alike, and
+plain HTTP on port 80 got an empty reply. A fetch from a second network
+failed the same way ("socket closed"), so the fault is the host's, not one
+client's. The weekly source monitor had already reported the Explorer
+unreachable on 2026-11-02. Its API had answered 500 a month earlier (F-38).
+
+The Data Portal's dataflow `DF_CPI_NA`, "National Average Retail Prices",
+holds the same basket: 22 commodities keyed by COICOP item code and pack
+size (`UNIT_QUANTITY`), monthly from 2019-02 to 2026-07 — 1,980 values in a
+22 x 10 x 90 cube whose other cells are empty. Compared with the Explorer
+capture, every shared value agrees to the Explorer's two decimals (petrol
+179.354 / 198.674 / 215.170 / 214.950 for 2026-03 to 2026-06 against 179.35
+/ 198.67 / 215.17 / 214.95; maize flour 83.043 / 83.428 against 83.04 /
+83.43). Against Table 3 of the June 2026 CPI release, which prints a
+different selection, the eleven commodities both carry agree to the cent for
+June 2025, May 2026 and June 2026 — with one exception: cabbages, June 2025,
+is 85.10 on the portal and 58.40 in the release, while both later months
+agree. That is KNBS's own two artefacts disagreeing, recorded and left as
+the portal has it. The release's fuel prices are Nairobi's, the portal's
+national, so those differ by design. The release comparison also settles
+the two packs the portal labels alike, "Other animal oils and fats n.e.c.":
+`CP011599` per litre is the salad oil (347.17 / 355.79 / 358.63 in both),
+`CP01159903` per 500 g the cooking fat.
+
+The register crosswalk (`retail_commodities()`) maps each portal item and
+pack to the Explorer's `CPI001`-`CPI022`, name, unit and quantity, so the
+two sources give identical rows. `knbs_retail_prices()` asks the portal
+first and the Explorer only when the portal is down or refusing; since the
+figures are the same, falling back changes no number, unlike the CPI index
+and inflation rates, where F-38's rule (name the alternative, substitute
+nothing) stands. A changed portal dataflow is reported, not papered over by
+the fallback.
+
+Reproducible checks:
+
+```bash
+curl -v https://cpiexplorer.knbs.or.ke/   # handshake closed by the server
+curl -sS -X POST -H 'Content-Type: application/json' -d '[]' \
+  'https://opendata.knbs.or.ke/beta/databrowserhub/api/Core/nodes/1/datasets/KE1,DF_CPI_NA,1.0/data'
+```
+
 **F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
 Traced 2026-08-08 after a direct question exposed that this portal — probed
 only superficially during the Phase 5 audit — had never been enumerated. The
@@ -986,3 +1030,5 @@ Copy this block for each new candidate source.
 | 2026-10-15 | knbs_publications | F-43 F-06 is back: `www.knbs.or.ke` sends its Let's Encrypt `YE2` leaf without `YE2` or the cross-signed `Root YE`; verify error 21 on the weekly monitor (2026-10-12) and live | The missing Generation Y intermediates and cross-signs ship with the package, verified to ISRG Root X1/X2; a failed verification to `knbs.or.ke` is retried once with them; verification never switched off |
 | 2026-10-15 | knbs_cpi | F-44 the retail-price listing arrives unsorted; the package's duplicate check misread that as 1,012 duplicates | Check reads commodity and month in source order; test with interleaved records |
 | 2026-10-15 | opendataforafrica | F-41 continues: still HTTP 403 | Left alone: identity is never disguised and challenges are never solved (F-34); the 403 surfaces as the classed access error |
+| 2026-11-06 | knbs_cpi | F-45 the Explorer's host closes every connection (443 and 80, two networks); the Data Portal's `DF_CPI_NA` carries the same 22 retail prices, equal to the Explorer's and to the June 2026 release's table (one cabbage month aside) | Retail prices read from the portal first, the Explorer as fallback; crosswalk to the Explorer's register; index and inflation keep F-38's no-substitution rule |
+| 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |

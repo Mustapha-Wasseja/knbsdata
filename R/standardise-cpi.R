@@ -123,9 +123,11 @@ standardise_cpix_retail <- function(records, register, source_id,
   ids <- vapply(records, function(r) as.character(r$commodity), character(1))
   periods <- as.Date(vapply(records, function(r) as.character(r$period), character(1)))
   codes <- register$commodity_code[match(ids, register$commodity_id)]
+  basket <- retail_commodities()
 
   out <- tibble::tibble(
     commodity_code = codes,
+    coicop_code = basket$coicop_code[match(codes, basket$commodity_code)],
     commodity = vapply(records, function(r) as.character(r$commodity_name), character(1)),
     unit = vapply(records, json_chr, character(1), "unit_of_measure"),
     quantity = vapply(records, function(r) {
@@ -162,9 +164,76 @@ standardise_cpix_retail <- function(records, register, source_id,
   out
 }
 
+#' Standardise the Data Portal's retail-price dataflow into the price schema
+#'
+#' `DF_CPI_NA` is a cube of item x pack size x month in which only each
+#' item's own pack carries values; the empty cells are dropped. Each item and
+#' pack is matched to the CPI Explorer's register, so prices line up
+#' whichever source answered. One the register does not know keeps its row,
+#' with an `NA` code and the portal's own labels, as an unknown commodity does
+#' from the Explorer.
+#'
+#' @param obs The dataflow as standardised SDMX observations.
+#' @noRd
+standardise_hub_retail <- function(obs, source_id, call = rlang::caller_env()) {
+  needed <- c("item_price", "item_price_code", "unit_quantity", "unit_quantity_code",
+              "period", "value")
+  if (!all(needed %in% names(obs))) {
+    knbs_abort(
+      c("The retail-price dataflow changed shape; please report it.",
+        "i" = "Expected the dimensions ITEM_PRICE and UNIT_QUANTITY, monthly."),
+      class = "knbs_error_schema_changed",
+      call = call
+    )
+  }
+  obs <- obs[!is.na(obs$value), ]
+  if (nrow(obs) == 0L) {
+    return(empty_cpix_prices())
+  }
+  if (!inherits(obs$period, "Date") || anyNA(obs$period)) {
+    knbs_abort(
+      c("A retail-price observation carries an unreadable month."),
+      class = "knbs_error_validation_failed",
+      call = call
+    )
+  }
+  keys <- paste(obs$item_price_code, obs$unit_quantity_code, obs$period, sep = "\r")
+  if (anyDuplicated(keys) > 0L) {
+    knbs_abort(
+      c("The retail-price dataflow contains duplicate keys.",
+        "i" = "This means the dataflow changed shape; please report it."),
+      class = "knbs_error_validation_failed",
+      call = call
+    )
+  }
+
+  basket <- retail_commodities()
+  at <- match(paste(obs$item_price_code, obs$unit_quantity_code),
+              paste(basket$coicop_code, basket$portal_quantity))
+  # "500 Gram" -> 500 and "Gram", for a pack the register does not know.
+  pack <- trimws(as.character(obs$unit_quantity))
+  pack_quantity <- suppressWarnings(as.numeric(sub("^([0-9.]+).*$", "\\1", pack)))
+  pack_unit <- trimws(sub("^[0-9.]+\\s*", "", pack))
+  known <- !is.na(at)
+
+  out <- tibble::tibble(
+    commodity_code = basket$commodity_code[at],
+    coicop_code = as.character(obs$item_price_code),
+    commodity = ifelse(known, basket$commodity[at], trimws(as.character(obs$item_price))),
+    unit = ifelse(known, basket$unit[at], pack_unit),
+    quantity = ifelse(known, basket$quantity[at], pack_quantity),
+    period = obs$period,
+    period_label = format(obs$period, "%Y-%m"),
+    price = as.numeric(obs$value),
+    source_id = rep(source_id, nrow(obs))
+  )
+  out[order(out$commodity_code, out$coicop_code, out$period), ]
+}
+
 empty_cpix_prices <- function() {
   tibble::tibble(
     commodity_code = character(0),
+    coicop_code = character(0),
     commodity = character(0),
     unit = character(0),
     quantity = numeric(0),
