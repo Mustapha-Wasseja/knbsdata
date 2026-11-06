@@ -169,7 +169,10 @@ cache_tidy <- function(dir) {
       vapply(abstract_registry()$workbooks, function(w) as.character(w$publication_id), "")
     },
     reports = function() {
-      vapply(report_registry()$reports, function(r) as.character(r$publication_id), "")
+      ids <- vapply(report_registry()$reports, function(r) {
+        as.character(r$publication_id %||% NA_character_)
+      }, "")
+      ids[!is.na(ids)]
     }
   )
   for (sub in names(kept)) {

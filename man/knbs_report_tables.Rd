@@ -11,8 +11,8 @@ knbs_report_tables(series = NULL)
 }
 \value{
 A \code{knbs_catalogue} tibble with columns \code{table_id}, \code{series},
-\code{edition}, \code{printed}, \code{title}, \code{measure}, \code{prices}, \code{base_year}, \code{unit},
-\code{periods} and \code{report}.
+\code{edition}, \code{publisher}, \code{printed}, \code{title}, \code{measure}, \code{prices},
+\code{base_year}, \code{unit}, \code{periods} and \code{report}.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}

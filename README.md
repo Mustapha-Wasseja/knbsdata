@@ -60,6 +60,12 @@ demography from the KDHS.**
   report since 2019 (together 2013–2024). The tables are printed only in
   PDF; `knbs_gcp()` reads them by curated recipe, checks every county
   against the printed total, and codes them to the census counties.
+- **County budgets and spending**, from the Office of the Controller of
+  Budget’s annual reports, FY 2013/14 to 2023/24: each county’s approved
+  budget and actual spending, recurrent and development, and absorption
+  rates. Extracted by the same verified recipes; shipped with the
+  package, because the Controller of Budget’s website does not admit
+  programs.
 - **The republished datasets** of Kenya Open Data for Africa: 200
   datasets from KNBS, the Central Bank of Kenya and partner agencies,
   with republisher provenance stated on every result. Since October 2026
