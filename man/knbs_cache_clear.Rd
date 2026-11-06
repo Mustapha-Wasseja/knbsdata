@@ -13,8 +13,8 @@ knbs_cache_clear(quiet = knbs_option("quiet"))
 The number of entries removed, invisibly.
 }
 \description{
-Removes every cached response, and the Statistical Abstract workbooks the
-cache holds.
+Removes every cached response, and the Statistical Abstract workbooks and
+report PDFs the cache holds.
 }
 \examples{
 # A throwaway cache, so the example leaves yours alone

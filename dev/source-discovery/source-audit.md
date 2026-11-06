@@ -444,6 +444,46 @@ curl -sS -X POST -H 'Content-Type: application/json' -d '[]' \
   'https://opendata.knbs.or.ke/beta/databrowserhub/api/Core/nodes/1/datasets/KE1,DF_CPI_NA,1.0/data'
 ```
 
+**F-46 — The Gross County Product reports, read as data.** Curated
+2026-11-06. With Kenya Open Data for Africa gated (F-41), the one source
+of GCP as data was gone; the reports themselves remain. The KNBS
+publications library holds every edition: 2019 (media 9574), 2021 (9572),
+2023 (14519), 2024 (15341) and 2025 (16344), all text PDFs, each
+downloaded file identical (SHA-256) to an independently obtained copy.
+Findings that shape the engine (R/pdf-extract.R):
+
+- *Editions and vintages.* Each edition covers five to eight years and
+  revises earlier ones; the 2025 and 2024 editions agree on 2020's total
+  (9,862,147). The 2019 edition values constant prices at 2009 prices; from
+  2021, after the national accounts were rebased, 2016 prices. Consistency
+  across publications: the 2021 edition's 2016 total, 6,926,656, equals the
+  Statistical Abstract's GDP at factor cost for 2016 (F-36).
+- *Layouts.* A county-number column (2019); years printed as "2,013" in
+  the header (2021); two counties per line in two panels, each with its
+  own County column, on 2024's Tables 5 and 6; explanatory text printed on
+  the same lines as 2024's Table 7, with the table set further right on its
+  second page; the national row printed first (the population tables);
+  provisional years marked "2024*" (2025).
+- *Wrapping and misprints.* Names wrap above, below or around a row of
+  figures ("ELGEYO/" + "MARAKWET", "TAITA/" + figures + "TAVETA"), and
+  2024's Table 6 prints "NNYANDARUA". Labels are resolved only by matching
+  each candidate joining against the official counties; a misprint is
+  mapped explicitly in the recipe, never guessed.
+- *Speed.* Some pages of the 2023 edition take minutes to extract as text;
+  the tables' pages take milliseconds. The engine cuts the recipe's pages
+  out of the file (qpdf) before reading any text, and searches the whole
+  report only if the table has moved.
+- *Checks.* For every table: the 47 counties and the total once each; the
+  counties within (47 + 1) / 2 units of the printed total in every column
+  that adds (shares: of 100); two or three figures pinned by hand. All 19
+  tables pass, from the files as served, in under 15 seconds each.
+
+Curated: GCP at current and constant prices and county shares from all
+five editions, per-capita GCP (2019), and the population tables (2024,
+2025). Not yet curated from these reports: GCP by economic activity (2019
+Tables 1-3, 2021 Annexes I-III, 2023 Annex III), poverty, working
+population and the other county context tables.
+
 **F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
 Traced 2026-08-08 after a direct question exposed that this portal — probed
 only superficially during the Phase 5 audit — had never been enumerated. The
@@ -1031,4 +1071,5 @@ Copy this block for each new candidate source.
 | 2026-10-15 | knbs_cpi | F-44 the retail-price listing arrives unsorted; the package's duplicate check misread that as 1,012 duplicates | Check reads commodity and month in source order; test with interleaved records |
 | 2026-10-15 | opendataforafrica | F-41 continues: still HTTP 403 | Left alone: identity is never disguised and challenges are never solved (F-34); the 403 surfaces as the classed access error |
 | 2026-11-06 | knbs_cpi | F-45 the Explorer's host closes every connection (443 and 80, two networks); the Data Portal's `DF_CPI_NA` carries the same 22 retail prices, equal to the Explorer's and to the June 2026 release's table (one cabbage month aside) | Retail prices read from the portal first, the Explorer as fallback; crosswalk to the Explorer's register; index and inflation keep F-38's no-substitution rule |
+| 2026-11-06 | knbs_publications | F-46 the five Gross County Product reports (2019-2025) are text PDFs in the library; two-panel layouts, side text, wrapped and misprinted county names; 2009 prices before the rebasing, 2016 after; some pages of the 2023 edition take minutes to read as text | PDF table engine with curated recipes: the recipe's pages cut out before reading, counties matched to census codes, counties checked against the total, figures pinned; 19 tables curated, all read live from the library |
 | 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |

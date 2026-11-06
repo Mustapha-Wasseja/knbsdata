@@ -1,0 +1,417 @@
+# knbsdata report table registry
+#
+# One entry per curated table of a KNBS report published as PDF (audit
+# F-46). The reports are read from the KNBS publications library, as the
+# Statistical Abstract workbooks are; nothing is bundled. Nothing about a
+# table is guessed at run time: each entry records the title it is found by,
+# the pages it is expected on, its columns in order, the unit printed with
+# it, and figures read by hand from the report at curation time. The
+# extraction engine (R/pdf-extract.R) verifies all of it on every read - the
+# 47 counties and the total present exactly once, the counties adding up to
+# the total within what rounding can explain, every pinned figure unchanged -
+# and refuses a table that no longer matches.
+#
+# Report keys: report_id, series, edition, title, publication_id (the KNBS
+# media library id), file_name, sha256 and size at curation, landing_page.
+#
+# Table keys:
+#   table_id         stable id, "<report>-<what>"
+#   report_id        the report it is printed in
+#   printed          its number as printed ("Table 4")
+#   title            a clean title
+#   anchor           text of its title line, matched ignoring case and
+#                    punctuation
+#   pages            pages it was on at curation; the engine reads these and
+#                    two after, and searches the whole report only if the
+#                    title has moved
+#   measure          what the figures are: gcp, gva_share, gcp_per_capita,
+#                    population, ...
+#   prices, base_year  for money tables: current or constant, and the
+#                    constant prices' base year
+#   unit             as printed
+#   columns          in order; a year string ("2024*" provisional, "2022+"
+#                    revised) or a map with label, period, measure, unit and
+#                    sums (false where counties do not add: rates, densities,
+#                    per-capita figures, averages of shares are summed)
+#   panels           2 where two counties are printed side by side per line
+#   trailing_text    true where text printed beside the table runs onto its
+#                    lines: a row is then its label and the first run of
+#                    figures after it, and words after the figures are
+#                    dropped (each row must still carry one figure per column)
+#   line_width       characters kept per line, an alternative where a side
+#                    text holds figures of its own
+#   total_row        false where the table has no total row
+#   sum_to           a fixed figure the counties must add to (100 for shares)
+#   rounding         the printed precision (1 for whole numbers, 0.1 ...)
+#   relabel          printed labels that are not county names, mapped to the
+#                    county they mean (a misprint such as "NNYANDARUA")
+#   known_gaps       a printed discrepancy between the counties and the total
+#                    observed at curation: only that exact gap is accepted
+#   pins             figures read by hand: geo_code, column, value
+
+schema_version: 1
+
+reports:
+  - report_id: gcp-2019
+    series: gcp
+    edition: 2019
+    title: "Gross County Product 2019"
+    publication_id: "9574"
+    file_name: Kenya-Gross-County-Product-2019.pdf
+    sha256: 9110e24c26a664c00f838a40ecec902f0eae3e24dd536737c247ff23742c682f
+    size: 2929918
+    landing_page: https://www.knbs.or.ke/
+  - report_id: gcp-2021
+    series: gcp
+    edition: 2021
+    title: "Gross County Product 2021"
+    publication_id: "9572"
+    file_name: Kenya-Gross-County-Product-2021.pdf
+    sha256: d845cc9eb5b5e20ca36076068ce2b377712d3b09eb369c1a1f724f07dda5716e
+    size: 1640247
+    landing_page: https://www.knbs.or.ke/
+  - report_id: gcp-2023
+    series: gcp
+    edition: 2023
+    title: "Gross County Product 2023"
+    publication_id: "14519"
+    file_name: Gross-County-Product-2023-min.pdf
+    sha256: 8d566d6349d049fd70b59d8577670698289a23fa3f412ce0baed4c18b10bf5c9
+    size: 23553893
+    landing_page: https://www.knbs.or.ke/
+  - report_id: gcp-2024
+    series: gcp
+    edition: 2024
+    title: "Gross County Product 2024"
+    publication_id: "15341"
+    file_name: 2024-Gross-County-Product.pdf
+    sha256: fe2dff51a6976cbc60d9aeb35b03c8d3fdc4b927de967bb9ba554c5efe4f8ad8
+    size: 15358586
+    landing_page: https://www.knbs.or.ke/
+  - report_id: gcp-2025
+    series: gcp
+    edition: 2025
+    title: "Gross County Product 2025"
+    publication_id: "16344"
+    file_name: 2025-Gross-County-Product.pdf
+    sha256: 412af7c153b065b0e94cd74124274b12fade03554ccccad6ee50789b23661c2c
+    size: 11080945
+    landing_page: https://www.knbs.or.ke/
+
+tables:
+  # Gross County Product 2019 ------------------------------------------------
+  # Constant prices here are 2009 prices: this edition predates the 2016
+  # rebasing of the national accounts (audit F-46).
+  - table_id: gcp-2019-current
+    report_id: gcp-2019
+    printed: "Table 4"
+    pins:
+      - {geo_code: "01", column: "2013", value: 206170}
+      - {geo_code: "47", column: "2017", value: 1492323}
+      - {geo_code: "00", column: "2017", value: 7524710}
+    title: "Gross County Product, 2013-2017, current prices"
+    anchor: "Table 4: Gross County Product, 2013 - 2017"
+    pages: [29, 30]
+    measure: gcp
+    prices: current
+    unit: KSh million
+    columns: ["2013", "2014", "2015", "2016", "2017"]
+  - table_id: gcp-2019-share
+    report_id: gcp-2019
+    printed: "Table 5"
+    pins:
+      - {geo_code: "01", column: "2013", value: 4.8}
+      - {geo_code: "47", column: "average", value: 21.7}
+    title: "County share of GCP, 2013-2017"
+    anchor: "Table 5: County Share of GCP, 2013 - 2017"
+    pages: [31, 32]
+    measure: gva_share
+    unit: percent
+    rounding: 0.1
+    total_row: false
+    sum_to: 100
+    columns: ["2013", "2014", "2015", "2016", "2017",
+              {label: "average", measure: gva_share_average}]
+  - table_id: gcp-2019-constant
+    report_id: gcp-2019
+    printed: "Table 6"
+    pins:
+      - {geo_code: "01", column: "2013", value: 160412}
+      - {geo_code: "47", column: "2017", value: 998160}
+      - {geo_code: "00", column: "2017", value: 3992703}
+    title: "Gross County Product, 2013-2017, constant 2009 prices"
+    anchor: "Table 6: Gross County Product, 2013 - 2017"
+    pages: [33]
+    measure: gcp
+    prices: constant
+    base_year: 2009
+    unit: KSh million
+    columns: ["2013", "2014", "2015", "2016", "2017"]
+  - table_id: gcp-2019-per-capita-current
+    report_id: gcp-2019
+    printed: "Table 7"
+    pins:
+      - {geo_code: "01", column: "2013", value: 192988}
+      - {geo_code: "47", column: "2017", value: 317700}
+      - {geo_code: "00", column: "2017", value: 161499}
+    title: "Per capita GCP, 2013-2017, current prices"
+    anchor: "Table 7: Per Capita GCP, 2013 - 2017"
+    pages: [34]
+    measure: gcp_per_capita
+    prices: current
+    unit: KSh
+    sums: false
+    columns: ["2013", "2014", "2015", "2016", "2017"]
+  - table_id: gcp-2019-per-capita-constant
+    report_id: gcp-2019
+    printed: "Table 8"
+    pins:
+      - {geo_code: "01", column: "2013", value: 150156}
+      - {geo_code: "47", column: "2017", value: 212498}
+      - {geo_code: "00", column: "2017", value: 85689}
+    title: "Per capita GCP, 2013-2017, constant 2009 prices"
+    anchor: "Table 8: Per Capita GCP, 2013 - 2017"
+    pages: [35]
+    measure: gcp_per_capita
+    prices: constant
+    base_year: 2009
+    unit: KSh
+    sums: false
+    columns: ["2013", "2014", "2015", "2016", "2017"]
+
+  # Gross County Product 2021 ------------------------------------------------
+  # The first edition on the 2016-based national accounts.
+  - table_id: gcp-2021-current
+    report_id: gcp-2021
+    printed: "Table 1"
+    pins:
+      - {geo_code: "01", column: "2013", value: 268326}
+      - {geo_code: "47", column: "2020", value: 2669829}
+      - {geo_code: "00", column: "2020", value: 9892187}
+    title: "Gross County Product, 2013-2020, current prices"
+    anchor: "Table 1 :- Gross County Product (GCP) 2013-2020, in Current Prices"
+    pages: [19, 20]
+    measure: gcp
+    prices: current
+    unit: KSh million
+    columns: ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"]
+  - table_id: gcp-2021-constant
+    report_id: gcp-2021
+    printed: "Table 2"
+    pins:
+      - {geo_code: "01", column: "2013", value: 317699}
+      - {geo_code: "47", column: "2020", value: 2267447}
+      - {geo_code: "00", column: "2020", value: 8001274}
+    title: "Gross County Product, 2013-2020, constant 2016 prices"
+    anchor: "Table 2 :- Gross County Product (GCP) 2013-2020, in Constant Prices"
+    pages: [20, 21]
+    measure: gcp
+    prices: constant
+    base_year: 2016
+    unit: KSh million
+    columns: ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020"]
+  - table_id: gcp-2021-share
+    report_id: gcp-2021
+    printed: "Table 3"
+    pins:
+      - {geo_code: "01", column: "2013", value: 5.6}
+      - {geo_code: "47", column: "average", value: 27.5}
+    title: "County contribution to gross value added, 2013-2020"
+    anchor: "Table 3 :- County Contribution to Gross Value Added (GVA)"
+    pages: [21, 22]
+    measure: gva_share
+    unit: percent
+    rounding: 0.1
+    total_row: false
+    sum_to: 100
+    columns: ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020",
+              {label: "average", measure: gva_share_average}]
+
+  # Gross County Product 2023 ------------------------------------------------
+  - table_id: gcp-2023-current
+    report_id: gcp-2023
+    printed: "Table 1"
+    pins:
+      - {geo_code: "01", column: "2018", value: 435527}
+      - {geo_code: "47", column: "2022", value: 3379354}
+      - {geo_code: "00", column: "2022", value: 12285427}
+    title: "Gross County Product, 2018-2022, current prices"
+    anchor: "Table 1: Gross County Product at Current Prices, 2018-2022"
+    pages: [20, 21]
+    measure: gcp
+    prices: current
+    unit: KSh million
+    columns: ["2018", "2019", "2020", "2021", "2022"]
+  - table_id: gcp-2023-share
+    report_id: gcp-2023
+    printed: "Table 2"
+    pins:
+      - {geo_code: "01", column: "2018", value: 5.1}
+      - {geo_code: "47", column: "average", value: 27.5}
+    title: "County contribution to gross value added, 2018-2022"
+    anchor: "Table 2 : County Contribution to Gross Value Added"
+    pages: [22, 23]
+    measure: gva_share
+    unit: percent
+    rounding: 0.1
+    total_row: false
+    sum_to: 100
+    columns: ["2018", "2019", "2020", "2021", "2022",
+              {label: "average", measure: gva_share_average}]
+  - table_id: gcp-2023-constant
+    report_id: gcp-2023
+    printed: "Table 3"
+    pins:
+      - {geo_code: "01", column: "2018", value: 399191}
+      - {geo_code: "47", column: "2022", value: 2659197}
+      - {geo_code: "00", column: "2022", value: 8996769}
+    title: "Gross County Product, 2018-2022, constant 2016 prices"
+    anchor: "Table 3: Gross County Product at Constant 2016 Prices, 2018-2022"
+    pages: [36, 37]
+    measure: gcp
+    prices: constant
+    base_year: 2016
+    unit: KSh million
+    columns: ["2018", "2019", "2020", "2021", "2022"]
+
+  # Gross County Product 2024 ------------------------------------------------
+  # Tables 5 and 6 print two counties per line, side by side.
+  - table_id: gcp-2024-population
+    report_id: gcp-2024
+    printed: "Table 1"
+    pins:
+      - {geo_code: "01", column: "census_2019", value: 1208333}
+      - {geo_code: "47", column: "2023", value: 4750056}
+      - {geo_code: "00", column: "2023", value: 51525585}
+    title: "Population, 2019 census and projections for 2020-2023"
+    anchor: "Table 1: Population from 2019 Census and Estimated Population for 2020-2023"
+    pages: [16, 17]
+    measure: population
+    unit: persons
+    columns:
+      - {label: "census_2019", period: 2019, measure: population_census}
+      - {label: "land_area", measure: land_area, unit: sq km}
+      - {label: "density_2019", period: 2019, measure: population_density,
+         unit: persons per sq km, sums: false}
+      - {label: "2020", measure: population_projected}
+      - {label: "2021", measure: population_projected}
+      - {label: "2022", measure: population_projected}
+      - {label: "2023", measure: population_projected}
+  - table_id: gcp-2024-current
+    report_id: gcp-2024
+    printed: "Table 5"
+    pins:
+      - {geo_code: "01", column: "2019", value: 471343}
+      - {geo_code: "47", column: "2023", value: 3811180}
+      - {geo_code: "00", column: "2023", value: 13891146}
+    title: "Gross County Product, 2019-2023, current prices"
+    anchor: "Table 5: Gross County Product, 2019-2023"
+    pages: [27, 28]
+    panels: 2
+    measure: gcp
+    prices: current
+    unit: KSh million
+    columns: ["2019", "2020", "2021", "2022", "2023"]
+  - table_id: gcp-2024-share
+    report_id: gcp-2024
+    printed: "Table 6"
+    pins:
+      - {geo_code: "01", column: "2019", value: 5}
+      - {geo_code: "47", column: "average", value: 27.5}
+      - {geo_code: "00", column: "2023", value: 100}
+    title: "County contribution to gross value added, 2019-2023"
+    anchor: "Table 6: County Contribution to Gross Value Added, 2019-2023"
+    pages: [29]
+    panels: 2
+    measure: gva_share
+    unit: percent
+    rounding: 0.1
+    sum_to: 100
+    relabel: {NNYANDARUA: Nyandarua}
+    columns: ["2019", "2020", "2021", "2022", "2023",
+              {label: "average", measure: gva_share_average}]
+  - table_id: gcp-2024-constant
+    report_id: gcp-2024
+    printed: "Table 7"
+    pins:
+      - {geo_code: "01", column: "2019", value: 417056}
+      - {geo_code: "47", column: "2023", value: 2866017}
+      - {geo_code: "00", column: "2023", value: 9529438}
+    title: "Gross County Product, 2019-2023, constant 2016 prices"
+    anchor: "Table 7: Gross County Product, 2019-2023"
+    pages: [39, 40, 41]
+    trailing_text: true
+    measure: gcp
+    prices: constant
+    base_year: 2016
+    unit: KSh million
+    columns: ["2019", "2020", "2021", "2022", "2023"]
+
+  # Gross County Product 2025 ------------------------------------------------
+  - table_id: gcp-2025-population
+    report_id: gcp-2025
+    printed: "Table 1"
+    pins:
+      - {geo_code: "01", column: "census_2019", value: 1208333}
+      - {geo_code: "47", column: "2024", value: 4828205}
+      - {geo_code: "00", column: "2024", value: 52428273}
+    title: "Population, 2019 census and projections for 2020-2024"
+    anchor: "Table 1: Population from 2019 Census and Projected Population for 2020-2024"
+    pages: [18, 19]
+    measure: population
+    unit: persons
+    columns:
+      - {label: "census_2019", period: 2019, measure: population_census}
+      - {label: "land_area", measure: land_area, unit: sq km}
+      - {label: "density_2019", period: 2019, measure: population_density,
+         unit: persons per sq km, sums: false}
+      - {label: "2020", measure: population_projected}
+      - {label: "2021", measure: population_projected}
+      - {label: "2022", measure: population_projected}
+      - {label: "2023", measure: population_projected}
+      - {label: "2024", measure: population_projected}
+  - table_id: gcp-2025-current
+    report_id: gcp-2025
+    printed: "Table 8"
+    pins:
+      - {geo_code: "01", column: "2020", value: 469299}
+      - {geo_code: "47", column: "2024", value: 4105576}
+      - {geo_code: "00", column: "2024", value: 14968094}
+    title: "Gross County Product, 2020-2024, current prices"
+    anchor: "Table 8: Gross County Product at Current Prices"
+    pages: [32, 33]
+    measure: gcp
+    prices: current
+    unit: KSh million
+    columns: ["2020", "2021", "2022", "2023", "2024*"]
+  - table_id: gcp-2025-share
+    report_id: gcp-2025
+    printed: "Table 9"
+    pins:
+      - {geo_code: "01", column: "2020", value: 4.8}
+      - {geo_code: "47", column: "average", value: 27.5}
+    title: "County contribution to gross value added, 2020-2024"
+    anchor: "Table 9: County Contribution to Gross Value Added"
+    pages: [34, 35]
+    measure: gva_share
+    unit: percent
+    rounding: 0.1
+    total_row: false
+    sum_to: 100
+    columns: ["2020", "2021", "2022", "2023", "2024*",
+              {label: "average", measure: gva_share_average}]
+  - table_id: gcp-2025-constant
+    report_id: gcp-2025
+    printed: "Table 10"
+    pins:
+      - {geo_code: "01", column: "2020", value: 404758}
+      - {geo_code: "47", column: "2024", value: 2997797}
+      - {geo_code: "00", column: "2024", value: 9990769}
+    title: "Gross County Product, 2020-2024, constant 2016 prices"
+    anchor: "Table 10: Gross County Product at Constant 2016 Prices"
+    pages: [44, 45, 46]
+    measure: gcp
+    prices: constant
+    base_year: 2016
+    unit: KSh million
+    columns: ["2020", "2021", "2022", "2023", "2024*"]

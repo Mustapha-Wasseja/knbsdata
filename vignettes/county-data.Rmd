@@ -72,23 +72,54 @@ codes from the same source.
 
 ## Gross County Product
 
-The county economy itself is served by the Open Data for Africa republisher
-(`source_id` `"opendataforafrica"`), the one source that carries GCP as
-data: GVA shares plus constant- and current-price GCP for all 47 counties,
-annual 2013–2020.
+KNBS publishes the size of each county's economy, the Gross County Product,
+in a report each year, as tables printed in a PDF. `knbs_gcp()` reads them
+from the KNBS publications library by curated recipe and returns them
+already coded to the census counties:
 
 ```{r, eval = FALSE}
-gcp <- knbs_get_indicator("jhbzkjc")
-latest <- gcp[gcp$table_code == "T3" & gcp$period == 2020 & gcp$geo_code != "KE", ]
-head(latest[order(-latest$value), c("geo_name", "value")])
+gcp <- knbs_gcp()                          # current prices, latest edition
+real <- knbs_gcp(prices = "constant")      # constant 2016 prices
+shares <- knbs_gcp("share")                # percent of gross value added
+
+latest <- gcp[gcp$period == 2024 & gcp$geo_code != "00", ]
+head(latest[order(-latest$value), c("county", "value", "status")])
 ```
 
-Two cautions, both stated in `knbs_metadata()`: this is the **2021 edition**
-— newer GCP years exist only as PDF reports
-(`knbs_publications("gross county product")`) — and its geography codes are
-the **portal's own region codes**, not census territories. To relate GCP to
-census-coded data, translate its county names into census codes with
-`knbs_county_code()`, as below, rather than joining on its region codes.
+Every read checks the table: all 47 counties and the total present once,
+the counties adding up to the total within rounding, and figures checked by
+hand at curation unchanged. A report that has changed is refused rather
+than misread.
+
+Three things to know, all in `knbs_metadata()`:
+
+- **Each edition revises the years before it.** `edition = "latest"` (the
+  default) gives the newest; `edition = "all"` gives every edition, one
+  block each, so revisions can be compared. The editions curated are 2019,
+  2021, 2023, 2024 and 2025, together covering 2013–2024.
+- **Constant prices changed base year.** The 2019 edition values them at
+  2009 prices; from 2021 they are 2016 prices, after the national accounts
+  were rebased. The `base_year` column says which. Never splice the two
+  into one series.
+- **The newest year is provisional**: `status` is `"provisional"` where the
+  report marks a year with an asterisk.
+
+Because the counties carry census codes, GCP joins every other county table
+in the package directly — per-capita GCP against the reports' own county
+population tables, for instance:
+
+```{r, eval = FALSE}
+pop <- knbs_county_population()
+pop <- pop[pop$measure == "population_projected", c("geo_code", "period", "value")]
+names(pop)[3] <- "population"
+per_head <- merge(gcp[, c("geo_code", "county", "period", "value")], pop,
+                  by = c("geo_code", "period"))
+per_head$gcp_per_head <- per_head$value * 1e6 / per_head$population
+```
+
+`knbs_report_tables()` lists every curated table with its edition, prices
+and base year; `knbs_report_table()` returns any one of them exactly as
+printed, including the reports' averages.
 
 ## Health by county: the KDHS
 

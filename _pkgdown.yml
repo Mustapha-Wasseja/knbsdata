@@ -62,6 +62,17 @@ reference:
   - knbs_abstract_tables
   - knbs_abstract_table
 
+- title: County economy and report tables
+  desc: >
+    Tables KNBS publishes only in its PDF reports, extracted by curated,
+    verified recipe: Gross County Product by county at current and constant
+    prices, county shares, and the county population tables.
+  contents:
+  - knbs_gcp
+  - knbs_county_population
+  - knbs_report_tables
+  - knbs_report_table
+
 - title: Indicators and prices
   desc: >
     Census tables (CC BY 4.0), the monthly consumer price series, and the
