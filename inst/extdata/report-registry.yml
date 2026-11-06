@@ -47,6 +47,12 @@
 #                    county they mean (a misprint such as "NNYANDARUA")
 #   known_gaps       a printed discrepancy between the counties and the total
 #                    observed at curation: only that exact gap is accepted
+#   blank_cells      cells the report prints blank, found at curation:
+#                    geo_code, column, and derive - the columns whose sum the
+#                    table's own header identity gives it (C = A + B); the
+#                    cell is filled from them and marked "derived"
+#   min_rows_on_first_page  rows that must follow the title on its own page
+#                    (default 3; 0 where the title ends a page)
 #   pins             figures read by hand: geo_code, column, value
 
 schema_version: 1
@@ -97,6 +103,134 @@ reports:
     sha256: 412af7c153b065b0e94cd74124274b12fade03554ccccad6ee50789b23661c2c
     size: 11080945
     landing_page: https://www.knbs.or.ke/
+
+  # Controller of Budget ------------------------------------------------------
+  # The annual County Governments Budget Implementation Review Reports.
+  # cob.go.ke answers programs with a bot check, so these are file_only: the
+  # tables are read from a copy the user supplies, and the verified figures
+  # ship with the package (knbs_county_budget()). edition is the year the
+  # fiscal year ends. Checksums are of the copies curated on 2026-11-06.
+  - report_id: cob-2013-14
+    series: cob
+    edition: 2014
+    fiscal_year: "2013/14"
+    title: "County Governments Annual Budget Implementation Review Report, FY 2013/14"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2013_14 Report.pdf
+    sha256: ef8e9a7812f4e15a17b0f5680111e5c8440109e9765f809a009e3e4462ba46d8
+    size: 14603736
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2014-15
+    series: cob
+    edition: 2015
+    fiscal_year: "2014/15"
+    title: "Annual County Governments Budget Implementation Review Report, FY 2014/15"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2015 Report.pdf
+    sha256: a282633e530bc4853d603c4d8b67c4a6861f9d2c37e5a4620ab4d532509d6c76
+    size: 4047465
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2015-16
+    series: cob
+    edition: 2016
+    fiscal_year: "2015/16"
+    title: "Annual County Governments Budget Implementation Review Report, FY 2015/16"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2016 Report.pdf
+    sha256: eb7506ea0257c02273c0fc3046d3b0a0edc08a40b4911bbd2d147ccf913e9c7e
+    size: 7815954
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2016-17
+    series: cob
+    edition: 2017
+    fiscal_year: "2016/17"
+    title: "Annual County Governments Budget Implementation Review Report, FY 2016/17"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2017 Report.pdf
+    sha256: a206f4fe5ea76543d06327e4dc3af6d13a0300abd05a9e637e94798dca6a2b09
+    size: 17315482
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2017-18
+    series: cob
+    edition: 2018
+    fiscal_year: "2017/18"
+    title: "Annual County Governments Budget Implementation Review Report, FY 2017/18"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2017_18 Report.pdf
+    sha256: f811ce8addc0aaa06139fd68dc87cdd9125a3aefb905b3d08c22ea3f1456fd84
+    size: 11495395
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2018-19
+    series: cob
+    edition: 2019
+    fiscal_year: "2018/19"
+    title: "County Governments Annual Budget Implementation Review Report, FY 2018/19"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2018 Report.pdf
+    sha256: 00e24adcb3da800a29ef4b4256cd7ddf3e32f02d14f82e7f4bdb9ed653216e5e
+    size: 8908892
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2019-20
+    series: cob
+    edition: 2020
+    fiscal_year: "2019/20"
+    title: "County Governments Budget Implementation Review Report, FY 2019/20"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2019 Report.pdf
+    sha256: ef41deda74c0a3266bb78a3972b25a2d4b165d5769de36be2ab0021e3d9733e8
+    size: 8343985
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2020-21
+    series: cob
+    edition: 2021
+    fiscal_year: "2020/21"
+    title: "County Governments Budget Implementation Review Report, FY 2020/21"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2021 Report.pdf
+    sha256: fcc8de913d872a9a35e43b50d5fe0e98dda1abaf5d7bcd3a3ab82b0e3d9bc5e6
+    size: 11978871
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2021-22
+    series: cob
+    edition: 2022
+    fiscal_year: "2021/22"
+    title: "County Governments Annual Budget Implementation Review Report, FY 2021/22"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2022 Report.pdf
+    sha256: 1b42af2f3b6a2c7b667c8ae71785db11f137d623d14b4de082a1e90da65ce558
+    size: 11081564
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2022-23
+    series: cob
+    edition: 2023
+    fiscal_year: "2022/23"
+    title: "County Governments Budget Implementation Review Report, FY 2022/23"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2023 Report.pdf
+    sha256: 3106ee6e497b1f91029afc035173591ae7d80492499a2d9fc5e98d4c73ad573f
+    size: 15782259
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
+  - report_id: cob-2023-24
+    series: cob
+    edition: 2024
+    fiscal_year: "2023/24"
+    title: "County Governments Budget Implementation Review Report, FY 2023/24"
+    publisher: Office of the Controller of Budget
+    file_only: true
+    file_name: 2024 Report.pdf
+    sha256: a2d0d9ba5355493a515f02cd3e4a599df80d251b1fff91594a0d0550afa0d9a6
+    size: 31023784
+    landing_page: https://cob.go.ke/reports/county-governments-budget-implementation-review-reports/
 
 tables:
   # Gross County Product 2019 ------------------------------------------------
@@ -415,3 +549,241 @@ tables:
     base_year: 2016
     unit: KSh million
     columns: ["2020", "2021", "2022", "2023", "2024*"]
+
+  # Controller of Budget: county budget allocation, expenditure and absorption
+  # The same nine columns every year from FY 2015/16: budget and spending,
+  # recurrent and development, in KSh million to two decimals, and the three
+  # absorption rates (spending as a percent of budget), which do not add.
+  - table_id: cob-2015-16-budget
+    report_id: cob-2015-16
+    printed: "Table 2.4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 3540.88}
+      - {geo_code: "47", column: "expenditure_total", value: 23951.02}
+      - {geo_code: "00", column: "expenditure_total", value: 295297.45}
+    title: "County budget allocation, expenditure and absorption rate, FY 2015/16"
+    anchor: "Table 2.4: County budget allocation, expenditure and absorption rate for FY 2015/16"
+    pages: [31, 32]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    # Totals of five digits are set on a lower baseline and come out of the
+    # text on the line below their row; the engine reunites them by
+    # position (Bungoma, Kakamega, Kiambu, Kilifi, Kitui, Machakos, Mandera,
+    # Nakuru, and Nairobi City across three lines).
+    columns: &budget_columns
+      - {label: budget_recurrent}
+      - {label: budget_development}
+      - {label: budget_total}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+      - {label: absorption_recurrent, unit: percent, sums: false}
+      - {label: absorption_development, unit: percent, sums: false}
+      - {label: absorption_total, unit: percent, sums: false}
+    identities: &budget_identities
+      - {column: budget_total, sum: [budget_recurrent, budget_development]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+    # Busia's total expenditure is printed as 5,865.76, but D + E = 5,896.98;
+    # the printed national total is the sum with 5,896.98.
+    misprints:
+      - {geo_code: "40", column: expenditure_total}
+  - table_id: cob-2016-17-budget
+    report_id: cob-2016-17
+    printed: "Table 2.4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 3901.72}
+      - {geo_code: "47", column: "expenditure_total", value: 24858.64}
+      - {geo_code: "00", column: "expenditure_total", value: 319055.80}
+    title: "County budget allocation, expenditure and absorption rate, FY 2016/17"
+    anchor: "Table 2.4: County Budget Allocation, Expenditure and Absorption Rate for FY 2016/17"
+    pages: [32, 33]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2017-18-budget
+    report_id: cob-2017-18
+    printed: "Table 2.4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 4245.69}
+      - {geo_code: "47", column: "expenditure_total", value: 24541.53}
+      - {geo_code: "00", column: "expenditure_total", value: 303830.68}
+    title: "County budget allocation, expenditure and absorption rate, FY 2017/18"
+    anchor: "Table 2.4: County Budget Allocation, Expenditure and Absorption Rate for FY 2017/18"
+    pages: [29, 30]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2018-19-budget
+    report_id: cob-2018-19
+    printed: "Table 2.5"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 4528.48}
+      - {geo_code: "47", column: "expenditure_total", value: 29398.17}
+      - {geo_code: "00", column: "expenditure_total", value: 376434.74}
+    title: "County budget allocation, expenditure and absorption rate, FY 2018/19"
+    anchor: "Table 2.5: County Budget Allocation, Expenditure and Absorption Rate for FY 2018/19"
+    pages: [30, 31, 32]
+    # The title is the last line of page 30; the rows start on page 31.
+    min_rows_on_first_page: 0
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2019-20-budget
+    report_id: cob-2019-20
+    printed: "Table 2-4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 4883.87}
+      - {geo_code: "47", column: "expenditure_total", value: 23353.44}
+      - {geo_code: "00", column: "expenditure_total", value: 383788.18}
+    # The report prints this title with "FY 2018/19"; the figures are FY
+    # 2019/20's, as the rest of the report and its totals show.
+    title: "County budget allocation, expenditure and absorption rate, FY 2019/20"
+    anchor: "Table 2-4: Budget Allocation, Expenditure and Absorption Rate"
+    pages: [26, 27]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2020-21-budget
+    report_id: cob-2020-21
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 4651.47}
+      - {geo_code: "47", column: "expenditure_total", value: 30135.65}
+      - {geo_code: "00", column: "expenditure_total", value: 398014.13}
+    title: "County budget allocation, expenditure and absorption rate, FY 2020/21"
+    anchor: "Table 2.3: County Budget Allocation, Expenditure and Absorption Rate for FY 2020/21"
+    pages: [28, 29]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2021-22-budget
+    report_id: cob-2021-22
+    printed: "Table 2:4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 5415.43}
+      - {geo_code: "47", column: "expenditure_total", value: 28334.42}
+      - {geo_code: "00", column: "expenditure_total", value: 400964.88}
+    title: "County budget allocation, expenditure and absorption rate, FY 2021/22"
+    anchor: "Table 2:4: County Budget Allocation, Expenditure and Absorption Rate for the FY"
+    pages: [29, 30]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2022-23-budget
+    report_id: cob-2022-23
+    printed: "Table 2.4"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 5368.69}
+      - {geo_code: "47", column: "expenditure_total", value: 33238.38}
+      - {geo_code: "00", column: "expenditure_total", value: 428896.06}
+    title: "County budget allocation, expenditure and absorption rate, FY 2022/23"
+    anchor: "Table 2.4: County Budget Allocation, Expenditure and absorption Rate in FY"
+    pages: [32, 33]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+  - table_id: cob-2023-24-budget
+    report_id: cob-2023-24
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 5606.31}
+      - {geo_code: "47", column: "expenditure_total", value: 31789.13}
+      - {geo_code: "00", column: "expenditure_total", value: 446763.19}
+    title: "County budget allocation, expenditure and absorption rate, FY 2023/24"
+    anchor: "Table 2.3: County Budget Allocation, Expenditure and Absorption Rate for the FY 2023/24"
+    pages: [28, 29]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.01
+    columns: *budget_columns
+    identities: *budget_identities
+
+  # FY 2013/14 splits budget and spending between the County Assembly and
+  # the County Executive, and has no recurrent/development split of the
+  # budget. "-" is nil: totals count it as zero.
+  - table_id: cob-2013-14-budget
+    report_id: cob-2013-14
+    printed: "Table 4"
+    pins:
+      - {geo_code: "30", column: "budget_total", value: 3644.9}
+      - {geo_code: "47", column: "expenditure_executive_total", value: 16390.9}
+      - {geo_code: "00", column: "budget_total", value: 261080.9}
+    title: "County budgets and expenditure by arm of government, FY 2013/14"
+    anchor: "Table 4: FY 2013/14 Analysis of County Budgets and Expenditure"
+    pages: [44, 45]
+    measure: county_budget
+    unit: KSh million
+    rounding: 0.1
+    dash_means_zero: true
+    columns:
+      - {label: budget_total}
+      - {label: budget_assembly}
+      - {label: budget_executive}
+      - {label: expenditure_assembly_recurrent}
+      - {label: expenditure_assembly_development}
+      - {label: expenditure_assembly_car_loans_mortgage}
+      - {label: expenditure_assembly_total}
+      - {label: expenditure_executive_recurrent}
+      - {label: expenditure_executive_development}
+      - {label: expenditure_executive_total}
+      - {label: absorption_assembly, unit: percent, sums: false}
+      - {label: absorption_executive, unit: percent, sums: false}
+    identities:
+      - {column: budget_total, sum: [budget_assembly, budget_executive]}
+      - {column: expenditure_assembly_total,
+         sum: [expenditure_assembly_recurrent, expenditure_assembly_development,
+               expenditure_assembly_car_loans_mortgage]}
+      - {column: expenditure_executive_total,
+         sum: [expenditure_executive_recurrent, expenditure_executive_development]}
+
+  # FY 2014/15 is in whole shillings, with exchequer issues, and prints each
+  # county over two lines: its name with the four rates, then its nine
+  # amounts.
+  - table_id: cob-2014-15-budget
+    report_id: cob-2014-15
+    printed: "Annex 1"
+    pins:
+      - {geo_code: "30", column: "budget_recurrent", value: 2960575785.0}
+      - {geo_code: "47", column: "expenditure_total", value: 21022564017.0}
+      - {geo_code: "00", column: "expenditure_total", value: 257998137321.0}
+    title: "County budget allocations, funds released, expenditure and absorption rates, FY 2014/15"
+    anchor: "Annex 1: FY 2014/15 Budget Allocations, Funds Released, Expenditure and Absorption Rates"
+    pages: [303, 304, 305]
+    two_line_rows: true
+    min_rows_on_first_page: 0
+    measure: county_budget
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: budget_recurrent}
+      - {label: budget_development}
+      - {label: budget_total}
+      - {label: exchequer_recurrent}
+      - {label: exchequer_development}
+      - {label: exchequer_total}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+      - {label: absorption_recurrent, unit: percent, sums: false}
+      - {label: absorption_development, unit: percent, sums: false}
+      - {label: exchequer_absorption_recurrent, unit: percent, sums: false}
+      - {label: exchequer_absorption_development, unit: percent, sums: false}
+    identities:
+      - {column: budget_total, sum: [budget_recurrent, budget_development]}
+      - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}

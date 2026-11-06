@@ -7,10 +7,15 @@ value_of <- function(x, geo_code, column) {
 test_that("the curated tables are listed with edition, prices and base year", {
   tables <- knbs_report_tables()
   expect_s3_class(tables, "knbs_catalogue")
-  expect_named(tables, c("table_id", "series", "edition", "printed", "title", "measure",
-                         "prices", "base_year", "unit", "periods", "report"))
-  expect_identical(nrow(tables), 19L)
-  expect_setequal(unique(tables$edition), c(2019L, 2021L, 2023L, 2024L, 2025L))
+  expect_named(tables, c("table_id", "series", "edition", "publisher", "printed", "title",
+                         "measure", "prices", "base_year", "unit", "periods", "report"))
+  gcp <- tables[tables$series == "gcp", ]
+  expect_identical(nrow(gcp), 19L)
+  expect_setequal(unique(gcp$edition), c(2019L, 2021L, 2023L, 2024L, 2025L))
+  expect_identical(unique(gcp$publisher), "Kenya National Bureau of Statistics")
+  cob <- tables[tables$series == "cob", ]
+  expect_identical(nrow(cob), 11L)
+  expect_identical(unique(cob$publisher), "Office of the Controller of Budget")
   constant <- tables[tables$measure == "gcp" & tables$prices %in% "constant", ]
   # 2009 prices before the 2016 rebasing, 2016 prices after.
   expect_identical(constant$base_year[constant$edition == 2019L], 2009L)

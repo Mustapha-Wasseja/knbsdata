@@ -4,11 +4,19 @@
 \alias{knbs_report_table}
 \title{Retrieve one curated table of a KNBS report as tidy observations}
 \usage{
-knbs_report_table(table, cache = knbs_option("cache"), refresh = FALSE)
+knbs_report_table(
+  table,
+  file = NULL,
+  cache = knbs_option("cache"),
+  refresh = FALSE
+)
 }
 \arguments{
 \item{table}{A table id from \code{\link[=knbs_report_tables]{knbs_report_tables()}}, such as
 \code{"gcp-2025-current"}, or enough of its title to identify one table.}
+
+\item{file}{For a report the package cannot fetch, the path to your copy
+of it. Ignored for reports fetched from the KNBS library.}
 
 \item{cache}{Whether to use the local cache.}
 
@@ -51,6 +59,13 @@ changed base year with the 2016 rebasing of the national accounts: the
 2019 edition's constant prices are 2009 prices, later editions' 2016
 prices. Each table keeps its edition and \code{base_year}; never splice
 constant-price figures across base years.
+
+Some reports cannot be fetched by a program: the Controller of Budget's
+website answers programs with a bot check, which the package does not get
+past. Their tables are read from a copy of the report you download in a
+browser and pass as \code{file}; the copy must be the edition the recipe was
+made from, and is checked like any other. The verified data from those
+reports also ship with the package: see \code{\link[=knbs_county_budget]{knbs_county_budget()}}.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}

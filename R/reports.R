@@ -25,8 +25,8 @@
 #' @param series Keep only these report series, for example `"gcp"`.
 #'
 #' @return A `knbs_catalogue` tibble with columns `table_id`, `series`,
-#'   `edition`, `printed`, `title`, `measure`, `prices`, `base_year`, `unit`,
-#'   `periods` and `report`.
+#'   `edition`, `publisher`, `printed`, `title`, `measure`, `prices`,
+#'   `base_year`, `unit`, `periods` and `report`.
 #'
 #' @seealso [knbs_report_table()], [knbs_gcp()], [knbs_county_population()]
 #'
@@ -44,6 +44,9 @@ knbs_report_tables <- function(series = NULL) {
     table_id = vapply(tables, function(t) t$table_id, character(1)),
     series = vapply(tables, function(t) chr(report_of(t)$series), character(1)),
     edition = vapply(tables, function(t) as.integer(report_of(t)$edition), integer(1)),
+    publisher = vapply(tables, function(t) {
+      chr(report_of(t)$publisher %||% "Kenya National Bureau of Statistics")
+    }, character(1)),
     printed = vapply(tables, function(t) chr(t$printed), character(1)),
     title = vapply(tables, function(t) chr(t$title), character(1)),
     measure = vapply(tables, function(t) chr(t$measure), character(1)),
@@ -113,8 +116,17 @@ knbs_report_tables <- function(series = NULL) {
 #' prices. Each table keeps its edition and `base_year`; never splice
 #' constant-price figures across base years.
 #'
+#' Some reports cannot be fetched by a program: the Controller of Budget's
+#' website answers programs with a bot check, which the package does not get
+#' past. Their tables are read from a copy of the report you download in a
+#' browser and pass as `file`; the copy must be the edition the recipe was
+#' made from, and is checked like any other. The verified data from those
+#' reports also ship with the package: see [knbs_county_budget()].
+#'
 #' @param table A table id from [knbs_report_tables()], such as
 #'   `"gcp-2025-current"`, or enough of its title to identify one table.
+#' @param file For a report the package cannot fetch, the path to your copy
+#'   of it. Ignored for reports fetched from the KNBS library.
 #' @param cache Whether to use the local cache.
 #' @param refresh Whether to re-download the report and re-extract.
 #'
@@ -131,6 +143,7 @@ knbs_report_tables <- function(series = NULL) {
 #' population <- knbs_report_table("gcp-2025-population")
 #' @export
 knbs_report_table <- function(table,
+                              file = NULL,
                               cache = knbs_option("cache"),
                               refresh = FALSE) {
   check_string(table, "table")
@@ -138,6 +151,12 @@ knbs_report_table <- function(table,
   spec <- report_resolve_table(table, registry)
   report <- report_spec(registry, spec$report_id)
   src <- knbs_source("knbs_publications")
+
+  if (isTRUE(report$file_only)) {
+    fetched <- report_local_file(file, report)
+    extracted <- report_extract(fetched$path, spec)
+    return(report_as_data(extracted, fetched, spec, report, src))
+  }
 
   got <- cache_fetch(
     cache_key(src$source_id, "report_table",
@@ -294,7 +313,12 @@ report_registry <- function(call = rlang::caller_env()) {
   ok <- length(table_ids) > 0L && all(nzchar(table_ids)) && !anyDuplicated(table_ids) &&
     all(nzchar(report_ids)) && !anyDuplicated(report_ids) &&
     all(vapply(registry$reports, function(r) {
-      is.character(r$publication_id %||% NULL) && is.character(r$file_name %||% NULL)
+      # A report is fetched from the KNBS library by its media id, or read
+      # from a file the user supplies when its publisher's site cannot be
+      # reached by programs.
+      fetchable <- is.character(r$publication_id %||% NULL) ||
+        (isTRUE(r$file_only) && is.character(r$publisher %||% NULL))
+      fetchable && is.character(r$file_name %||% NULL) && is.character(r$sha256 %||% NULL)
     }, logical(1))) &&
     all(vapply(registry$tables, function(t) {
       (t$report_id %||% "") %in% report_ids && is.character(t$anchor %||% NULL) &&
@@ -459,6 +483,41 @@ report_fetch_pdf <- function(source, report, refresh = FALSE, call = rlang::call
   list(path = target, url = url, sha256 = digest::digest(file = target, algo = "sha256"))
 }
 
+#' Check a report file the user supplies
+#'
+#' For a report the package cannot fetch. The file must exist and be a PDF;
+#' a copy that is not byte-for-byte the curated file is still read - the
+#' table checks decide - and the provenance says it differs.
+#'
+#' @return list(path, url, sha256), as report_fetch_pdf().
+#' @noRd
+report_local_file <- function(file, report, call = rlang::caller_env()) {
+  if (is.null(file)) {
+    knbs_abort(
+      c(
+        "{report$title} cannot be fetched by the package.",
+        "i" = "{report$publisher}'s website answers programs with a bot check, which the package does not get past.",
+        "i" = "Download the report in a browser and pass it as {.arg file}.",
+        "i" = "Its verified figures also ship with the package: see {.fn knbs_county_budget}."
+      ),
+      class = "knbs_error_access_restricted",
+      call = call
+    )
+  }
+  check_string(file, "file")
+  if (!file.exists(file)) {
+    knbs_abort(c("{.arg file} does not exist.", "x" = "{.path {file}}"),
+               class = "knbs_error_invalid_argument", call = call)
+  }
+  head <- readBin(file, "raw", 5L)
+  if (!identical(rawToChar(head[seq_len(min(4L, length(head)))]), "%PDF")) {
+    knbs_abort(c("{.arg file} is not a PDF.", "x" = "{.path {file}}"),
+               class = "knbs_error_invalid_argument", call = call)
+  }
+  list(path = normalizePath(file), url = as.character(report$landing_page %||% NA_character_),
+       sha256 = digest::digest(file = file, algo = "sha256"))
+}
+
 #' Extract a table from a report file
 #'
 #' Reads the recipe's pages and two after; if the title is not there - the
@@ -504,22 +563,23 @@ report_as_data <- function(extracted, fetched, spec, report, src) {
     status = table$status,
     value = table$value,
     edition = as.integer(report$edition),
-    source_id = src$source_id
+    source_id = if (isTRUE(report$file_only)) report_source_id(report) else src$source_id
   )
   url <- as.character(fetched$url %||% NA_character_)
   if (is.na(url) || !nzchar(url)) url <- as.character(report$landing_page)
   years <- stats::na.omit(out$period)
   same_file <- identical(fetched$sha256, as.character(report$sha256 %||% ""))
+  publisher <- as.character(report$publisher %||% "Kenya National Bureau of Statistics")
   new_knbs_data(
     out,
     new_knbs_metadata(
       title = paste0(report$title, ", ", spec$printed, ": ", spec$title),
       resource_id = spec$table_id,
       resource_type = "table",
-      source_id = src$source_id,
-      source_name = src$source_name,
+      source_id = if (isTRUE(report$file_only)) report_source_id(report) else src$source_id,
+      source_name = if (isTRUE(report$file_only)) publisher else src$source_name,
       source_url = url,
-      producer = "Kenya National Bureau of Statistics",
+      producer = publisher,
       reference_period = if (length(years)) paste(min(years), "to", max(years)) else NULL,
       unit = as.character(spec$unit),
       frequency = "annual",
@@ -549,6 +609,15 @@ report_as_data <- function(extracted, fetched, spec, report, src) {
     ),
     class = "knbs_report_table"
   )
+}
+
+#' The source id of a report read from a file the user supplies: its
+#' publisher, as a snake-case id
+#' @noRd
+report_source_id <- function(report) {
+  switch(as.character(report$series),
+         cob = "controller_of_budget",
+         gsub("[^a-z0-9]+", "_", tolower(as.character(report$publisher))))
 }
 
 #' Stack several report tables, with metadata naming all of them

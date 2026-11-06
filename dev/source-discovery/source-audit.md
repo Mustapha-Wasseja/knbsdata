@@ -484,6 +484,49 @@ five editions, per-capita GCP (2019), and the population tables (2024,
 Tables 1-3, 2021 Annexes I-III, 2023 Annex III), poverty, working
 population and the other county context tables.
 
+**F-47 — The Controller of Budget's county reports, read as data.**
+Curated 2026-11-06 from copies supplied by the maintainers: the annual
+County Governments Budget Implementation Review Reports for FY 2013/14 to
+FY 2023/24 (eleven reports; two of the twelve files supplied were the same
+FY 2020/21 report, byte for byte). All are text PDFs. `cob.go.ke` answers
+programs with an "One moment, please... request is being verified" page,
+after a few requests even on its report listings, and `cra.go.ke` does the
+same on every page including `robots.txt`; neither is fetched, so the
+verified figures ship with the package (`data-raw/county-budget.R`,
+`inst/extdata/county-budget.csv`) and a user's copy can be re-read by
+recipe. Findings:
+
+- *The budget table.* "County Budget Allocation, Expenditure and Absorption
+  Rate" (Table 2.3, 2.4 or 2.5 of each report from FY 2015/16): nine
+  columns in KSh million, with the identities C = A + B and F = D + E
+  printed in the header. FY 2014/15 has it as Annex 1 in whole shillings
+  with exchequer issues, each county over two or three lines (name and
+  rates, then amounts); FY 2013/14 as Table 4, by arm of government, with
+  no recurrent/development split of the budget and "-" for nil.
+- *Wide figures on another baseline.* In FY 2015/16 every figure of five
+  digits (totals of KSh 10 billion and more) is set slightly lower and
+  comes out of the text on the line below its row; Nairobi City runs over
+  three lines. Not blanks: the figures are printed, and the engine reunites
+  them by their positions under the columns.
+- *A misprint.* FY 2015/16, Busia: total expenditure printed 5,865.76, but
+  recurrent 3,409.77 + development 2,487.21 = 5,896.98; the national total,
+  295,297.45, is the sum with 5,896.98. Kept as printed, marked misprint.
+- *A mislabelled title.* The FY 2019/20 report's budget table is titled
+  "FY 2018/19"; its figures, and its totals elsewhere in the report, are FY
+  2019/20's.
+- *Two tables of one report disagree.* FY 2013/14's recurrent spending
+  summed from Table 4 (Assembly plus Executive) differs from an
+  independent extraction that appears to take it from Table 1 (economic
+  classification); for Mombasa 5,081.9 against 5,097.8. Table 1 is not yet
+  curated; the shipped figures are Table 4's.
+- *An independent extraction agrees.* The maintainers' own extraction of
+  the same tables agrees figure for figure for FY 2014/15 to 2023/24 (3,760
+  figures, after converting FY 2014/15 to millions).
+
+Curated so far: the budget table for all eleven years. Not yet: spending by
+economic classification, own-source revenue, pending bills, exchequer
+issues and conditional grants, which the reports also print by county.
+
 **F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
 Traced 2026-08-08 after a direct question exposed that this portal — probed
 only superficially during the Phase 5 audit — had never been enumerated. The
@@ -1072,4 +1115,7 @@ Copy this block for each new candidate source.
 | 2026-10-15 | opendataforafrica | F-41 continues: still HTTP 403 | Left alone: identity is never disguised and challenges are never solved (F-34); the 403 surfaces as the classed access error |
 | 2026-11-06 | knbs_cpi | F-45 the Explorer's host closes every connection (443 and 80, two networks); the Data Portal's `DF_CPI_NA` carries the same 22 retail prices, equal to the Explorer's and to the June 2026 release's table (one cabbage month aside) | Retail prices read from the portal first, the Explorer as fallback; crosswalk to the Explorer's register; index and inflation keep F-38's no-substitution rule |
 | 2026-11-06 | knbs_publications | F-46 the five Gross County Product reports (2019-2025) are text PDFs in the library; two-panel layouts, side text, wrapped and misprinted county names; 2009 prices before the rebasing, 2016 after; some pages of the 2023 edition take minutes to read as text | PDF table engine with curated recipes: the recipe's pages cut out before reading, counties matched to census codes, counties checked against the total, figures pinned; 19 tables curated, all read live from the library |
+| 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |
+| 2026-11-06 | controller_of_budget | F-47 eleven annual county budget reports (FY 2013/14-2023/24) read by recipe; cob.go.ke and cra.go.ke answer programs with a verification page; five-digit figures set on another baseline (FY 2015/16); one misprint (Busia, FY 2015/16); FY 2019/20 table titled 2018/19 | Verified figures shipped (data-raw/county-budget.R); row identities checked on every row; rows reunited by column position; a user's copy re-readable by recipe |
+NA
 | 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |

@@ -24,9 +24,17 @@
 #   - Tables continue across pages under a repeated header, with running
 #     heads and page numbers between. Lines that are neither a complete row
 #     nor part of a label are skipped.
+#   - Some reports set wider figures on a slightly different baseline, and
+#     text extraction moves them to the line above or below their row. A
+#     row that is short beside a line of figures alone is reunited by the
+#     figures' positions under the columns, and only if every column then
+#     holds exactly one figure.
 #   - A cell left blank would make its row one figure short, and with plain
 #     text there is no telling which column is missing. Such a row is
-#     refused, never shifted.
+#     refused, never shifted - unless the recipe names that very cell
+#     (`blank_cells`), checked by hand at curation; it is then filled from
+#     the identity the table prints for its column (C = A + B) and marked
+#     "derived".
 #   - Text is read only from the pages a table is expected on, cut out of
 #     the file first: some reports carry pages that take minutes to read,
 #     and they are never the table's.
@@ -60,11 +68,11 @@ pdf_pages <- function(path, pages = NULL, call = rlang::caller_env()) {
   stats::setNames(gsub("\r", "", text, fixed = TRUE), pages)
 }
 
-# A figure as printed: 1,234 | 1234 | 12.5 | (387) | -12.5 | 2024* | 7+ ; or
-# a mark for no figure. Thousands commas must come in threes, so a stray
-# "12,34" is not a figure.
+# A figure as printed: 1,234 | 1234 | 12.5 | (387) | -12.5 | 2024* | 7+ |
+# 99.5% ; or a mark for no figure. Thousands commas must come in threes, so
+# a stray "12,34" is not a figure.
 pdf_figure_re <- function() {
-  "^\\(?[-\u2212]?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)(\\.[0-9]+)?\\)?[*+]?$"
+  "^\\(?[-\u2212]?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)(\\.[0-9]+)?\\)?[*+%]?$"
 }
 
 pdf_missing_marks <- function() {
@@ -80,7 +88,7 @@ pdf_is_figure <- function(tokens) {
 #' Figures as numbers: commas dropped, parentheses negative, marks NA
 #' @noRd
 pdf_value <- function(tokens) {
-  x <- gsub("[*+]$", "", tokens)
+  x <- gsub("[*+%]$", "", tokens)
   negative <- grepl("^\\(.*\\)$", x) | grepl("^[-\u2212][0-9]", x)
   x <- gsub("[(),\u2212-]", "", x)
   out <- suppressWarnings(as.numeric(x))
@@ -116,6 +124,12 @@ pdf_split_line <- function(line, trailing = FALSE) {
   words <- which(!is_fig)
   start <- if (length(words) == 0L) 1L else max(words) + 1L
   figures <- if (start <= length(tokens)) tokens[start:length(tokens)] else character(0)
+  # A lone dash after words is the hyphen of a name that wraps ("Tharaka -"
+  # over "Nithi"), not a row of one nil figure.
+  if (length(words) > 0L && length(figures) == 1L && figures %in% pdf_missing_marks()) {
+    start <- length(tokens) + 1L
+    figures <- character(0)
+  }
   label <- if (start > 1L) paste(tokens[seq_len(start - 1L)], collapse = " ") else ""
   list(label = label, figures = figures)
 }
@@ -218,6 +232,125 @@ pdf_unpanel <- function(lines, spec, n, call = rlang::caller_env()) {
   do.call(rbind, out)
 }
 
+#' The figure tokens of a line with the character position each ends at
+#' @noRd
+pdf_figure_positions <- function(line, trailing = FALSE) {
+  m <- gregexpr("\\S+", line)[[1]]
+  if (m[[1]] < 0L) {
+    return(list(words = character(0), figures = character(0), ends = integer(0)))
+  }
+  tokens <- regmatches(line, list(m))[[1]]
+  ends <- as.integer(m) + attr(m, "match.length") - 1L
+  split <- pdf_split_line(line, trailing)
+  n_fig <- length(split$figures)
+  keep <- if (n_fig > 0L) {
+    first <- if (trailing) which(pdf_is_figure(tokens))[[1]] else length(tokens) - n_fig + 1L
+    first:(first + n_fig - 1L)
+  } else {
+    integer(0)
+  }
+  list(words = if (nzchar(split$label)) split$label else character(0),
+       figures = tokens[keep], ends = ends[keep])
+}
+
+#' Reunite rows whose figures were printed on two lines
+#'
+#' Some reports set wider figures on a slightly different baseline, and text
+#' extraction then puts them on the line above or below their row: a row
+#' one or more figures short, beside a line of figures alone. Figures in
+#' these tables are right-aligned, so each column's position is measured on
+#' the page's complete rows, and the two lines' figures are placed by
+#' position. They are joined only if every column then holds exactly one
+#' figure; otherwise both lines are left as they were, and a short row is
+#' refused as before.
+#'
+#' @return The lines, with each reunited row as one line and the line of
+#'   figures it took removed.
+#' @noRd
+pdf_merge_overflow <- function(lines, n, trailing = FALSE) {
+  info <- lapply(lines, pdf_figure_positions, trailing = trailing)
+  counts <- vapply(info, function(x) length(x$figures), integer(1))
+  complete <- which(counts == n)
+  if (length(complete) < 3L) {
+    return(lines)
+  }
+  # Each column's right edge: the median end position on the complete rows.
+  ends <- do.call(rbind, lapply(info[complete], function(x) x$ends))
+  edges <- apply(ends, 2, stats::median)
+  spacing <- if (n > 1L) min(diff(edges)) else Inf
+  tolerance <- max(2, spacing * 0.45)
+  place <- function(pos) {
+    col <- vapply(pos, function(p) which.min(abs(edges - p)), integer(1))
+    ok <- abs(edges[col] - pos) <= tolerance
+    if (all(ok) && !anyDuplicated(col) && length(col) == n) col else NULL
+  }
+  drop <- integer(0)
+  out <- lines
+  for (i in seq_along(lines)) {
+    if (i %in% drop || counts[[i]] == 0L || counts[[i]] >= n) next
+    for (j in c(i + 1L, i - 1L)) {
+      if (j < 1L || j > length(lines) || j %in% drop) next
+      # The partner holds figures and nothing else, and is no row itself.
+      if (length(info[[j]]$words) > 0L || counts[[j]] == 0L || counts[[j]] >= n) next
+      pos <- c(info[[i]]$ends, info[[j]]$ends)
+      col <- place(pos)
+      if (is.null(col)) next
+      figures <- c(info[[i]]$figures, info[[j]]$figures)[order(col)]
+      out[[i]] <- paste(c(info[[i]]$words, figures), collapse = "   ")
+      drop <- c(drop, j)
+      break
+    }
+  }
+  if (length(drop) > 0L) out[-drop] else out
+}
+
+#' Join rows printed over several lines
+#'
+#' For tables that print each row's name, with some of its figures, on one
+#' line and the rest of its figures on the next, unlabelled - or, where the
+#' name wraps, over three lines ("Elgeyo", the rates, "Marakwet" with the
+#' amounts). From each line that starts with words, following lines are
+#' taken in until the row holds exactly `n` figures; their words make the
+#' label, and their figures are put in column order by where each ends. A
+#' group is kept only if it comes to exactly `n` figures and its label names
+#' an expected row - a running head printed between rows starts no group -
+#' otherwise its first line is left as it was and the next line tried.
+#'
+#' @noRd
+pdf_join_two_line_rows <- function(lines, n, key_of = function(label) "row") {
+  info <- lapply(lines, pdf_figure_positions)
+  counts <- vapply(info, function(x) length(x$figures), integer(1))
+  out <- character(0)
+  i <- 1L
+  while (i <= length(lines)) {
+    if (length(info[[i]]$words) == 0L || counts[[i]] >= n) {
+      out <- c(out, lines[[i]])
+      i <- i + 1L
+      next
+    }
+    words <- info[[i]]$words
+    figures <- info[[i]]$figures
+    ends <- info[[i]]$ends
+    j <- i
+    while (length(figures) < n && j < length(lines) && j < i + 2L) {
+      j <- j + 1L
+      if (!nzchar(trimws(lines[[j]]))) next
+      words <- c(words, info[[j]]$words)
+      figures <- c(figures, info[[j]]$figures)
+      ends <- c(ends, info[[j]]$ends)
+    }
+    label <- paste(words, collapse = " ")
+    if (length(figures) == n && !is.na(key_of(label))) {
+      out <- c(out, paste(c(label, figures[order(ends)]), collapse = "   "))
+      i <- j + 1L
+    } else {
+      out <- c(out, lines[[i]])
+      i <- i + 1L
+    }
+  }
+  out
+}
+
 #' Read the rows of a table whose rows are named by the recipe
 #'
 #' Every line with exactly one figure per column is a row. Its label is its
@@ -234,11 +367,18 @@ pdf_unpanel <- function(lines, spec, n, call = rlang::caller_env()) {
 #' @return A tibble: key, label, figures (a list of the figures as printed).
 #' @noRd
 pdf_named_rows <- function(lines, n, key_of, table_id, trailing = FALSE,
-                           call = rlang::caller_env()) {
+                           blanks = list(), call = rlang::caller_env()) {
   parts <- lapply(lines, pdf_split_line, trailing = trailing)
   labels <- vapply(parts, function(p) p$label, character(1))
   counts <- vapply(parts, function(p) length(p$figures), integer(1))
-  is_row <- counts == n
+  # A row the recipe says the report prints with a blank cell is one figure
+  # short; it is read as a row only if its label names that row.
+  blank_keys <- vapply(blanks, function(b) as.character(b$geo_code), character(1))
+  short_but_known <- function(i) {
+    counts[[i]] == n - 1L && length(blank_keys) > 0L &&
+      !is.na(key_of(labels[[i]])) && key_of(labels[[i]]) %in% blank_keys
+  }
+  is_row <- counts == n | vapply(seq_along(lines), short_but_known, logical(1))
   is_label_only <- counts == 0L & grepl("[A-Za-z]", labels)
 
   rows <- which(is_row)
@@ -270,7 +410,13 @@ pdf_named_rows <- function(lines, n, key_of, table_id, trailing = FALSE,
     if (chosen$above) used[[i - 1L]] <- TRUE
     if (chosen$below) used[[i + 1L]] <- TRUE
     used[[i]] <- TRUE
-    out[[k]] <- list(key = key, label = trimws(chosen$text), figures = parts[[i]]$figures)
+    figures <- parts[[i]]$figures
+    if (length(figures) == n - 1L) {
+      # The declared blank: an empty slot at its column, filled later.
+      at <- as.integer(blanks[[match(key, blank_keys)]]$position)
+      figures <- append(figures, "", after = at - 1L)
+    }
+    out[[k]] <- list(key = key, label = trimws(chosen$text), figures = figures)
   }
 
   # A line that names an expected row but did not become one: a blank or
@@ -384,9 +530,24 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
     located$line <- substr(located$line, 1L, as.integer(spec$line_width))
   }
   lines <- if (as.integer(spec$panels %||% 1L) > 1L) pdf_unpanel(located, spec, n, call = call) else located
+  # Rows split over two lines are reunited page by page (panel by panel),
+  # since column positions are measured per page.
   key_of <- pdf_county_key_fn(spec)
+  lines <- do.call(rbind, lapply(split(lines, factor(lines$page, unique(lines$page))), function(pg) {
+    merged <- if (isTRUE(spec$two_line_rows)) {
+      pdf_join_two_line_rows(pg$line, n, key_of)
+    } else {
+      pdf_merge_overflow(pg$line, n, trailing = isTRUE(spec$trailing_text))
+    }
+    tibble::tibble(page = rep(pg$page[[1]], length(merged)), line = merged)
+  }))
+  key_of <- pdf_county_key_fn(spec)
+  blanks <- lapply(spec$blank_cells %||% list(), function(b) {
+    b$position <- match(as.character(b$column), columns$column)
+    b
+  })
   rows <- pdf_named_rows(lines$line, n, key_of, spec$table_id,
-                         trailing = isTRUE(spec$trailing_text), call = call)
+                         trailing = isTRUE(spec$trailing_text), blanks = blanks, call = call)
   rows <- rows[!is.na(rows$key), ]
 
   expected <- c(sprintf("%02d", 1:47), if (!isFALSE(spec$total_row)) "00")
@@ -414,12 +575,33 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
   }
 
   values <- do.call(rbind, lapply(rows$figures, pdf_value))
+  colnames(values) <- columns$column
+  if (isTRUE(spec$dash_means_zero)) {
+    # Where the report prints "-" for nil, as its totals show.
+    dashes <- do.call(rbind, lapply(rows$figures, function(f) f %in% c("-", "\u2013", "\u2014")))
+    values[dashes] <- 0
+  }
+  # A cell the report prints blank is filled from the identity the table
+  # prints in its header (C = A + B), and marked as derived.
+  derived <- matrix(FALSE, nrow(values), n, dimnames = dimnames(values))
+  for (b in blanks) {
+    r <- match(as.character(b$geo_code), rows$key)
+    parts <- as.character(unlist(b$derive))
+    if (is.na(r) || length(parts) == 0L || !is.na(values[r, b$position])) next
+    values[r, b$position] <- sum(values[r, parts])
+    derived[r, b$position] <- TRUE
+  }
   long <- tibble::tibble(
     geo_code = rep(rows$key, times = n),
     column = rep(columns$column, each = nrow(rows)),
-    value = as.vector(values)
+    value = as.vector(values),
+    derived = as.vector(derived)
   )
   long <- merge(long, columns, by = "column", sort = FALSE)
+  long$status[long$derived] <- "derived"
+  for (m in spec$misprints %||% list()) {
+    long$status[long$geo_code == m$geo_code & long$column == as.character(m$column)] <- "misprint"
+  }
   long <- tibble::as_tibble(long[order(long$geo_code == "00", long$geo_code,
                                        match(long$column, columns$column)),
                                  c("geo_code", "column", "period", "measure", "unit",
@@ -429,8 +611,10 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
   list(table = long, pages = sort(unique(located$page)))
 }
 
-#' Verify a table against its recipe: pinned figures, and the counties
-#' against the total
+#' Verify a table against its recipe: pinned figures, row identities, and
+#' the counties against the total
+#'
+#' Works on a copy: the table returned keeps every figure as printed.
 #'
 #' Rounding to the printed precision explains at most half a unit per
 #' county, so the 47 counties may differ from the printed total by up to
@@ -457,10 +641,55 @@ pdf_check_table <- function(long, spec, call = rlang::caller_env()) {
       )
     }
   }
+  unit <- as.numeric(spec$rounding %||% 1)
+  value_at <- function(code, col) long$value[long$geo_code == code & long$column == col]
+
+  # Row identities the table prints in its header (C = A + B): checked on
+  # every row, within what rounding of each part can explain. A misprint
+  # found at curation is listed in the recipe and kept as printed; for the
+  # column totals it counts at the value its identity gives.
+  misprinted <- vapply(spec$misprints %||% list(), function(m) {
+    paste(m$geo_code, m$column)
+  }, character(1))
+  corrected <- long$value
+  for (identity in spec$identities %||% list()) {
+    col <- as.character(identity$column)
+    parts <- as.character(unlist(identity$sum))
+    for (code in unique(long$geo_code)) {
+      printed <- value_at(code, col)
+      implied <- sum(vapply(parts, function(p) value_at(code, p), numeric(1)))
+      if (length(printed) != 1L || is.na(printed) || is.na(implied)) next
+      # A county's parts are each rounded once; the total row's are sums of
+      # 47 rounded figures, and may drift as far as a column total may.
+      allowed <- if (code == "00") {
+        unit * (sum(long$geo_code != "00" & long$column == col) + 1) / 2 + 1e-9
+      } else {
+        unit * (length(parts) + 1) / 2 + 1e-9
+      }
+      if (paste(code, col) %in% misprinted) {
+        corrected[long$geo_code == code & long$column == col] <- implied
+        next
+      }
+      if (abs(printed - implied) > allowed) {
+        knbs_abort(
+          c(
+            "A row of {.val {spec$table_id}} does not add up as the table says it does.",
+            "x" = "{code}: {col} is printed as {printed}; {paste(parts, collapse = ' + ')} = {implied}.",
+            "i" = "A figure was misread or the report has changed; please report it."
+          ),
+          class = "knbs_error_validation_failed",
+          call = call,
+          geo_code = code,
+          column = col
+        )
+      }
+    }
+  }
+  long$value <- corrected
+
   if (isFALSE(spec$total_row) && is.null(spec$sum_to)) {
     return(invisible(TRUE))
   }
-  unit <- as.numeric(spec$rounding %||% 1)
   known <- spec$known_gaps %||% list()
   for (col in unique(long$column[long$sums])) {
     counties <- long$value[long$column == col & long$geo_code != "00"]

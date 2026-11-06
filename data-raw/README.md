@@ -11,6 +11,18 @@ Nothing here is run at install time or by users. Each script must:
 - record a vintage for anything geographic,
 - and fail loudly rather than guess.
 
+Scripts:
+
+| Script | Output | Source |
+|---|---|---|
+| `county-budget.R` | `inst/extdata/county-budget.csv`, read by `knbs_county_budget()` | Controller of Budget annual reports, FY 2013/14 to 2023/24, curated 2026-11-06 |
+
+`county-budget.R` writes a plain CSV to `inst/extdata` rather than an `.rda`
+through `usethis::use_data()`, so that the figures shipped are readable and
+diffable, and are read through a function that attaches their provenance.
+It runs the same curated recipes and checks as any report table; a table
+that fails a check stops the build.
+
 Planned scripts (see the implementation plan, section 7):
 
 | Script | Purpose | Phase |
