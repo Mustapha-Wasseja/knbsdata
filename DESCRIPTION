@@ -43,6 +43,8 @@ Suggests:
     dplyr,
     haven,
     knitr,
+    pdftools,
+    qpdf,
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),

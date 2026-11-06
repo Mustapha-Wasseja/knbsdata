@@ -162,14 +162,22 @@ cache_tidy <- function(dir) {
     }
   }
 
-  workbooks <- file.path(dir, "abstract")
-  if (dir.exists(workbooks)) {
-    current <- tryCatch(
-      vapply(abstract_registry()$workbooks, function(w) as.character(w$publication_id), ""),
-      error = function(cnd) NULL
-    )
+  # Downloaded workbooks and report PDFs, named "<publication id>-<file>":
+  # kept only while a curated registry still refers to them.
+  kept <- list(
+    abstract = function() {
+      vapply(abstract_registry()$workbooks, function(w) as.character(w$publication_id), "")
+    },
+    reports = function() {
+      vapply(report_registry()$reports, function(r) as.character(r$publication_id), "")
+    }
+  )
+  for (sub in names(kept)) {
+    folder <- file.path(dir, sub)
+    if (!dir.exists(folder)) next
+    current <- tryCatch(kept[[sub]](), error = function(cnd) NULL)
     if (length(current) > 0L) {
-      files <- list.files(workbooks, full.names = TRUE)
+      files <- list.files(folder, full.names = TRUE)
       old <- files[!sub("-.*$", "", basename(files)) %in% current]
       suppressWarnings(file.remove(old))
       removed <- removed + length(old)
@@ -329,8 +337,8 @@ knbs_cache_info <- function() {
 
 #' Empty the cache
 #'
-#' Removes every cached response, and the Statistical Abstract workbooks the
-#' cache holds.
+#' Removes every cached response, and the Statistical Abstract workbooks and
+#' report PDFs the cache holds.
 #'
 #' @param quiet Suppress the summary message.
 #'
@@ -353,11 +361,13 @@ knbs_cache_clear <- function(quiet = knbs_option("quiet")) {
   files <- list.files(dir, pattern = "\\.(rds|json)$", full.names = TRUE)
   n <- length(files) %/% 2L
   file.remove(files)
-  # The Statistical Abstract workbooks are cached too, in their own folder.
-  workbooks <- file.path(dir, "abstract")
-  if (dir.exists(workbooks)) {
-    n <- n + length(list.files(workbooks, pattern = "\\.xlsx?$"))
-    unlink(workbooks, recursive = TRUE)
+  # The Statistical Abstract workbooks and report PDFs are cached too, each
+  # in their own folder.
+  for (folder in file.path(dir, c("abstract", "reports"))) {
+    if (dir.exists(folder)) {
+      n <- n + length(list.files(folder, pattern = "\\.(xlsx?|pdf)$"))
+      unlink(folder, recursive = TRUE)
+    }
   }
   if (!quiet) {
     cli::cli_alert_success("Removed {n} cache entr{?y/ies} from {.path {dir}}.")

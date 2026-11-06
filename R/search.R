@@ -485,7 +485,7 @@ search_rows_tables <- function() {
   span <- regmatches(cat_$title, regexpr("[0-9]{4} ?- ?[0-9]{4}", cat_$title))
   period <- rep(NA_character_, nrow(cat_))
   period[grepl("[0-9]{4} ?- ?[0-9]{4}", cat_$title)] <- gsub(" ", "", span)
-  search_rows(
+  abstract <- search_rows(
     "table",
     resource_id = cat_$table_id,
     title = paste0("Table ", cat_$table_id, ": ", cat_$title),
@@ -496,6 +496,23 @@ search_rows_tables <- function() {
     get = sprintf('knbs_abstract_table("%s")', cat_$table_id),
     text = paste(cat_$title, cat_$chapter, "statistical abstract", cat_$unit)
   )
+  # Tables printed in KNBS reports. The Gross County Product reports'
+  # tables are found as GCP and as county GDP.
+  rep_ <- tibble::as_tibble(knbs_report_tables())
+  series_words <- c(gcp = "gcp gross county product county gdp")[rep_$series]
+  series_words[is.na(series_words)] <- ""
+  reports <- search_rows(
+    "table",
+    resource_id = rep_$table_id,
+    title = paste0(rep_$report, ", ", rep_$printed, ": ", rep_$title),
+    topic = rep_$report,
+    period = rep_$periods,
+    access = "open",
+    source_id = "knbs_publications",
+    get = sprintf('knbs_report_table("%s")', rep_$table_id),
+    text = paste(rep_$title, rep_$report, rep_$measure, unname(series_words), rep_$unit)
+  )
+  rbind(abstract, reports)
 }
 
 #' Every study in the survey archive

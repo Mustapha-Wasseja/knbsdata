@@ -1,5 +1,28 @@
 # knbsdata (development version)
 
+## Tables from KNBS reports: Gross County Product and county population
+
+* New `knbs_gcp()`: county GDP for the 47 counties and Kenya at current or
+  constant prices, each county's share of gross value added, and
+  per-capita GCP, from every Gross County Product report since 2019 -
+  together 2013-2024 - coded to the 2019 census counties. `edition =
+  "latest"` (the default), `"all"` (one block per edition, to compare
+  revisions) or named edition years. Constant prices keep their
+  `base_year`: 2009 in the 2019 edition, 2016 after the rebasing.
+* New `knbs_county_population()`: each county's 2019 census population,
+  KNBS's projections for the years since, land area and density, from the
+  same reports - the county-year denominators for per-capita figures.
+* New `knbs_report_tables()` and `knbs_report_table()`: tables KNBS prints
+  only in PDF reports, read from the publications library by curated
+  recipe. Every read checks the table: the 47 counties and the total
+  present exactly once (wrapped or misprinted names matched to the
+  official counties), the counties adding up to the printed total within
+  rounding, and figures read by hand at curation unchanged. A report that
+  no longer matches is refused, never misread; a row missing a figure is
+  refused, never shifted. 19 tables from five reports are curated;
+  `knbs_search()` finds them. Reading them needs the suggested packages
+  pdftools and qpdf.
+
 ## Sources that go down
 
 * `knbs_retail_prices()` reads the KNBS Data Portal first (dataflow
