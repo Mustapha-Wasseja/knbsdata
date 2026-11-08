@@ -35,15 +35,15 @@ knbs_status()
 #> # A tibble: 9 × 7
 #>   source_id    operation status http_status response_time_ms checked_at         
 #>   <chr>        <chr>     <chr>        <int>            <dbl> <dttm>             
-#> 1 kenada       search_s… not_c…          NA               NA 2026-11-06 09:51:54
-#> 2 finaccess    download… not_c…          NA               NA 2026-11-06 09:51:54
-#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-06 09:51:54
-#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
-#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-06 09:51:54
-#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
-#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-06 09:51:54
-#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-06 09:51:54
-#> 9 fake_source  search_s… unver…          NA               NA 2026-11-06 09:51:54
+#> 1 kenada       search_s… not_c…          NA               NA 2026-11-08 14:38:59
+#> 2 finaccess    download… not_c…          NA               NA 2026-11-08 14:38:59
+#> 3 knbs_public… search_p… not_c…          NA               NA 2026-11-08 14:38:59
+#> 4 knbs_indica… list_ind… not_c…          NA               NA 2026-11-08 14:38:59
+#> 5 knbs_cpi     list_ind… not_c…          NA               NA 2026-11-08 14:38:59
+#> 6 knbs_openda… list_ind… not_c…          NA               NA 2026-11-08 14:38:59
+#> 7 opendatafor… list_ind… not_c…          NA               NA 2026-11-08 14:38:59
+#> 8 dhs_program  list_ind… not_c…          NA               NA 2026-11-08 14:38:59
+#> 9 fake_source  search_s… unver…          NA               NA 2026-11-08 14:38:59
 #> # ℹ 1 more variable: message <chr>
 ```
 
@@ -172,14 +172,23 @@ on every result:
   period.** Asking for them returns zero rows, because that is the
   source’s answer.
 
-**Gross County Product and the republished datasets**, via Kenya Open
-Data for Africa (`kenya.opendataforafrica.org`): 202 datasets — 169
-sourced from KNBS, the rest from the Central Bank of Kenya, ministries
-and agencies — including the one thing no first-party portal serves as
-data: Gross County Product (`knbs_get_indicator("jhbzkjc")` — GVA shares
-plus constant- and current-price GCP for all 47 counties, 2013–2020).
+**Gross County Product and county population**, from the KNBS reports
+themselves
+([`knbs_gcp()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_gcp.md),
+[`knbs_county_population()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_population.md)):
+the tables of every Gross County Product report since 2019, read from
+the publications library by curated recipe and checked on every read —
+every county once, the counties against the printed total, hand-checked
+figures unchanged. See
+[`vignette("county-data")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/county-data.md).
+
+**The republished datasets**, via Kenya Open Data for Africa
+(`kenya.opendataforafrica.org`): 202 datasets — 169 sourced from KNBS,
+the rest from the Central Bank of Kenya, ministries and agencies.
 [`knbs_indicators()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_indicators.md)
-lists them (`source_id` `"opendataforafrica"`).
+lists them (`source_id` `"opendataforafrica"`). Since October 2026 the
+portal has answered programs with a Cloudflare check, which the package
+does not get past.
 
 This source is different in kind from the others, and its honesty
 caveats are correspondingly heavier:
@@ -282,15 +291,17 @@ which this package does not do. The `catalogue_url` column from
 [`knbs_search_surveys()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_search_surveys.md)
 opens the study on the archive’s own site, where they are linked.
 
-### The newest Gross County Product years are still documents
+### Tables printed only in PDF reports
 
-GCP is data now — but only the 2021 edition (2013–2020), through the
-Open Data for Africa republisher above; no first-party KNBS portal
-serves it as data (checked exhaustively). The editions published since
-extend the series past 2020 as PDF reports only, reachable through
-`knbs_publications("gross county product")`. If the newest county
-figures matter, read the PDF; the metadata on the data version dates its
-vintage precisely so the gap is never invisible.
+Some KNBS data exist only as tables in PDF reports. The package reads a
+growing set of them by curated recipe —
+[`knbs_report_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_tables.md)
+lists them, the Gross County Product reports first — and refuses any
+that no longer match what was checked. A table not yet curated is still
+reachable as its report, through
+[`knbs_publications()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_publications.md)
+and
+[`knbs_download_publication()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_download_publication.md).
 
 ### Geography: one vintage, no boundaries, no classifications
 

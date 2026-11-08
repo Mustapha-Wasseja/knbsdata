@@ -63,6 +63,24 @@ workbooks into tidy tables.
   **\[experimental\]** : Retrieve one Statistical Abstract table as tidy
   observations
 
+## County economy and report tables
+
+Tables KNBS publishes only in its PDF reports, extracted by curated,
+verified recipe: Gross County Product by county at current and constant
+prices, county shares, and the county population tables.
+
+- [`knbs_gcp()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_gcp.md)
+  **\[experimental\]** : Gross County Product: county GDP from the KNBS
+  reports
+- [`knbs_county_population()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_population.md)
+  **\[experimental\]** : County population from the Gross County Product
+  reports
+- [`knbs_report_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_tables.md)
+  **\[experimental\]** : List the curated tables of KNBS reports
+- [`knbs_report_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_table.md)
+  **\[experimental\]** : Retrieve one curated table of a KNBS report as
+  tidy observations
+
 ## Indicators and prices
 
 Census tables (CC BY 4.0), the monthly consumer price series, and the

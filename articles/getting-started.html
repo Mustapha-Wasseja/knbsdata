@@ -109,13 +109,13 @@ data service (2019 census tables, CC BY 4.0); <code>knbs_cpi</code>, the
 CPI Explorer (monthly consumer prices from 2009);
 <code>knbs_opendata</code>, the Data Portal (323 SDMX dataflows: GDP,
 trade, county finance and more); <code>opendataforafrica</code>, the
-Knoema-operated republisher that fills gaps no first-party portal serves
-as data — Gross County Product above all; and <code>dhs_program</code>,
-the DHS Program’s API for the Kenya Demographic and Health Survey
-indicators, by county from 2014. A source the audit has not verified
-stays at stability <code>discovery</code> and is never contacted — there
-is nothing there to call. The <code>source-status</code> vignette says
-exactly what is and is not covered, and why.</p>
+Knoema-operated republisher of 200 Kenyan datasets; and
+<code>dhs_program</code>, the DHS Program’s API for the Kenya
+Demographic and Health Survey indicators, by county from 2014. A source
+the audit has not verified stays at stability <code>discovery</code> and
+is never contacted — there is nothing there to call. The
+<code>source-status</code> vignette says exactly what is and is not
+covered, and why.</p>
 </div>
 <div class="section level2">
 <h2 id="five-ideas-worth-knowing">Five ideas worth knowing<a class="anchor" aria-label="anchor" href="#five-ideas-worth-knowing"></a>
@@ -189,8 +189,8 @@ out.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span> <span class="op">|&gt;</span>                    <span class="co"># Gross County Product</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">table_code</span> <span class="op">==</span> <span class="st">"T3"</span>, <span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="fu"><a href="../reference/knbs_gcp.html">knbs_gcp</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span>                                       <span class="co"># Gross County Product</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2024</span>, <span class="va">geo_code</span> <span class="op">!=</span> <span class="st">"00"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">value</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/knbs_abstract_table.html">knbs_abstract_table</a></span><span class="op">(</span><span class="st">"2.2"</span><span class="op">)</span> <span class="op">|&gt;</span>                       <span class="co"># years across, like print</span></span>
@@ -248,7 +248,7 @@ geography down to sub-county:</p>
 <code class="sourceCode R"><span><span class="va">cpi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CPI_ALL_ITEMS"</span>, start <span class="op">=</span> <span class="st">"2020-01"</span><span class="op">)</span></span>
 <span><span class="va">gdp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_NAT_GDPCP"</span><span class="op">)</span>            <span class="co"># GDP by activity, SDMX</span></span>
 <span><span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_PF_CG_REV"</span><span class="op">)</span>                   <span class="co"># county govt revenue</span></span>
-<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span>                 <span class="co"># Gross County Product</span></span>
+<span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_gcp.html">knbs_gcp</a></span><span class="op">(</span><span class="op">)</span>                                    <span class="co"># Gross County Product</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/knbs_indicators.html">knbs_indicators</a></span><span class="op">(</span>topic <span class="op">=</span> <span class="st">"Population"</span><span class="op">)</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0001"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>

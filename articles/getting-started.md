@@ -44,12 +44,12 @@ microdata); `knbs_publications`, the KNBS website’s media library;
 BY 4.0); `knbs_cpi`, the CPI Explorer (monthly consumer prices from
 2009); `knbs_opendata`, the Data Portal (323 SDMX dataflows: GDP, trade,
 county finance and more); `opendataforafrica`, the Knoema-operated
-republisher that fills gaps no first-party portal serves as data — Gross
-County Product above all; and `dhs_program`, the DHS Program’s API for
-the Kenya Demographic and Health Survey indicators, by county from 2014.
-A source the audit has not verified stays at stability `discovery` and
-is never contacted — there is nothing there to call. The `source-status`
-vignette says exactly what is and is not covered, and why.
+republisher of 200 Kenyan datasets; and `dhs_program`, the DHS Program’s
+API for the Kenya Demographic and Health Survey indicators, by county
+from 2014. A source the audit has not verified stays at stability
+`discovery` and is never contacted — there is nothing there to call. The
+`source-status` vignette says exactly what is and is not covered, and
+why.
 
 ## Five ideas worth knowing
 
@@ -129,8 +129,8 @@ drops the wrapper whenever you want out.
 library(dplyr)
 library(tidyr)
 
-knbs_get_indicator("jhbzkjc") |>                    # Gross County Product
-  filter(table_code == "T3", period == 2020) |>
+knbs_gcp() |>                                       # Gross County Product
+  filter(period == 2024, geo_code != "00") |>
   slice_max(value, n = 5)
 
 knbs_abstract_table("2.2") |>                       # years across, like print
@@ -203,7 +203,7 @@ geography down to sub-county:
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 gdp <- knbs_get_indicator("DF_NAT_GDPCP")            # GDP by activity, SDMX
 knbs_get_indicator("DF_PF_CG_REV")                   # county govt revenue
-gcp <- knbs_get_indicator("jhbzkjc")                 # Gross County Product
+gcp <- knbs_gcp()                                    # Gross County Product
 
 knbs_indicators(topic = "Population")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")

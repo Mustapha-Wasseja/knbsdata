@@ -13,9 +13,12 @@ tables from the **2019 Population and Housing Census** (CC BY 4.0), the
 **monthly consumer price series** from the KNBS CPI Explorer, the **323
 economic dataflows of the KNBS Data Portal** — GDP, trade, balance of
 payments, county government finance and much else, in SDMX form — and
-the **202 datasets republished by Kenya Open Data for Africa**, which
-carry the one thing no first-party portal serves as data: Gross County
-Product.
+the **202 datasets republished by Kenya Open Data for Africa**. Gross
+County Product, which no portal serves as data, comes from KNBS’s own
+reports through
+[`knbs_gcp()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_gcp.md);
+see
+[`vignette("county-data")`](https://Mustapha-Wasseja.github.io/knbsdata/articles/county-data.md).
 
 ``` r
 
@@ -23,7 +26,7 @@ knbs_indicators()                  # all families, source_id says which
 cpi <- knbs_get_indicator("CPI_ALL_ITEMS", start = "2020-01")
 gdp <- knbs_get_indicator("DF_NAT_GDPCP")
 pop <- knbs_get_indicator("POPCEN0001", geo_level = "county")
-gcp <- knbs_get_indicator("jhbzkjc") # Gross County Product, 2013-2020
+gcp <- knbs_gcp()                  # Gross County Product, from the reports
 ```
 
 ## The Data Portal (SDMX)
@@ -62,12 +65,19 @@ opaque slugs, so name search is the natural way in:
 
 ``` r
 
-knbs_indicators(source = "opendataforafrica", search = "county product")
-gcp <- knbs_get_indicator("jhbzkjc")
-gcp[gcp$table_code == "T3" & gcp$period == 2020, ]  # current-price GCP, 2020
+knbs_indicators(source = "opendataforafrica", search = "interest rates")
 ```
 
-Three behaviours to know:
+Since October 2026 the portal has answered programs with a Cloudflare
+human-verification check. The package never tries to get past such
+checks: the request fails with an error saying what it met, and
+catalogue searches skip the portal for the rest of the session, having
+said so once. Its best-known dataset, Gross County Product, no longer
+depends on it:
+[`knbs_gcp()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_gcp.md)
+reads the KNBS reports themselves, newer editions included.
+
+Three behaviours to know when it answers:
 
 - **Mixed frequencies.** One dataset may hold annual, quarterly and
   monthly series side by side. Annual periods are integer years and

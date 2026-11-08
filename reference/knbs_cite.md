@@ -49,13 +49,13 @@ A `knbs_citation` object; print it, or use
 # Any object knbsdata returns can be cited; this catalogue ships with it.
 files <- knbs_finaccess_files(year = 2024, content = "data")
 knbs_cite(files)
-#> Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya. FinAccess survey files. Available at https://finaccess.knbs.or.ke/reports-and-datasets. Retrieved 06 November 2026 using knbsdata version 0.5.0.
+#> Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya. FinAccess survey files. Available at https://finaccess.knbs.or.ke/reports-and-datasets. Retrieved 08 November 2026 using knbsdata version 0.5.0.
 knbs_cite(files, style = "bibtex")
 #> @misc{FinAccesssurveyfiles,
 #>   title = {FinAccess survey files},
 #>   author = {{Central Bank of Kenya, Kenya National Bureau of Statistics and FSD Kenya}},
 #>   year = {2026},
 #>   url = {https://finaccess.knbs.or.ke/reports-and-datasets},
-#>   urldate = {2026-11-06},
+#>   urldate = {2026-11-08},
 #> }
 ```

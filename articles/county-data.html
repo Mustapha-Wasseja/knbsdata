@@ -129,21 +129,53 @@ same codes from the same source.</p>
 <div class="section level2">
 <h2 id="gross-county-product">Gross County Product<a class="anchor" aria-label="anchor" href="#gross-county-product"></a>
 </h2>
-<p>The county economy itself is served by the Open Data for Africa
-republisher (<code>source_id</code> <code>"opendataforafrica"</code>),
-the one source that carries GCP as data: GVA shares plus constant- and
-current-price GCP for all 47 counties, annual 2013–2020.</p>
+<p>KNBS publishes the size of each county’s economy, the Gross County
+Product, in a report each year, as tables printed in a PDF.
+<code><a href="../reference/knbs_gcp.html">knbs_gcp()</a></code> reads them from the KNBS publications library by
+curated recipe and returns them already coded to the census
+counties:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"jhbzkjc"</span><span class="op">)</span></span>
-<span><span class="va">latest</span> <span class="op">&lt;-</span> <span class="va">gcp</span><span class="op">[</span><span class="va">gcp</span><span class="op">$</span><span class="va">table_code</span> <span class="op">==</span> <span class="st">"T3"</span> <span class="op">&amp;</span> <span class="va">gcp</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2020</span> <span class="op">&amp;</span> <span class="va">gcp</span><span class="op">$</span><span class="va">geo_code</span> <span class="op">!=</span> <span class="st">"KE"</span>, <span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">latest</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_name"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p>Two cautions, both stated in <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code>: this is
-the <strong>2021 edition</strong> — newer GCP years exist only as PDF
-reports (<code>knbs_publications("gross county product")</code>) — and
-its geography codes are the <strong>portal’s own region codes</strong>,
-not census territories. To relate GCP to census-coded data, translate
-its county names into census codes with <code><a href="../reference/knbs_county_code.html">knbs_county_code()</a></code>,
-as below, rather than joining on its region codes.</p>
+<code class="sourceCode R"><span><span class="va">gcp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_gcp.html">knbs_gcp</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># current prices, latest edition</span></span>
+<span><span class="va">real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_gcp.html">knbs_gcp</a></span><span class="op">(</span>prices <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span>      <span class="co"># constant 2016 prices</span></span>
+<span><span class="va">shares</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_gcp.html">knbs_gcp</a></span><span class="op">(</span><span class="st">"share"</span><span class="op">)</span>                <span class="co"># percent of gross value added</span></span>
+<span></span>
+<span><span class="va">latest</span> <span class="op">&lt;-</span> <span class="va">gcp</span><span class="op">[</span><span class="va">gcp</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="fl">2024</span> <span class="op">&amp;</span> <span class="va">gcp</span><span class="op">$</span><span class="va">geo_code</span> <span class="op">!=</span> <span class="st">"00"</span>, <span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">latest</span><span class="op">$</span><span class="va">value</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"county"</span>, <span class="st">"value"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>Every read checks the table: all 47 counties and the total present
+once, the counties adding up to the total within rounding, and figures
+checked by hand at curation unchanged. A report that has changed is
+refused rather than misread.</p>
+<p>Three things to know, all in <code><a href="../reference/knbs_metadata.html">knbs_metadata()</a></code>:</p>
+<ul>
+<li>
+<strong>Each edition revises the years before it.</strong>
+<code>edition = "latest"</code> (the default) gives the newest;
+<code>edition = "all"</code> gives every edition, one block each, so
+revisions can be compared. The editions curated are 2019, 2021, 2023,
+2024 and 2025, together covering 2013–2024.</li>
+<li>
+<strong>Constant prices changed base year.</strong> The 2019 edition
+values them at 2009 prices; from 2021 they are 2016 prices, after the
+national accounts were rebased. The <code>base_year</code> column says
+which. Never splice the two into one series.</li>
+<li>
+<strong>The newest year is provisional</strong>: <code>status</code>
+is <code>"provisional"</code> where the report marks a year with an
+asterisk.</li>
+</ul>
+<p>Because the counties carry census codes, GCP joins every other county
+table in the package directly — per-capita GCP against the reports’ own
+county population tables, for instance:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_county_population.html">knbs_county_population</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="va">pop</span><span class="op">[</span><span class="va">pop</span><span class="op">$</span><span class="va">measure</span> <span class="op">==</span> <span class="st">"population_projected"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"period"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"population"</span></span>
+<span><span class="va">per_head</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">gcp</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"county"</span>, <span class="st">"period"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span>, <span class="va">pop</span>,</span>
+<span>                  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"period"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">per_head</span><span class="op">$</span><span class="va">gcp_per_head</span> <span class="op">&lt;-</span> <span class="va">per_head</span><span class="op">$</span><span class="va">value</span> <span class="op">*</span> <span class="fl">1e6</span> <span class="op">/</span> <span class="va">per_head</span><span class="op">$</span><span class="va">population</span></span></code></pre></div>
+<p><code><a href="../reference/knbs_report_tables.html">knbs_report_tables()</a></code> lists every curated table with its
+edition, prices and base year; <code><a href="../reference/knbs_report_table.html">knbs_report_table()</a></code> returns
+any one of them exactly as printed, including the reports’ averages.</p>
 </div>
 <div class="section level2">
 <h2 id="health-by-county-the-kdhs">Health by county: the KDHS<a class="anchor" aria-label="anchor" href="#health-by-county-the-kdhs"></a>
@@ -153,7 +185,7 @@ for all 47 counties since 2014. The DHS Program publishes them
 (<code>source_id</code> <code>"dhs_program"</code>), and the package
 gives the county rows census codes, so they join census tables
 directly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stunting</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"CN_NUTS_C_HA2"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"POPCEN0002"</span>, geo_level <span class="op">=</span> <span class="st">"county"</span><span class="op">)</span></span>
 <span><span class="va">pop</span> <span class="op">&lt;-</span> <span class="va">pop</span><span class="op">[</span><span class="va">pop</span><span class="op">$</span><span class="va">age_type</span> <span class="op">==</span> <span class="st">"total"</span> <span class="op">&amp;</span> <span class="va">pop</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"total"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"geo_code"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
@@ -183,7 +215,7 @@ writes “Murang’a”, “Tharaka-Nithi” and “Nairobi City”, the Data Po
 (<code>KE_200_MU</code>). Treasury, Controller of Budget and survey data
 add their own variants. <code><a href="../reference/knbs_county_code.html">knbs_county_code()</a></code> turns any of
 them into the census codes:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_county_code.html">knbs_county_code</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murang'a"</span>, <span class="st">"MURANGA"</span>, <span class="st">"Nairobi City County"</span>,</span>
 <span>                   <span class="st">"taita/taveta"</span>, <span class="st">"Homabay"</span>, <span class="st">"47"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "21" "21" "47" "06" "43" "47"</span></span></code></pre></div>
@@ -193,7 +225,7 @@ numbers; “Kenya” is <code>"00"</code>. Nothing else is matched — there
 is no list of alternative names to guess from — so a misspelling becomes
 <code>NA</code> with a warning that names it and suggests the nearest
 official name:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/knbs_county_code.html">knbs_county_code</a></span><span class="op">(</span><span class="st">"Kakamenga"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: 1 value matched no county and became `NA`:</span></span>
 <span><span class="co">#&gt; • "Kakamenga" (did you mean "Kakamega"?)</span></span>
@@ -202,7 +234,7 @@ official name:</p>
 <p>That makes cross-source joins one line. The rural share of each
 county’s population, from the Data Portal’s rural table and the
 census:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rural</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_get_indicator.html">knbs_get_indicator</a></span><span class="op">(</span><span class="st">"DF_POP_CENSUS_RUR"</span>, source <span class="op">=</span> <span class="st">"knbs_opendata"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
