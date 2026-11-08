@@ -4,6 +4,11 @@
 # network (plan section 21.1). This workflow is the only place where live KNBS
 # sources are contacted, it runs on a schedule and on demand, and a failure here
 # means "a source changed", not "the package is broken".
+#
+# Sources already known to be down are listed in
+# .github/known-down-sources.txt, so that a failing run always means something
+# new. A new outage fails the run; a new outage or a recovery opens or updates
+# one issue labelled source-monitor.
 on:
   schedule:
     # Mondays at 05:00 UTC
@@ -34,6 +39,7 @@ jobs:
           needs: check
 
       - name: Check source health
+        id: health
         run: |
           library(knbsdata)
           status <- knbs_status(live = TRUE, timeout = 30)
@@ -45,13 +51,65 @@ jobs:
                 paste(unverified$source_id, collapse = ", "), "\n")
           }
 
+          known <- readLines(".github/known-down-sources.txt", warn = FALSE)
+          known <- trimws(sub("#.*$", "", known))
+          known <- known[nzchar(known)]
+
           failed <- status[status$status == "unavailable", ]
-          if (nrow(failed) > 0L) {
-            cat("\n")
-            for (i in seq_len(nrow(failed))) {
-              cat(failed$source_id[[i]], ": ", failed$message[[i]], "\n", sep = "")
-            }
-            stop(nrow(failed), " source(s) did not answer. This usually means the ",
-                 "source changed or is down, not that the package is broken.")
+          new_down <- setdiff(failed$source_id, known)
+          still_down <- intersect(failed$source_id, known)
+          recovered <- setdiff(intersect(known, status$source_id), failed$source_id)
+          cat("\nNew outages:", if (length(new_down)) paste(new_down, collapse = ", ") else "none",
+              "\nStill down, as known:", if (length(still_down)) paste(still_down, collapse = ", ") else "none",
+              "\nRecovered:", if (length(recovered)) paste(recovered, collapse = ", ") else "none", "\n")
+
+          reason <- function(id) {
+            msg <- failed$message[failed$source_id == id][[1]]
+            substr(gsub("[[:space:]]+", " ", cli::ansi_strip(msg)), 1, 400)
           }
+          report <- c(
+            paste0("Source monitor, ", format(Sys.time(), "%Y-%m-%d %H:%M UTC", tz = "UTC"), "."),
+            "",
+            if (length(new_down)) c(
+              "**New outages** (add to `.github/known-down-sources.txt` once understood):",
+              "", paste0("- `", new_down, "`: ", vapply(new_down, reason, "")), ""
+            ),
+            if (length(recovered)) c(
+              "**Back up** (remove from `.github/known-down-sources.txt`):",
+              "", paste0("- `", recovered, "`"), ""
+            ),
+            if (length(still_down)) c(
+              "Still down, as known: ", paste0("`", still_down, "`", collapse = ", ")
+            )
+          )
+          writeLines(report, "source-report.md")
+
+          out <- Sys.getenv("GITHUB_OUTPUT")
+          cat("new_down=", paste(new_down, collapse = ","), "\n", sep = "", file = out, append = TRUE)
+          cat("recovered=", paste(recovered, collapse = ","), "\n", sep = "", file = out, append = TRUE)
         shell: Rscript {0}
+
+      - name: Open or update the monitor issue
+        if: steps.health.outputs.new_down != '' || steps.health.outputs.recovered != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_DOWN: ${{ steps.health.outputs.new_down }}
+          RECOVERED: ${{ steps.health.outputs.recovered }}
+        run: |
+          gh label create source-monitor --color B60205 \
+            --description "A live data source changed state" --force
+          issue=$(gh issue list --state open --label source-monitor --json number --jq '.[0].number // empty')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body-file source-report.md
+          else
+            gh issue create --title "Source monitor: a data source changed state" \
+              --label source-monitor --body-file source-report.md
+          fi
+
+      - name: Fail on a new outage
+        if: steps.health.outputs.new_down != ''
+        env:
+          NEW_DOWN: ${{ steps.health.outputs.new_down }}
+        run: |
+          echo "::error::New source outage: $NEW_DOWN. This means a source changed or is down, not that the package is broken."
+          exit 1

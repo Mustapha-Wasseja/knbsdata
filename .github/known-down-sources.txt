@@ -1,0 +1,10 @@
+# Sources the weekly monitor (.github/workflows/test-sources.yaml) expects to
+# find down. One source id per line. A source listed here does not fail the
+# run; when it answers again, the monitor says so in an issue, and the line
+# should be removed. A source down and not listed fails the run.
+
+# Answers programs with a Cloudflare check since 2026-10-05 (audit F-41).
+opendataforafrica
+
+# The host closes every connection since about 2026-11-02 (audit F-45).
+knbs_cpi
