@@ -77,8 +77,8 @@ from the Controller of Budget’s reports.
   **\[experimental\]** : County population from the Gross County Product
   reports
 - [`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md)
-  **\[experimental\]** : County budget execution: budgets, spending and
-  absorption by county
+  **\[experimental\]** : County budget execution: budgets, spending,
+  revenue and pending bills
 - [`knbs_report_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_tables.md)
   **\[experimental\]** : List the curated tables of KNBS reports
 - [`knbs_report_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_table.md)

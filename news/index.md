@@ -48,14 +48,22 @@
   `data-raw/county-budget.R`);
   [`knbs_report_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_table.md)
   re-reads any of the reports from a copy you pass as `file`.
+- [`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md)
+  also carries spending by economic classification (personnel,
+  operations and maintenance), own-source revenue against target (by
+  quarter to FY 2018/19), pending bills at 30 June (by arm of government
+  from FY 2021/22) and exchequer issues (FY 2015/16 to 2018/19): 13,296
+  figures from 46 curated tables. A `status` column marks what is
+  derived, misprinted in the report, inconsistent with its own row, or
+  not submitted by a county.
 - The PDF table engine now checks the row identities a table prints
   (total = recurrent + development) on every row; reunites rows whose
   wider figures the PDF sets on another line, by their positions under
   the columns; joins rows printed over two or three lines; reads
-  percentages and dashes that mean nil; and takes misprints and blank
-  cells only where a recipe names them. A figure printed inconsistently
-  with its row is kept as printed and marked `status = "misprint"` (one,
-  in FY 2015/16).
+  percentages and dashes that mean nil; places cells left empty by their
+  position; and takes misprints, blank cells, printed gaps and counties
+  that did not report only where a recipe names them, so anything else
+  still stops the read.
 
 ### Sources that go down
 

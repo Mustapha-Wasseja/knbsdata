@@ -126,16 +126,33 @@ averages.
 
 [`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md)
 gives each county’s approved budget and actual spending, recurrent and
-development, and its absorption rates, from the Office of the Controller
-of Budget’s annual budget implementation review reports, FY 2013/14 to
-2023/24:
+development, its absorption rates, spending by economic classification,
+own-source revenue against target, pending bills and exchequer issues,
+from the Office of the Controller of Budget’s annual budget
+implementation review reports, FY 2013/14 to 2023/24:
 
 ``` r
 
 budget <- knbs_county_budget()
 dev <- knbs_county_budget(measure = c("budget_development", "expenditure_development"))
 knbs_county_budget(county = "Turkana", measure = "absorption_development")
+knbs_county_budget(measure = c("osr_target", "osr_actual"))
+knbs_county_budget(measure = "pending_total")
 ```
+
+Own-source revenue deserves care. `osr_actual` is what a county
+collected and `osr_target` what it budgeted to collect, and they are not
+the same thing: the figures on the KNBS Data Portal (`DF_PF_CG_REV`) are
+actual collections in only some years. In FY 2023/24 the Controller of
+Budget’s totals include facility improvement funds and
+appropriations-in-aid that earlier years leave out, so use
+`osr_actual_ordinary` to compare across years.
+
+The `status` column says how far to trust a figure as it stands: `NA` as
+printed, `"derived"` computed from other figures, `"misprint"` or
+`"inconsistent"` kept as the report prints it though it fails its own
+arithmetic, and `"not_reported"` for a county that did not submit
+figures.
 
 The Controller of Budget’s website answers programs with a bot check, so
 these figures ship with the package; they were read from the reports by

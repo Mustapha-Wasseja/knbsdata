@@ -45,10 +45,10 @@ A `knbs_catalogue` tibble with columns `table_id`, `series`, `edition`,
 knbs_report_tables()
 #> <knbs_catalogue>
 #> Title: KNBS report tables: curated
-#> Rows: 30
+#> Rows: 65
 #> Source: Kenya National Bureau of Statistics
 #> 
-#> # A tibble: 30 × 12
+#> # A tibble: 65 × 12
 #>    table_id      series edition publisher printed title measure prices base_year
 #>    <chr>         <chr>    <int> <chr>     <chr>   <chr> <chr>   <chr>      <int>
 #>  1 gcp-2019-cur… gcp       2019 Kenya Na… Table 4 Gros… gcp     curre…        NA
@@ -61,7 +61,7 @@ knbs_report_tables()
 #>  8 gcp-2021-sha… gcp       2021 Kenya Na… Table 3 Coun… gva_sh… NA            NA
 #>  9 gcp-2023-cur… gcp       2023 Kenya Na… Table 1 Gros… gcp     curre…        NA
 #> 10 gcp-2023-sha… gcp       2023 Kenya Na… Table 2 Coun… gva_sh… NA            NA
-#> # ℹ 20 more rows
+#> # ℹ 55 more rows
 #> # ℹ 3 more variables: unit <chr>, periods <chr>, report <chr>
 knbs_report_tables(series = "gcp")
 #> <knbs_catalogue>

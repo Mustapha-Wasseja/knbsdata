@@ -181,13 +181,31 @@ any one of them exactly as printed, including the reports’ averages.</p>
 <h2 id="county-budgets-and-spending">County budgets and spending<a class="anchor" aria-label="anchor" href="#county-budgets-and-spending"></a>
 </h2>
 <p><code><a href="../reference/knbs_county_budget.html">knbs_county_budget()</a></code> gives each county’s approved budget
-and actual spending, recurrent and development, and its absorption
-rates, from the Office of the Controller of Budget’s annual budget
-implementation review reports, FY 2013/14 to 2023/24:</p>
+and actual spending, recurrent and development, its absorption rates,
+spending by economic classification, own-source revenue against target,
+pending bills and exchequer issues, from the Office of the Controller of
+Budget’s annual budget implementation review reports, FY 2013/14 to
+2023/24:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">budget</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">dev</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span>measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"budget_development"</span>, <span class="st">"expenditure_development"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span>county <span class="op">=</span> <span class="st">"Turkana"</span>, measure <span class="op">=</span> <span class="st">"absorption_development"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span>county <span class="op">=</span> <span class="st">"Turkana"</span>, measure <span class="op">=</span> <span class="st">"absorption_development"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span>measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"osr_target"</span>, <span class="st">"osr_actual"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/knbs_county_budget.html">knbs_county_budget</a></span><span class="op">(</span>measure <span class="op">=</span> <span class="st">"pending_total"</span><span class="op">)</span></span></code></pre></div>
+<p>Own-source revenue deserves care. <code>osr_actual</code> is what a
+county collected and <code>osr_target</code> what it budgeted to
+collect, and they are not the same thing: the figures on the KNBS Data
+Portal (<code>DF_PF_CG_REV</code>) are actual collections in only some
+years. In FY 2023/24 the Controller of Budget’s totals include facility
+improvement funds and appropriations-in-aid that earlier years leave
+out, so use <code>osr_actual_ordinary</code> to compare across
+years.</p>
+<p>The <code>status</code> column says how far to trust a figure as it
+stands: <code>NA</code> as printed, <code>"derived"</code> computed from
+other figures, <code>"misprint"</code> or <code>"inconsistent"</code>
+kept as the report prints it though it fails its own arithmetic, and
+<code>"not_reported"</code> for a county that did not submit
+figures.</p>
 <p>The Controller of Budget’s website answers programs with a bot check,
 so these figures ship with the package; they were read from the reports
 by the same curated recipes and checks as every report table, including
