@@ -59,7 +59,7 @@ synthetic_county_page <- function(figures, header = "County   A   B   C") {
 edit_line <- function(report_id, pattern, replacement) {
   function(path, pages) {
     if (identical(path, report_id)) {
-      pages[] <- sub(pattern, replacement, pages)
+      pages[] <- sub(pattern, replacement, pages, perl = TRUE)
     }
     pages
   }

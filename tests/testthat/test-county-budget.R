@@ -164,3 +164,128 @@ test_that("overflow lines are joined only when every column then holds one figur
   # Epsilon's lone figure sits under no column: left alone, refused later.
   expect_identical(pdf_split_line(merged[[5]])$figures, c("1.00", "2.00"))
 })
+
+# Revenue, pending bills, exchequer issues and spending by classification ------
+
+test_that("own-source revenue separates what was collected from the target", {
+  x <- knbs_county_budget(fiscal_year = "2023/24", county = "Baringo",
+                          measure = c("osr_target", "osr_actual", "osr_performance"))
+  value <- function(m) x$value[x$measure == m]
+  expect_equal(value("osr_target"), 450.097396)
+  expect_equal(value("osr_actual"), 378.201635)
+  expect_identical(value("osr_performance"), 84)
+  expect_identical(x$unit[x$measure == "osr_performance"], "percent")
+  expect_identical(unique(x$printed), "Table 2.1")
+})
+
+test_that("every status is explained and carried", {
+  budget <- tibble::as_tibble(knbs_county_budget())
+  expect_setequal(stats::na.omit(unique(budget$status)),
+                  c("derived", "misprint", "inconsistent", "not_reported"))
+  of <- function(fy, code, m) budget[budget$fiscal_year == fy & budget$geo_code == code & budget$measure == m, ]
+  expect_identical(of("2015/16", "40", "expenditure_personnel")$status, "misprint")
+  expect_identical(of("2015/16", "00", "osr_target")$status, "misprint")
+  expect_identical(of("2022/23", "47", "pending_executive_recurrent")$status, "misprint")
+  expect_identical(of("2020/21", "31", "pending_total")$status, "inconsistent")
+  mombasa <- of("2019/20", "01", "pending_total")
+  expect_identical(mombasa$status, "not_reported")
+  expect_true(is.na(mombasa$value))
+  expect_identical(of("2015/16", "16", "pending_total")$status, "not_reported")
+})
+
+test_that("pending bills split by arm are summed, and marked derived", {
+  budget <- tibble::as_tibble(knbs_county_budget(fiscal_year = "2021/22", county = "Baringo"))
+  value <- function(m) budget$value[budget$measure == m]
+  expect_equal(value("pending_recurrent"), 57.263418 + 39.127015)
+  expect_identical(budget$status[budget$measure == "pending_recurrent"], "derived")
+  expect_equal(value("pending_total"), 236.928281)
+})
+
+test_that("personnel and operations add to recurrent spending across tables", {
+  budget <- tibble::as_tibble(knbs_county_budget(fiscal_year = "2023/24"))
+  of <- function(m) {
+    this <- budget[budget$measure == m & budget$geo_code != "00", ]
+    this$value[order(this$geo_code)]
+  }
+  gap <- of("expenditure_personnel") + of("expenditure_operations_maintenance") - of("expenditure_recurrent")
+  expect_lte(max(abs(gap)), 0.011)
+})
+
+test_that("a misprinted part is named, and the column totals still hold", {
+  local_cache()
+  local_report_pdfs()
+  table <- knbs_report_table("cob-2015-16-classification", file = report_copy("cob-2015-16"))
+  busia <- table[table$geo_code == "40" & table$column == "expenditure_personnel", ]
+  expect_identical(busia$value, 2262810177)
+  expect_identical(busia$status, "misprint")
+  # Any other change to the column is refused: the gap is exact.
+  local_report_pdfs(edit_line("cob-2015-16", "1,143,961,002", "1,143,961,102"))
+  expect_error(knbs_report_table("cob-2015-16-classification", file = report_copy("cob-2015-16"), refresh = TRUE),
+               class = "knbs_error_validation_failed")
+})
+
+test_that("counties that did not submit are rows of no figures, not lost rows", {
+  local_cache()
+  local_report_pdfs()
+  table <- knbs_report_table("cob-2019-20-pending", file = report_copy("cob-2019-20"))
+  expect_setequal(unique(table$geo_code[table$status %in% "not_reported"]), c("01", "10", "11", "20", "24"))
+  expect_true(all(is.na(table$value[table$status %in% "not_reported"])))
+  # A county the recipe does not name is still refused if it goes missing.
+  local_report_pdfs(edit_line("cob-2019-20", "(?m)^ *Baringo.*$", ""))
+  expect_error(knbs_report_table("cob-2019-20-pending", file = report_copy("cob-2019-20")),
+               class = "knbs_error_schema_changed", regexp = "Baringo")
+})
+
+test_that("cells left empty are placed by position, and dashes kept apart", {
+  local_cache()
+  local_report_pdfs()
+  table <- knbs_report_table("cob-2023-24-osr", file = report_copy("cob-2023-24"))
+  expect_identical(table$value[table$geo_code == "30" & table$column == "osr_actual"], 378201635)
+  expect_false(anyNA(table$value[table$column == "osr_actual"]))
+
+  lines <- c("Alpha   1.00   2.00   3.00", "Beta    1.00   2.00   3.00", "Gamma   1.00   2.00   3.00",
+             "Delta   1.00          3.00", "Eps     1.00                     9.00")
+  edges <- pdf_column_edges(lines, 3L)
+  filled <- pdf_fill_blanks(lines, 3L, edges)
+  expect_identical(pdf_split_line(filled[[4]])$figures, c("1.00", "-", "3.00"))
+  # A figure under no column leaves the row as it was.
+  expect_identical(filled[[5]], lines[[5]])
+})
+
+test_that("identities can name rows that fail and spare the total row", {
+  figures <- function(code) {
+    switch(code, "05" = c("10", "5", "18"), "00" = c("470", "235", "999"), c("10", "5", "15"))
+  }
+  page <- synthetic_county_page(figures)
+  pages <- c("1" = paste(c("Table 1: County A B C", page), collapse = "\n"))
+  spec <- list(
+    table_id = "synthetic", anchor = "County A B C", pages = list(1),
+    columns = list("a", "b", "c"), rounding = 1, min_rows_on_first_page = 0,
+    known_gaps = list(list(column = "c", gap = 708 - 999)),
+    identities = list(list(column = "c", sum = list("a", "b"), counties_only = TRUE, exempt = list("05")))
+  )
+  out <- extract_pdf_county_table(pages, spec)$table
+  expect_identical(out$status[out$geo_code == "05" & out$column == "c"], "inconsistent")
+  expect_identical(out$value[out$geo_code == "05" & out$column == "c"], 18)
+  # Unnamed, the same row is refused.
+  spec$identities[[1]]$exempt <- NULL
+  expect_error(extract_pdf_county_table(pages, spec), class = "knbs_error_validation_failed",
+               regexp = "does not add up as the table says")
+})
+
+test_that("column totals use the counties that report, and a coarser total row", {
+  figures <- function(code) {
+    switch(code, "05" = c("-", "5.00"), "00" = c("460", "235"), c("10.00", "5.00"))
+  }
+  page <- synthetic_county_page(figures, header = "County   A   B")
+  pages <- c("1" = paste(c("Table 1: County A B", page), collapse = "\n"))
+  spec <- list(table_id = "synthetic", anchor = "County A B", pages = list(1),
+               columns = list("a", "b"), rounding = 0.01, total_rounding = 1, min_rows_on_first_page = 0)
+  out <- extract_pdf_county_table(pages, spec)$table
+  expect_true(is.na(out$value[out$geo_code == "05" & out$column == "a"]))
+  # 46 counties report 10.00 each: 460, the printed total. Off by one is not.
+  bad <- function(code) if (code == "00") c("461", "235") else figures(code)
+  page <- synthetic_county_page(bad, header = "County   A   B")
+  expect_error(extract_pdf_county_table(c("1" = paste(c("Table 1: County A B", page), collapse = "\n")), spec),
+               class = "knbs_error_validation_failed", regexp = "do not add up")
+})

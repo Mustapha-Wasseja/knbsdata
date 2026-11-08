@@ -2,7 +2,7 @@
 % Please edit documentation in R/county-budget.R
 \name{knbs_county_budget}
 \alias{knbs_county_budget}
-\title{County budget execution: budgets, spending and absorption by county}
+\title{County budget execution: budgets, spending, revenue and pending bills}
 \usage{
 knbs_county_budget(fiscal_year = NULL, county = NULL, measure = NULL)
 }
@@ -23,8 +23,9 @@ A \code{knbs_data} tibble with columns \code{fiscal_year}, \code{geo_code},
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Each county's approved budget and actual spending, recurrent and
-development, and its absorption rates, from the Office of the Controller
+Each county's approved budget and actual spending, its spending by
+economic classification, its own-source revenue against target, its
+pending bills and its exchequer issues, from the Office of the Controller
 of Budget's annual County Governments Budget Implementation Review
 Reports, FY 2013/14 to FY 2023/24, for the 47 counties and the national
 total, with the counties' 2019 census codes.
@@ -56,16 +57,53 @@ and the County Executive (\code{budget_assembly},
 split of the budget; its overall recurrent, development and total
 spending and overall absorption are derived from the split and carry
 \code{status = "derived"}.
+\item Spending by economic classification (all years but FY 2014/15):
+\code{expenditure_personnel} and \code{expenditure_operations_maintenance}, and
+for FY 2013/14 \code{expenditure_debt_pending_bills}.
+\item Own-source revenue: \code{osr_target}, \code{osr_actual} (what was collected) and
+\code{osr_performance} (percent of target); by quarter \code{osr_q1} to \code{osr_q4}
+(FY 2014/15 to 2018/19); and for FY 2019/20 and 2023/24 the split into
+\code{osr_target_ordinary}, \code{osr_target_aia}, \code{osr_actual_ordinary} and
+\code{osr_actual_aia}. In FY 2023/24 the totals include the facility
+improvement funds and appropriations-in-aid that earlier years leave
+out, so use \code{osr_actual_ordinary} for a like-for-like series. FY
+2013/14 also gives \code{revenue_equitable_share},
+\code{revenue_conditional_grants} and \code{revenue_total_budgeted}.
+\item Pending bills at 30 June (FY 2014/15 on): \code{pending_recurrent},
+\code{pending_development}, \code{pending_total}; from FY 2021/22 also by arm of
+government (\code{pending_executive_recurrent},
+\code{pending_assembly_development}, ...), with the overall recurrent and
+development bills derived from them.
+\item Exchequer issues by arm of government (FY 2015/16 to 2018/19):
+\code{exchequer_assembly_recurrent}, \code{exchequer_executive_total}, ... and
+the combined \code{exchequer_recurrent}, \code{exchequer_development} and
+\code{exchequer_total}.
 }
 
-\code{status} is \code{NA} for a figure as printed, \code{"derived"} for one computed as
-just described, and \code{"misprint"} for a figure printed inconsistently with
-its own row (FY 2015/16: Busia's total expenditure is printed as 5,865.76
-while its recurrent and development spending sum to 5,896.98; the printed
-national total uses the latter). Misprints are kept as printed.
+\code{status} says how far to trust a figure as it stands:
+\itemize{
+\item \code{NA}: as printed, and consistent with its row and column.
+\item \code{"derived"}: computed as described above.
+\item \code{"misprint"}: printed inconsistently with its own row or column, and
+kept as printed. FY 2015/16: Busia's total expenditure in the budget
+table (5,865.76, where its parts sum to 5,896.98) and its personnel cost
+in the classification table (short by 3 million); the national
+own-source revenue target (printed 50,539,446 for 50,539,746,840). FY
+2022/23: Nairobi's executive recurrent bills (9,000 short).
+\item \code{"inconsistent"}: a total that does not equal its parts, with nothing
+to show which figure is wrong (Laikipia's pending bills, FY 2020/21).
+\item \code{"not_reported"}: a county the report says did not submit figures,
+with \code{NA} values. Where a report prints a dash for such a county the
+value is also \code{NA}; where a dash means nil it is zero.
+}
 
-The reports' FY 2019/20 budget table is titled "FY 2018/19" by mistake;
-its figures are FY 2019/20's. The FY 2024/25 report is not yet included.
+Reports do not always agree with themselves. In FY 2015/16 the budget
+table counts 30 million of Turkana's spending as recurrent and the
+classification table as development; the budget table's figures are the
+ones given here. In FY 2013/14, recurrent spending summed from the arms
+of government differs from personnel plus operations and maintenance.
+The FY 2019/20 budget table is titled "FY 2018/19" by mistake; its
+figures are FY 2019/20's. The FY 2024/25 report is not yet included.
 }
 \examples{
 budget <- knbs_county_budget(fiscal_year = "2023/24")

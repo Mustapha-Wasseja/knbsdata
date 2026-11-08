@@ -53,6 +53,22 @@
 #                    cell is filled from them and marked "derived"
 #   min_rows_on_first_page  rows that must follow the title on its own page
 #                    (default 3; 0 where the title ends a page)
+#   identities       what the table's header says a row must satisfy: a
+#                    column and the columns that sum to it; counties_only
+#                    spares the total row, exempt names counties whose row
+#                    fails with nothing to show which figure is wrong (marked
+#                    "inconsistent")
+#   misprints        figures found at curation to contradict their own row
+#                    or column: kept as printed, marked "misprint", and
+#                    counted at their corrected value in the column totals
+#   two_line_rows    each row is printed over two or three lines
+#   blank_by_position  figures are placed by where they sit under the
+#                    columns, for tables that leave cells empty
+#   dash_means_zero  a dash or empty cell is nil, as the table's totals show
+#   absent_rows      counties the report says did not submit: rows of no
+#                    figures, marked "not_reported"
+#   total_labels     how the total row is labelled, if not Total or Kenya
+#   total_rounding   the printed precision of the total row, if coarser
 #   pins             figures read by hand: geo_code, column, value
 
 schema_version: 1
@@ -787,3 +803,862 @@ tables:
       - {column: budget_total, sum: [budget_recurrent, budget_development]}
       - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
       - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  # Controller of Budget: spending by economic classification. Four columns
+  # to FY 2018/19, then with a recurrent subtotal. In whole shillings.
+  - table_id: cob-2013-14-classification
+    report_id: cob-2013-14
+    printed: "Table 1"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 1419592987}
+      - {geo_code: "47", column: "expenditure_total", value: 17774928454.0}
+      - {geo_code: "00", column: "expenditure_total", value: 169352359923.0}
+    title: "Expenditure by economic classification, FY 2013/14"
+    anchor: "Table 1: Analysis of Expenditure by Economic Classification"
+    pages: [28, 29]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    blank_by_position: true
+    dash_means_zero: true
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_development}
+      - {label: expenditure_debt_pending_bills}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_total, sum: [expenditure_personnel, expenditure_operations_maintenance, expenditure_development, expenditure_debt_pending_bills]}
+
+  - table_id: cob-2015-16-classification
+    report_id: cob-2015-16
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 2252071989.0}
+      - {geo_code: "47", column: "expenditure_total", value: 23951023667.0}
+      - {geo_code: "00", column: "expenditure_total", value: 295297671344.0}
+    title: "Expenditure by economic classification, FY 2015/16"
+    anchor: "Table 2.3: Expenditure by Economic Classification - FY 2015/16"
+    pages: [29, 30]
+    measure: county_classification
+    # Busia's personnel cost is printed 2,262,810,177; its row and the column
+    # total both imply 2,265,810,177. Operations and maintenance is 139
+    # shillings off its printed total.
+    misprints:
+      - {geo_code: "40", column: expenditure_personnel}
+    known_gaps:
+      - {column: expenditure_operations_maintenance, gap: -139}
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_total, sum: [expenditure_personnel, expenditure_operations_maintenance, expenditure_development], counties_only: true}
+
+  - table_id: cob-2016-17-classification
+    report_id: cob-2016-17
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 2384718802.0}
+      - {geo_code: "47", column: "expenditure_total", value: 24858636826.0}
+      - {geo_code: "00", column: "expenditure_total", value: 319055796192.0}
+    title: "Expenditure by economic classification, FY 2016/17"
+    anchor: "Table 2.3: Expenditure by Economic Classification - FY 2016/17"
+    pages: [30, 31]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_total, sum: [expenditure_personnel, expenditure_operations_maintenance, expenditure_development]}
+
+  - table_id: cob-2017-18-classification
+    report_id: cob-2017-18
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3011116752.0}
+      - {geo_code: "47", column: "expenditure_total", value: 24541532416.0}
+      - {geo_code: "00", column: "expenditure_total", value: 303830684752.0}
+    title: "Expenditure by economic classification, FY 2017/18"
+    anchor: "Table 2.3: Expenditure by Economic Classification - FY 2017/18"
+    pages: [27, 28]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_total, sum: [expenditure_personnel, expenditure_operations_maintenance, expenditure_development]}
+
+  - table_id: cob-2018-19-classification
+    report_id: cob-2018-19
+    printed: "Table 2.4"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3190741416.0}
+      - {geo_code: "47", column: "expenditure_total", value: 29398171029.0}
+      - {geo_code: "00", column: "expenditure_total", value: 376434735086.0}
+    title: "Expenditure by economic classification, FY 2018/19"
+    anchor: "Table 2.4: Expenditure by Economic Classification - FY 2018/19"
+    pages: [29, 30]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_total, sum: [expenditure_personnel, expenditure_operations_maintenance, expenditure_development]}
+
+  - table_id: cob-2019-20-classification
+    report_id: cob-2019-20
+    printed: "Table 2-3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3241991027.0}
+      - {geo_code: "47", column: "expenditure_total", value: 23353435308.0}
+      - {geo_code: "00", column: "expenditure_total", value: 383788163360.0}
+    title: "Expenditure by economic classification, FY 2019/20"
+    anchor: "Table 2-3: Expenditure by Economic Classification for FY 2019/20"
+    pages: [24, 25]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_recurrent, sum: [expenditure_personnel, expenditure_operations_maintenance]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  - table_id: cob-2020-21-classification
+    report_id: cob-2020-21
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 2764408991.0}
+      - {geo_code: "47", column: "expenditure_total", value: 30135645468.0}
+      - {geo_code: "00", column: "expenditure_total", value: 398014097144.0}
+    title: "Expenditure by economic classification, FY 2020/21"
+    anchor: "Table 2.2: Expenditure by Major Economic Classification - FY 2020/21"
+    pages: [26, 27]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_recurrent, sum: [expenditure_personnel, expenditure_operations_maintenance]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  - table_id: cob-2021-22-classification
+    report_id: cob-2021-22
+    printed: "Table 2:3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3450297215.0}
+      - {geo_code: "47", column: "expenditure_total", value: 28334422989.0}
+      - {geo_code: "00", column: "expenditure_total", value: 400964919244.0}
+    title: "Expenditure by economic classification, FY 2021/22"
+    anchor: "Table 2:3: Expenditure by Major Economic Classification - FY 2021/22"
+    pages: [28, 29]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_recurrent, sum: [expenditure_personnel, expenditure_operations_maintenance]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  - table_id: cob-2022-23-classification
+    report_id: cob-2022-23
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3431707237.0}
+      - {geo_code: "47", column: "expenditure_total", value: 33238384950.0}
+      - {geo_code: "00", column: "expenditure_total", value: 428896063303.0}
+    title: "Expenditure by economic classification, FY 2022/23"
+    anchor: "Table 2.3: Expenditure by Major Economic Classification - FY 2022/23"
+    pages: [30, 31]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_recurrent, sum: [expenditure_personnel, expenditure_operations_maintenance]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  - table_id: cob-2023-24-classification
+    report_id: cob-2023-24
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "expenditure_personnel", value: 3647717618.0}
+      - {geo_code: "47", column: "expenditure_total", value: 31789133463.0}
+      - {geo_code: "00", column: "expenditure_total", value: 446763187496.0}
+    title: "Expenditure by economic classification, FY 2023/24"
+    anchor: "Table 2.2: Expenditure by Major Economic Classification in the FY 2023/24"
+    pages: [26, 27]
+    measure: county_classification
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: expenditure_personnel}
+      - {label: expenditure_operations_maintenance}
+      - {label: expenditure_recurrent}
+      - {label: expenditure_development}
+      - {label: expenditure_total}
+    identities:
+      - {column: expenditure_recurrent, sum: [expenditure_personnel, expenditure_operations_maintenance]}
+      - {column: expenditure_total, sum: [expenditure_recurrent, expenditure_development]}
+
+  # Controller of Budget: own-source revenue, target and actual.
+  - table_id: cob-2013-14-osr
+    report_id: cob-2013-14
+    printed: "Annex 2"
+    pins:
+      - {geo_code: "30", column: "revenue_equitable_share", value: 3247853214.0}
+      - {geo_code: "47", column: "osr_actual", value: 10026171804.0}
+      - {geo_code: "00", column: "osr_actual", value: 26296089510.0}
+    title: "Annual county revenue and local revenue, FY 2013/14"
+    anchor: "Annex 2: Annual County Revenue FY 2013/2014"
+    pages: [222, 223]
+    measure: county_osr
+    # Total budgeted revenue is not the sum of its columns in 13 counties
+    # (Kilifi by 1.33 billion): it includes other revenue, so no identity.
+    # The printed totals of conditional grants and of total budgeted revenue
+    # are 4,000 and 100,000,003 away from their counties.
+    known_gaps:
+      - {column: revenue_conditional_grants, gap: 4000}
+      - {column: revenue_total_budgeted, gap: -100000003}
+    unit: KSh
+    rounding: 1
+    blank_by_position: true
+    dash_means_zero: true
+    columns:
+      - {label: revenue_equitable_share}
+      - {label: revenue_conditional_grants}
+      - {label: osr_target}
+      - {label: revenue_total_budgeted}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+
+  - table_id: cob-2014-15-osr
+    report_id: cob-2014-15
+    printed: "Table 1"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 255800000}
+      - {geo_code: "47", column: "osr_actual", value: 11500049480.0}
+      - {geo_code: "00", column: "osr_actual", value: 33848542299.0}
+    title: "Locally collected revenue by county, FY 2014/15"
+    anchor: "Table 1: Locally Collected Revenue by Counties in FY 2014/15"
+    pages: [24, 25]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_q1}
+      - {label: osr_q2}
+      - {label: osr_q3}
+      - {label: osr_q4}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_actual, sum: [osr_q1, osr_q2, osr_q3, osr_q4]}
+
+  - table_id: cob-2015-16-osr
+    report_id: cob-2015-16
+    printed: "Table 2.1"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 300000000}
+      - {geo_code: "47", column: "osr_actual", value: 11710008300.0}
+      - {geo_code: "00", column: "osr_actual", value: 35021571159.0}
+    title: "Local revenue collection by quarter, FY 2015/16"
+    anchor: "Table 2.1: Monthly local revenue collection for the period July 2015"
+    pages: [25, 26]
+    measure: county_osr
+    # The national target is printed 50,539,446, digits lost: the counties
+    # sum to 50,539,746,840, and the printed 69.3 per cent needs that figure.
+    relabel: {NairobiCity: Nairobi City}
+    misprints:
+      - {geo_code: "00", column: osr_target}
+    known_gaps:
+      - {column: osr_target, gap: 50489207394.0}
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_q1}
+      - {label: osr_q2}
+      - {label: osr_q3}
+      - {label: osr_q4}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_actual, sum: [osr_q1, osr_q2, osr_q3, osr_q4]}
+
+  - table_id: cob-2016-17-osr
+    report_id: cob-2016-17
+    printed: "Table 2.1"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 330000000}
+      - {geo_code: "47", column: "osr_actual", value: 10929830353.0}
+      - {geo_code: "00", column: "osr_actual", value: 32522875093.0}
+    title: "Local revenue collection by quarter, FY 2016/17"
+    anchor: "Table 2.1: Local Revenue Collection for FY 2016/17"
+    pages: [25, 26]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_q1}
+      - {label: osr_q2}
+      - {label: osr_q3}
+      - {label: osr_q4}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_actual, sum: [osr_q1, osr_q2, osr_q3, osr_q4]}
+
+  - table_id: cob-2017-18-osr
+    report_id: cob-2017-18
+    printed: "Table 2.1"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 350000000}
+      - {geo_code: "47", column: "osr_actual", value: 10109419494.0}
+      - {geo_code: "00", column: "osr_actual", value: 32491694261.0}
+    title: "Own-source revenue collection by quarter, FY 2017/18"
+    anchor: "Table 2.1: Local Revenue Collection for FY 2017/18"
+    pages: [23, 24]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_q1}
+      - {label: osr_q2}
+      - {label: osr_q3}
+      - {label: osr_q4}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_actual, sum: [osr_q1, osr_q2, osr_q3, osr_q4]}
+
+  - table_id: cob-2018-19-osr
+    report_id: cob-2018-19
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 371147446}
+      - {geo_code: "47", column: "osr_actual", value: 10248425385.0}
+      - {geo_code: "00", column: "osr_actual", value: 40304833142.0}
+    title: "Own-source revenue collection by quarter, FY 2018/19"
+    anchor: "Table 2.2: Own Source Revenue Collection for FY 2018/19"
+    pages: [25, 26]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_q1}
+      - {label: osr_q2}
+      - {label: osr_q3}
+      - {label: osr_q4}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_actual, sum: [osr_q1, osr_q2, osr_q3, osr_q4]}
+
+  - table_id: cob-2019-20-osr
+    report_id: cob-2019-20
+    printed: "Table 2-2"
+    pins:
+      - {geo_code: "30", column: "osr_target_ordinary", value: 393.42}
+      - {geo_code: "47", column: "osr_actual", value: 8715.07}
+      - {geo_code: "00", column: "osr_actual", value: 35772.58}
+    title: "Own-source revenue collection, FY 2019/20"
+    anchor: "Table 2-2: Own Source Revenue Collection for FY 2019/20"
+    pages: [22, 23]
+    measure: county_osr
+    unit: KSh million
+    rounding: 0.01
+    dash_means_zero: true
+    columns:
+      - {label: osr_target_ordinary}
+      - {label: osr_target_aia}
+      - {label: osr_target}
+      - {label: osr_actual_ordinary}
+      - {label: osr_actual_aia}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_target, sum: [osr_target_ordinary, osr_target_aia]}
+      - {column: osr_actual, sum: [osr_actual_ordinary, osr_actual_aia]}
+
+  - table_id: cob-2020-21-osr
+    report_id: cob-2020-21
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 346088720}
+      - {geo_code: "47", column: "osr_actual", value: 9958038681.0}
+      - {geo_code: "00", column: "osr_actual", value: 34444282669.0}
+    title: "Own-source revenue collection, FY 2020/21"
+    anchor: "Table 2.2: Own Source Revenue Collection in the FY 2020/21"
+    pages: [24, 25]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+
+  - table_id: cob-2021-22-osr
+    report_id: cob-2021-22
+    printed: "Table 2:2"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 288546935}
+      - {geo_code: "47", column: "osr_actual", value: 9238804878.0}
+      - {geo_code: "00", column: "osr_actual", value: 35907638989.0}
+    title: "Own-source revenue collection, FY 2021/22"
+    anchor: "Table 2:2: Own Source Revenue Collection for the FY 2021/22"
+    pages: [26, 27]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+
+  - table_id: cob-2022-23-osr
+    report_id: cob-2022-23
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "osr_target", value: 387429514}
+      - {geo_code: "47", column: "osr_actual", value: 10237263780.0}
+      - {geo_code: "00", column: "osr_actual", value: 37809038922.0}
+    title: "Own-source revenue collection, FY 2022/23"
+    anchor: "Table 2.2: Own Source Revenue Collection in FY 2022/23"
+    pages: [28, 29]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: osr_target}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+
+  - table_id: cob-2023-24-osr
+    report_id: cob-2023-24
+    printed: "Table 2.1"
+    pins:
+      - {geo_code: "30", column: "osr_target_ordinary", value: 300719215}
+      - {geo_code: "47", column: "osr_actual", value: 12542094418.0}
+      - {geo_code: "00", column: "osr_actual", value: 58948601257.0}
+    title: "Own-source revenue collection, FY 2023/24"
+    anchor: "Table 2.1: Own Source Revenue Collection in the FY 2023/24"
+    pages: [24, 25]
+    measure: county_osr
+    unit: KSh
+    rounding: 1
+    dash_means_zero: true
+    columns:
+      - {label: osr_target_ordinary}
+      - {label: osr_target_aia}
+      - {label: osr_target}
+      - {label: osr_actual_ordinary}
+      - {label: osr_actual_aia}
+      - {label: osr_actual}
+      - {label: osr_performance, unit: percent, sums: false}
+    identities:
+      - {column: osr_target, sum: [osr_target_ordinary, osr_target_aia]}
+      - {column: osr_actual, sum: [osr_actual_ordinary, osr_actual_aia]}
+
+  # Controller of Budget: pending bills at 30 June.
+  - table_id: cob-2014-15-pending
+    report_id: cob-2014-15
+    printed: "Table 4"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 138300000}
+      - {geo_code: "47", column: "pending_total", value: 1228390523}
+      - {geo_code: "00", column: "pending_total", value: 37822739378.0}
+    title: "Pending bills as of 30 June 2015"
+    anchor: "Table 4: Pending Bills for the Counties as of June 30, 2015"
+    pages: [39, 40]
+    measure: county_pending
+    total_labels: [Totals, Total]
+    blank_by_position: true
+    dash_means_zero: true
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2015-16-pending
+    report_id: cob-2015-16
+    printed: "Table 2.7"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 101670123}
+      - {geo_code: "47", column: "pending_total", value: 5040087300.0}
+      - {geo_code: "00", column: "pending_total", value: 37363350577.0}
+    title: "Pending bills as at 30 June 2016"
+    anchor: "Table 2.7: Pending Bills for the Counties as at June 30, 2016"
+    pages: [38, 39]
+    measure: county_pending
+    # Machakos and Wajir are starred: not submitted.
+    absent_rows: ["16", "08"]
+    blank_by_position: true
+    dash_means_zero: true
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2016-17-pending
+    report_id: cob-2016-17
+    printed: "Table 2.7"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 61650000}
+      - {geo_code: "22", column: "pending_total", value: 920261674}
+      - {geo_code: "00", column: "pending_total", value: 35841717468.0}
+    title: "Pending bills as at 30 June 2017"
+    anchor: "Table 2.7: Pending Bills for the Counties as at June 30th, 2017"
+    pages: [38, 39]
+    measure: county_pending
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2017-18-pending
+    report_id: cob-2017-18
+    printed: "Table 2.7"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 27.35}
+      - {geo_code: "47", column: "pending_total", value: 64802.99}
+      - {geo_code: "00", column: "pending_total", value: 108411.43}
+    title: "Pending bills as at 30 June 2018"
+    anchor: "Table 2.7: Pending Bills for the Counties as at June 30th, 2018"
+    pages: [34, 35]
+    measure: county_pending
+    unit: KSh million
+    rounding: 0.01
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2018-19-pending
+    report_id: cob-2018-19
+    printed: "Table 2.8"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 45.21}
+      - {geo_code: "22", column: "pending_total", value: 2526.48}
+      - {geo_code: "00", column: "pending_total", value: 34538.06}
+    title: "Pending bills as at 30 June 2019"
+    anchor: "Table 2.8: Pending Bills for the Counties as at June 30th, 2019"
+    pages: [36, 37]
+    measure: county_pending
+    unit: KSh million
+    rounding: 0.01
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2019-20-pending
+    report_id: cob-2019-20
+    printed: "Table 2-6"
+    pins:
+      - {geo_code: "30", column: "pending_development", value: 31133052}
+      - {geo_code: "47", column: "pending_total", value: 78700448753.0}
+      - {geo_code: "00", column: "pending_total", value: 113850161617.0}
+    title: "Pending bills as of 30 June 2020"
+    anchor: "Table 2-6: Pending Bills for the Counties as of June 30th, 2020"
+    pages: [29, 30]
+    measure: county_pending
+    # Isiolo, Kirinyaga, Marsabit, Mombasa and West Pokot "did not submit".
+    absent_rows: ["11", "20", "10", "01", "24"]
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: pending_development}
+      - {label: pending_recurrent}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development]}
+
+  - table_id: cob-2020-21-pending
+    report_id: cob-2020-21
+    printed: "Table 2.5"
+    pins:
+      - {geo_code: "30", column: "pending_recurrent", value: 19927647}
+      - {geo_code: "47", column: "pending_total", value: 54318170680.0}
+      - {geo_code: "00", column: "pending_total", value: 96006140093.0}
+    title: "Pending bills as of 30 June 2021"
+    anchor: "Table 2.5: Pending Bills for the Counties as of June 30th, 2021"
+    pages: [31, 32]
+    measure: county_pending
+    # Several counties gave a total with no split, so the printed recurrent
+    # and development totals cover fewer counties than the grand total, and
+    # the grand total is 1,587,759,495 below the sum of its counties.
+    blank_by_position: true
+    known_gaps:
+      - {column: pending_total, gap: 1587759495}
+    unit: KSh
+    rounding: 1
+    columns:
+      - {label: pending_recurrent}
+      - {label: pending_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_recurrent, pending_development], counties_only: true, exempt: ["31"]}
+
+  - table_id: cob-2021-22-pending
+    report_id: cob-2021-22
+    printed: "Table 2.6"
+    pins:
+      - {geo_code: "30", column: "pending_executive_recurrent", value: 57263418}
+      - {geo_code: "47", column: "pending_total", value: 99058655235.0}
+      - {geo_code: "00", column: "pending_total", value: 153016776304.0}
+    title: "Pending bills as of 30 June 2022, by arm of government"
+    anchor: "Table 2.6: Pending Bills for the Counties as of June 30, 2022"
+    pages: [33, 34]
+    measure: county_pending
+    blank_by_position: true
+    unit: KSh
+    rounding: 1
+    dash_means_zero: true
+    columns:
+      - {label: pending_executive_recurrent}
+      - {label: pending_executive_development}
+      - {label: pending_executive_total}
+      - {label: pending_assembly_recurrent}
+      - {label: pending_assembly_development}
+      - {label: pending_assembly_total}
+      - {label: pending_total}
+    identities:
+      - {column: pending_executive_total, sum: [pending_executive_recurrent, pending_executive_development]}
+      - {column: pending_assembly_total, sum: [pending_assembly_recurrent, pending_assembly_development]}
+      - {column: pending_total, sum: [pending_executive_total, pending_assembly_total]}
+
+  - table_id: cob-2022-23-pending
+    report_id: cob-2022-23
+    printed: "Table 2.6"
+    pins:
+      - {geo_code: "30", column: "pending_executive_recurrent", value: 133194494}
+      - {geo_code: "47", column: "pending_total", value: 107333377995.0}
+      - {geo_code: "00", column: "pending_total", value: 164764672557.0}
+    title: "Pending bills as of 30 June 2023, by arm of government"
+    anchor: "Table 2.6: Pending Bills for the Counties as of 30th June 2023"
+    pages: [36, 37]
+    measure: county_pending
+    # Nairobi's executive recurrent bills are printed 9,000 short of what its
+    # row total and the column total imply.
+    misprints:
+      - {geo_code: "47", column: pending_executive_recurrent}
+    blank_by_position: true
+    unit: KSh
+    rounding: 1
+    dash_means_zero: true
+    columns:
+      - {label: pending_executive_recurrent}
+      - {label: pending_executive_development}
+      - {label: pending_assembly_recurrent}
+      - {label: pending_assembly_development}
+      - {label: pending_total}
+    identities:
+      - {column: pending_total, sum: [pending_executive_recurrent, pending_executive_development, pending_assembly_recurrent, pending_assembly_development]}
+
+  - table_id: cob-2023-24-pending
+    report_id: cob-2023-24
+    printed: "Table 2.5"
+    pins:
+      - {geo_code: "30", column: "pending_executive_recurrent", value: 243387349}
+      - {geo_code: "47", column: "pending_total", value: 118440282648.0}
+      - {geo_code: "00", column: "pending_total", value: 181979501827.0}
+    title: "Pending bills as of 30 June 2024, by arm of government"
+    anchor: "Table 2.5: Pending Bills for the Counties as of 30th June 2024"
+    pages: [31, 32]
+    measure: county_pending
+    blank_by_position: true
+    unit: KSh
+    rounding: 1
+    dash_means_zero: true
+    columns:
+      - {label: pending_executive_recurrent}
+      - {label: pending_executive_development}
+      - {label: pending_executive_total}
+      - {label: pending_assembly_recurrent}
+      - {label: pending_assembly_development}
+      - {label: pending_assembly_total}
+      - {label: pending_total}
+    identities:
+      - {column: pending_executive_total, sum: [pending_executive_recurrent, pending_executive_development]}
+      - {column: pending_assembly_total, sum: [pending_assembly_recurrent, pending_assembly_development]}
+      - {column: pending_total, sum: [pending_executive_total, pending_assembly_total]}
+
+  # Controller of Budget: exchequer issues to the county arms, KSh million.
+  - table_id: cob-2015-16-exchequer
+    report_id: cob-2015-16
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "exchequer_assembly_recurrent", value: 512.59}
+      - {geo_code: "47", column: "exchequer_total", value: 15523.26}
+      - {geo_code: "00", column: "exchequer_total", value: 303473.93}
+    title: "Exchequer issues by arm of government, FY 2015/16"
+    anchor: "Table 2.2: The exchequer issues to the County Assembly and the County Executive for FY 2015/16"
+    pages: [27, 28]
+    measure: county_exchequer
+    unit: KSh million
+    rounding: 0.01
+    columns:
+      - {label: exchequer_assembly_recurrent}
+      - {label: exchequer_assembly_development}
+      - {label: exchequer_assembly_total}
+      - {label: exchequer_executive_recurrent}
+      - {label: exchequer_executive_development}
+      - {label: exchequer_executive_total}
+      - {label: exchequer_recurrent}
+      - {label: exchequer_development}
+      - {label: exchequer_total}
+    identities:
+      - {column: exchequer_assembly_total, sum: [exchequer_assembly_recurrent, exchequer_assembly_development]}
+      - {column: exchequer_executive_total, sum: [exchequer_executive_recurrent, exchequer_executive_development]}
+      - {column: exchequer_recurrent, sum: [exchequer_assembly_recurrent, exchequer_executive_recurrent]}
+      - {column: exchequer_development, sum: [exchequer_assembly_development, exchequer_executive_development]}
+      - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
+
+  - table_id: cob-2016-17-exchequer
+    report_id: cob-2016-17
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "exchequer_assembly_recurrent", value: 556.67}
+      - {geo_code: "47", column: "exchequer_total", value: 15541.49}
+      - {geo_code: "00", column: "exchequer_total", value: 328243}
+    title: "Exchequer issues by arm of government, FY 2016/17"
+    anchor: "Table 2.2: The Exchequer Issues to the County Assembly and the County Executive for FY 2016/17"
+    pages: [28, 29]
+    measure: county_exchequer
+    unit: KSh million
+    rounding: 0.01
+    total_rounding: 1
+    columns:
+      - {label: exchequer_assembly_recurrent}
+      - {label: exchequer_assembly_development}
+      - {label: exchequer_assembly_total}
+      - {label: exchequer_executive_recurrent}
+      - {label: exchequer_executive_development}
+      - {label: exchequer_executive_total}
+      - {label: exchequer_recurrent}
+      - {label: exchequer_development}
+      - {label: exchequer_total}
+    identities:
+      - {column: exchequer_assembly_total, sum: [exchequer_assembly_recurrent, exchequer_assembly_development]}
+      - {column: exchequer_executive_total, sum: [exchequer_executive_recurrent, exchequer_executive_development]}
+      - {column: exchequer_recurrent, sum: [exchequer_assembly_recurrent, exchequer_executive_recurrent]}
+      - {column: exchequer_development, sum: [exchequer_assembly_development, exchequer_executive_development]}
+      - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
+
+  - table_id: cob-2017-18-exchequer
+    report_id: cob-2017-18
+    printed: "Table 2.2"
+    pins:
+      - {geo_code: "30", column: "exchequer_assembly_recurrent", value: 618.65}
+      - {geo_code: "47", column: "exchequer_total", value: 21131.25}
+      - {geo_code: "00", column: "exchequer_total", value: 324118.33}
+    title: "Exchequer issues by arm of government, FY 2017/18"
+    anchor: "Table 2.2: The Exchequer Issues to the County Assembly and the County Executive for"
+    pages: [25, 26]
+    measure: county_exchequer
+    unit: KSh million
+    rounding: 0.01
+    columns:
+      - {label: exchequer_assembly_recurrent}
+      - {label: exchequer_assembly_development}
+      - {label: exchequer_assembly_total}
+      - {label: exchequer_executive_recurrent}
+      - {label: exchequer_executive_development}
+      - {label: exchequer_executive_total}
+      - {label: exchequer_recurrent}
+      - {label: exchequer_development}
+      - {label: exchequer_total}
+    identities:
+      - {column: exchequer_assembly_total, sum: [exchequer_assembly_recurrent, exchequer_assembly_development]}
+      - {column: exchequer_executive_total, sum: [exchequer_executive_recurrent, exchequer_executive_development]}
+      - {column: exchequer_recurrent, sum: [exchequer_assembly_recurrent, exchequer_executive_recurrent]}
+      - {column: exchequer_development, sum: [exchequer_assembly_development, exchequer_executive_development]}
+      - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
+
+  - table_id: cob-2018-19-exchequer
+    report_id: cob-2018-19
+    printed: "Table 2.3"
+    pins:
+      - {geo_code: "30", column: "exchequer_assembly_recurrent", value: 629.01}
+      - {geo_code: "47", column: "exchequer_total", value: 24433.17}
+      - {geo_code: "00", column: "exchequer_total", value: 395230.50}
+    title: "Exchequer issues by arm of government, FY 2018/19"
+    anchor: "Table 2.3: The Exchequer Issues to the County Assembly and the County Executive for"
+    pages: [28, 29]
+    measure: county_exchequer
+    unit: KSh million
+    rounding: 0.01
+    columns:
+      - {label: exchequer_assembly_recurrent}
+      - {label: exchequer_assembly_development}
+      - {label: exchequer_assembly_total}
+      - {label: exchequer_executive_recurrent}
+      - {label: exchequer_executive_development}
+      - {label: exchequer_executive_total}
+      - {label: exchequer_recurrent}
+      - {label: exchequer_development}
+      - {label: exchequer_total}
+    identities:
+      - {column: exchequer_assembly_total, sum: [exchequer_assembly_recurrent, exchequer_assembly_development]}
+      - {column: exchequer_executive_total, sum: [exchequer_executive_recurrent, exchequer_executive_development]}
+      - {column: exchequer_recurrent, sum: [exchequer_assembly_recurrent, exchequer_executive_recurrent]}
+      - {column: exchequer_development, sum: [exchequer_assembly_development, exchequer_executive_development]}
+      - {column: exchequer_total, sum: [exchequer_recurrent, exchequer_development]}
+

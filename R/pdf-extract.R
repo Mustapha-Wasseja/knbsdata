@@ -253,6 +253,49 @@ pdf_figure_positions <- function(line, trailing = FALSE) {
        figures = tokens[keep], ends = ends[keep])
 }
 
+#' Each column's right edge, measured on the complete rows among `lines`
+#'
+#' @return The edges, or NULL with fewer than three complete rows.
+#' @noRd
+pdf_column_edges <- function(lines, n, trailing = FALSE) {
+  info <- lapply(lines, pdf_figure_positions, trailing = trailing)
+  complete <- Filter(function(x) length(x$figures) == n, info)
+  if (length(complete) < 3L) {
+    return(NULL)
+  }
+  apply(do.call(rbind, lapply(complete, function(x) x$ends)), 2, stats::median)
+}
+
+#' Put a recipe's blank cells in their columns, by position
+#'
+#' For a table the recipe says leaves cells empty where there is nothing to
+#' report. A row with a label and too few figures has each figure placed
+#' under the column its right edge sits at, and a mark for no figure put in
+#' the columns left over. A row whose figures do not sit under distinct
+#' columns is left as it was, and refused later.
+#'
+#' @noRd
+pdf_fill_blanks <- function(lines, n, edges, trailing = FALSE) {
+  if (is.null(edges)) {
+    return(lines)
+  }
+  tolerance <- max(2, min(diff(edges)) * 0.45)
+  vapply(lines, function(line) {
+    pos <- pdf_figure_positions(line, trailing = trailing)
+    count <- length(pos$figures)
+    if (length(pos$words) == 0L || count == 0L || count >= n) {
+      return(line)
+    }
+    col <- vapply(pos$ends, function(p) which.min(abs(edges - p)), integer(1))
+    if (any(abs(edges[col] - pos$ends) > tolerance) || anyDuplicated(col)) {
+      return(line)
+    }
+    figures <- rep("-", n)
+    figures[col] <- pos$figures
+    paste(c(pos$words, figures), collapse = "   ")
+  }, character(1), USE.NAMES = FALSE)
+}
+
 #' Reunite rows whose figures were printed on two lines
 #'
 #' Some reports set wider figures on a slightly different baseline, and text
@@ -533,15 +576,23 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
   # Rows split over two lines are reunited page by page (panel by panel),
   # since column positions are measured per page.
   key_of <- pdf_county_key_fn(spec)
+  # Where a recipe says cells are left empty, columns are measured on the
+  # page's own complete rows, or on the whole table's if the page has too few.
+  table_edges <- if (isTRUE(spec$blank_by_position)) {
+    pdf_column_edges(lines$line, n, trailing = isTRUE(spec$trailing_text))
+  }
   lines <- do.call(rbind, lapply(split(lines, factor(lines$page, unique(lines$page))), function(pg) {
     merged <- if (isTRUE(spec$two_line_rows)) {
       pdf_join_two_line_rows(pg$line, n, key_of)
     } else {
       pdf_merge_overflow(pg$line, n, trailing = isTRUE(spec$trailing_text))
     }
+    if (isTRUE(spec$blank_by_position)) {
+      edges <- pdf_column_edges(merged, n, trailing = isTRUE(spec$trailing_text)) %||% table_edges
+      merged <- pdf_fill_blanks(merged, n, edges, trailing = isTRUE(spec$trailing_text))
+    }
     tibble::tibble(page = rep(pg$page[[1]], length(merged)), line = merged)
   }))
-  key_of <- pdf_county_key_fn(spec)
   blanks <- lapply(spec$blank_cells %||% list(), function(b) {
     b$position <- match(as.character(b$column), columns$column)
     b
@@ -549,6 +600,14 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
   rows <- pdf_named_rows(lines$line, n, key_of, spec$table_id,
                          trailing = isTRUE(spec$trailing_text), blanks = blanks, call = call)
   rows <- rows[!is.na(rows$key), ]
+
+  # Counties the report prints with no figures ("did not submit"), found at
+  # curation: kept as rows of no figures, marked as not reported.
+  absent <- setdiff(as.character(unlist(spec$absent_rows %||% character(0))), rows$key)
+  if (length(absent) > 0L) {
+    rows <- rbind(rows, tibble::tibble(key = absent, label = absent,
+                                       figures = rep(list(rep("", n)), length(absent))))
+  }
 
   expected <- c(sprintf("%02d", 1:47), if (!isFALSE(spec$total_row)) "00")
   missing <- setdiff(expected, rows$key)
@@ -599,6 +658,13 @@ extract_pdf_county_table <- function(pages, spec, call = rlang::caller_env()) {
   )
   long <- merge(long, columns, by = "column", sort = FALSE)
   long$status[long$derived] <- "derived"
+  long$status[long$geo_code %in% absent] <- "not_reported"
+  # A row whose identity fails with nothing to show which figure is wrong,
+  # named in the recipe: kept as printed, marked on its total.
+  for (identity in spec$identities %||% list()) {
+    long$status[long$column == as.character(identity$column) &
+                  long$geo_code %in% as.character(unlist(identity$exempt))] <- "inconsistent"
+  }
   for (m in spec$misprints %||% list()) {
     long$status[long$geo_code == m$geo_code & long$column == as.character(m$column)] <- "misprint"
   }
@@ -642,6 +708,8 @@ pdf_check_table <- function(long, spec, call = rlang::caller_env()) {
     }
   }
   unit <- as.numeric(spec$rounding %||% 1)
+  # Some tables print their total row to a coarser precision than the rows.
+  total_unit <- as.numeric(spec$total_rounding %||% unit)
   value_at <- function(code, col) long$value[long$geo_code == code & long$column == col]
 
   # Row identities the table prints in its header (C = A + B): checked on
@@ -656,18 +724,27 @@ pdf_check_table <- function(long, spec, call = rlang::caller_env()) {
     col <- as.character(identity$column)
     parts <- as.character(unlist(identity$sum))
     for (code in unique(long$geo_code)) {
+      if (isTRUE(identity$counties_only) && code == "00") next
+      if (code %in% as.character(unlist(identity$exempt))) next
       printed <- value_at(code, col)
       implied <- sum(vapply(parts, function(p) value_at(code, p), numeric(1)))
       if (length(printed) != 1L || is.na(printed) || is.na(implied)) next
       # A county's parts are each rounded once; the total row's are sums of
       # 47 rounded figures, and may drift as far as a column total may.
       allowed <- if (code == "00") {
-        unit * (sum(long$geo_code != "00" & long$column == col) + 1) / 2 + 1e-9
+        (unit * sum(long$geo_code != "00" & long$column == col) + total_unit) / 2 + 1e-9
       } else {
         unit * (length(parts) + 1) / 2 + 1e-9
       }
       if (paste(code, col) %in% misprinted) {
         corrected[long$geo_code == code & long$column == col] <- implied
+        next
+      }
+      wrong_part <- parts[paste(code, parts) %in% misprinted]
+      if (length(wrong_part) == 1L) {
+        # The total is right and one part is not: that part, corrected.
+        at <- long$geo_code == code & long$column == wrong_part
+        corrected[at] <- long$value[at] + printed - implied
         next
       }
       if (abs(printed - implied) > allowed) {
@@ -695,11 +772,12 @@ pdf_check_table <- function(long, spec, call = rlang::caller_env()) {
     counties <- long$value[long$column == col & long$geo_code != "00"]
     target <- if (!is.null(spec$sum_to)) as.numeric(spec$sum_to) else
       long$value[long$column == col & long$geo_code == "00"]
-    if (anyNA(counties) || length(target) != 1L || is.na(target)) {
+    counties <- counties[!is.na(counties)]
+    if (length(counties) == 0L || length(target) != 1L || is.na(target)) {
       next
     }
     gap <- sum(counties) - target
-    allowed <- unit * (length(counties) + 1) / 2 + 1e-9
+    allowed <- (unit * length(counties) + total_unit) / 2 + 1e-9
     accepted <- Filter(function(k) identical(as.character(k$column), col), known)
     if (length(accepted) > 0L && abs(gap - as.numeric(accepted[[1]]$gap)) <= 1e-6) {
       next

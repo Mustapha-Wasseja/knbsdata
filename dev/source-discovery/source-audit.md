@@ -523,9 +523,42 @@ recipe. Findings:
   the same tables agrees figure for figure for FY 2014/15 to 2023/24 (3,760
   figures, after converting FY 2014/15 to millions).
 
-Curated so far: the budget table for all eleven years. Not yet: spending by
-economic classification, own-source revenue, pending bills, exchequer
-issues and conditional grants, which the reports also print by county.
+*Revenue, spending by classification, pending bills, exchequer issues*
+(35 further tables, same engine). Own-source revenue settles a dispute
+between two KNBS compilations of these figures. Against the reports'
+target and actual columns, the county finance workbook KNBS circulated on
+2025-02-06 is actual collections for FY 2014/15 to 2022/23 (46 or 47
+counties each year), but not for FY 2023/24, where it is the target for
+14 counties and neither for 33. The Data Portal's `DF_PF_CG_REV` is
+actual collections only in FY 2015/16 and 2021/22; in the other years it
+is the target for 12 to 30 counties and neither for 17 to 35. It also
+states Kenya Shillings for figures in millions, and labels a fiscal year
+by the year it ends. FY 2023/24 actuals include facility improvement
+funds and appropriations-in-aid (58.9 billion, 42.3 billion ordinary).
+
+Further slips in the reports, each recorded in its recipe: Busia's
+personnel cost in the FY 2015/16 classification table is 3,000,000 short;
+the classification table counts 30 million of Turkana's FY 2015/16
+spending as development and the budget table as recurrent; the FY
+2015/16 national revenue target is printed 50,539,446 for 50,539,746,840;
+Nairobi's FY 2022/23 executive recurrent bills are 9,000 short;
+Laikipia's FY 2020/21 total is 127,786 off its parts; FY 2013/14 total
+budgeted revenue is not the sum of its columns in 13 counties, by up to
+1.68 billion, as it includes other revenue. Counties that did not submit
+pending bills print no figures, or dashes (five in FY 2019/20, two in
+FY 2015/16, three in FY 2016/17); they are kept as not reported, never as
+zero. FY 2020/21's split into recurrent and development omits counties
+that gave totals only, so its grand total exceeds that split's sum.
+
+An independent extraction by the maintainers agrees on every figure for
+classification, revenue, exchequer issues and pending bills to FY
+2020/21. Its pending bills for FY 2021/22 to 2023/24 carry the County
+Executive's figures under the County Assembly's names, and in FY 2022/23
+shift the columns.
+
+Curated: the budget, classification, own-source revenue, pending bills
+and exchequer tables. Not yet: conditional grants, printed per county in
+each county's chapter, and the County Assembly tables.
 
 **F-28 — `opendata.knbs.or.ke` is a 323-dataflow SDMX portal.**
 Traced 2026-08-08 after a direct question exposed that this portal — probed
@@ -1117,5 +1150,8 @@ Copy this block for each new candidate source.
 | 2026-11-06 | knbs_publications | F-46 the five Gross County Product reports (2019-2025) are text PDFs in the library; two-panel layouts, side text, wrapped and misprinted county names; 2009 prices before the rebasing, 2016 after; some pages of the 2023 edition take minutes to read as text | PDF table engine with curated recipes: the recipe's pages cut out before reading, counties matched to census codes, counties checked against the total, figures pinned; 19 tables curated, all read live from the library |
 | 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |
 | 2026-11-06 | controller_of_budget | F-47 eleven annual county budget reports (FY 2013/14-2023/24) read by recipe; cob.go.ke and cra.go.ke answer programs with a verification page; five-digit figures set on another baseline (FY 2015/16); one misprint (Busia, FY 2015/16); FY 2019/20 table titled 2018/19 | Verified figures shipped (data-raw/county-budget.R); row identities checked on every row; rows reunited by column position; a user's copy re-readable by recipe |
+NA
+| 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |
+| 2026-11-08 | controller_of_budget | F-47 continued: 35 tables of classification, own-source revenue, pending bills and exchequer issues; KNBS's workbook is actuals to FY 2022/23 and the Data Portal mostly targets or neither; further slips in the reports | Recipes pinned and shipped; misprints, exact gaps, non-reporters and inconsistent rows named one by one in the recipes |
 NA
 | 2026-11-06 | opendataforafrica | F-41 continues: `cf-mitigated: challenge` on the API and the front page | The 403 now says it is a Cloudflare challenge; catalogue searches skip a source that did not answer earlier in the session instead of asking, and warning, every time |

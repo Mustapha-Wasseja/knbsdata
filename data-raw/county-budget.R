@@ -56,10 +56,60 @@ for (report in reports) {
 }
 budget <- do.call(rbind, rows)
 
-# One unit for money throughout: KSh million (FY 2014/15 prints shillings).
+# One unit for money throughout: KSh million (several tables print shillings).
 in_shillings <- budget$unit == "KSh"
 budget$value[in_shillings] <- budget$value[in_shillings] / 1e6
 budget$unit[in_shillings] <- "KSh million"
+
+# Spending appears in both the budget table and the classification table.
+# The two must agree; the classification table adds only what the budget
+# table lacks. FY 2013/14 is compared after the totals are derived, below.
+classified <- grepl("-classification$", budget$table_id)
+overlap <- c("expenditure_recurrent", "expenditure_development", "expenditure_total")
+twin <- budget[classified & budget$measure %in% overlap & budget$fiscal_year != "2013/14", ]
+primary <- budget[!classified & budget$measure %in% overlap, ]
+at <- match(paste(twin$fiscal_year, twin$geo_code, twin$measure),
+            paste(primary$fiscal_year, primary$geo_code, primary$measure))
+gap <- twin$value - primary$value[at]
+# Known, in FY 2015/16: Busia's misprinted total in the budget table (see
+# the recipe); and 30 million of Turkana's spending, development in the
+# classification table and recurrent in the budget table, which moves the
+# national development total too (audit F-47). The budget table is kept.
+known <- twin$fiscal_year == "2015/16" & (
+  (twin$geo_code == "40" & twin$measure == "expenditure_total") |
+    (twin$geo_code %in% c("23", "00") & twin$measure == "expenditure_development")
+)
+# Totals are rounded to 0.01 million in one table, and summed from 47 in the other.
+tolerance <- ifelse(twin$geo_code == "00", 0.26, 0.011)
+if (any(abs(gap[!known]) > tolerance[!known], na.rm = TRUE)) {
+  bad <- twin[!known & abs(gap) > tolerance, c("fiscal_year", "geo_code", "measure", "value")]
+  print(as.data.frame(cbind(bad, gap = gap[!known & abs(gap) > tolerance])))
+  stop("The budget and classification tables disagree.")
+}
+budget <- budget[!(classified & budget$measure %in% overlap & budget$fiscal_year != "2013/14"), ]
+classified_13 <- budget[grepl("-classification$", budget$table_id) & budget$measure %in% overlap, ]
+budget <- budget[!(grepl("-classification$", budget$table_id) & budget$measure %in% overlap), ]
+
+# Pending bills split by arm of government (FY 2021/22 on): the overall
+# recurrent and development bills are derived from the split, and marked so.
+split_years <- unique(budget$fiscal_year[budget$measure == "pending_executive_recurrent"])
+derived_bills <- do.call(rbind, lapply(split_years, function(fy) {
+  this <- budget[budget$fiscal_year == fy, ]
+  of <- function(code, m) this$value[this$geo_code == code & this$measure == m]
+  do.call(rbind, lapply(unique(this$geo_code[this$measure == "pending_executive_recurrent"]), function(code) {
+    tibble::tibble(
+      fiscal_year = fy, geo_code = code,
+      measure = c("pending_recurrent", "pending_development"),
+      value = c(of(code, "pending_executive_recurrent") + of(code, "pending_assembly_recurrent"),
+                of(code, "pending_executive_development") + of(code, "pending_assembly_development")),
+      unit = "KSh million", status = "derived",
+      table_id = this$table_id[this$measure == "pending_executive_recurrent"][[1]],
+      printed = this$printed[this$measure == "pending_executive_recurrent"][[1]],
+      pages = this$pages[this$measure == "pending_executive_recurrent"][[1]]
+    )
+  }))
+}))
+budget <- rbind(budget, derived_bills)
 
 # FY 2013/14 splits spending between the County Assembly and the County
 # Executive; its recurrent, development and total spending, and overall
@@ -82,6 +132,13 @@ derived <- do.call(rbind, lapply(unique(fy13$geo_code), function(code) {
 }))
 budget <- rbind(budget, derived)
 budget <- budget[order(budget$fiscal_year, budget$geo_code == "00", budget$geo_code, budget$measure), ]
+
+# The derived FY 2013/14 total against Table 1's. Table 4 prints 0.1 million.
+total_13 <- classified_13[classified_13$measure == "expenditure_total", ]
+derived_13 <- derived[derived$measure == "expenditure_total", ]
+gap_13 <- total_13$value - derived_13$value[match(total_13$geo_code, derived_13$geo_code)]
+message("FY 2013/14 total, Table 1 less Table 4: largest gap ", round(max(abs(gap_13)), 2), " million.")
+stopifnot(max(abs(gap_13[total_13$geo_code != "00"])) <= 0.2)
 
 stopifnot(
   !anyDuplicated(paste(budget$fiscal_year, budget$geo_code, budget$measure)),

@@ -14,7 +14,7 @@ test_that("the curated tables are listed with edition, prices and base year", {
   expect_setequal(unique(gcp$edition), c(2019L, 2021L, 2023L, 2024L, 2025L))
   expect_identical(unique(gcp$publisher), "Kenya National Bureau of Statistics")
   cob <- tables[tables$series == "cob", ]
-  expect_identical(nrow(cob), 11L)
+  expect_identical(nrow(cob), 46L)
   expect_identical(unique(cob$publisher), "Office of the Controller of Budget")
   constant <- tables[tables$measure == "gcp" & tables$prices %in% "constant", ]
   # 2009 prices before the 2016 rebasing, 2016 prices after.
