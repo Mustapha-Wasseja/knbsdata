@@ -65,9 +65,10 @@ workbooks into tidy tables.
 
 ## County economy and report tables
 
-Tables KNBS publishes only in its PDF reports, extracted by curated,
-verified recipe: Gross County Product by county at current and constant
-prices, county shares, and the county population tables.
+Tables published only in PDF reports, extracted by curated, verified
+recipe: Gross County Product by county at current and constant prices,
+county shares, the county population tables, and county budget execution
+from the Controller of Budget’s reports.
 
 - [`knbs_gcp()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_gcp.md)
   **\[experimental\]** : Gross County Product: county GDP from the KNBS
@@ -75,6 +76,9 @@ prices, county shares, and the county population tables.
 - [`knbs_county_population()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_population.md)
   **\[experimental\]** : County population from the Gross County Product
   reports
+- [`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md)
+  **\[experimental\]** : County budget execution: budgets, spending and
+  absorption by county
 - [`knbs_report_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_tables.md)
   **\[experimental\]** : List the curated tables of KNBS reports
 - [`knbs_report_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_table.md)

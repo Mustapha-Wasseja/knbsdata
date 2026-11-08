@@ -60,7 +60,12 @@ table.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">knbs_report_table</span><span class="op">(</span><span class="va">table</span>, cache <span class="op">=</span> <span class="fu"><a href="knbs_option.html">knbs_option</a></span><span class="op">(</span><span class="st">"cache"</span><span class="op">)</span>, refresh <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">knbs_report_table</span><span class="op">(</span></span>
+<span>  <span class="va">table</span>,</span>
+<span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cache <span class="op">=</span> <span class="fu"><a href="knbs_option.html">knbs_option</a></span><span class="op">(</span><span class="st">"cache"</span><span class="op">)</span>,</span>
+<span>  refresh <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,6 +75,11 @@ table.</p>
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
 <dd><p>A table id from <code><a href="knbs_report_tables.html">knbs_report_tables()</a></code>, such as
 <code>"gcp-2025-current"</code>, or enough of its title to identify one table.</p></dd>
+
+
+<dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
+<dd><p>For a report the package cannot fetch, the path to your copy
+of it. Ignored for reports fetched from the KNBS library.</p></dd>
 
 
 <dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
@@ -109,6 +119,12 @@ changed base year with the 2016 rebasing of the national accounts: the
 2019 edition's constant prices are 2009 prices, later editions' 2016
 prices. Each table keeps its edition and <code>base_year</code>; never splice
 constant-price figures across base years.</p>
+<p>Some reports cannot be fetched by a program: the Controller of Budget's
+website answers programs with a bot check, which the package does not get
+past. Their tables are read from a copy of the report you download in a
+browser and pass as <code>file</code>; the copy must be the edition the recipe was
+made from, and is checked like any other. The verified data from those
+reports also ship with the package: see <code><a href="knbs_county_budget.html">knbs_county_budget()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

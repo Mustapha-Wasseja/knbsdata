@@ -122,6 +122,35 @@ lists every curated table with its edition, prices and base year;
 returns any one of them exactly as printed, including the reports’
 averages.
 
+## County budgets and spending
+
+[`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md)
+gives each county’s approved budget and actual spending, recurrent and
+development, and its absorption rates, from the Office of the Controller
+of Budget’s annual budget implementation review reports, FY 2013/14 to
+2023/24:
+
+``` r
+
+budget <- knbs_county_budget()
+dev <- knbs_county_budget(measure = c("budget_development", "expenditure_development"))
+knbs_county_budget(county = "Turkana", measure = "absorption_development")
+```
+
+The Controller of Budget’s website answers programs with a bot check, so
+these figures ship with the package; they were read from the reports by
+the same curated recipes and checks as every report table, including the
+identity each row must satisfy (total = recurrent + development). Money
+is in KSh million throughout. Fiscal years are labelled as the reports
+label them (`"2023/24"`); GCP and population are calendar years, so
+decide how to align the two before joining them. FY 2013/14 reports
+spending by arm of government (County Assembly, County Executive); its
+overall totals are derived from that split and marked
+`status = "derived"`.
+
+A copy of any of the reports can be re-read, and checked, with
+`knbs_report_table("cob-2023-24-budget", file = "path/to/report.pdf")`.
+
 ## Health by county: the KDHS
 
 The Kenya Demographic and Health Survey has reported its indicators for

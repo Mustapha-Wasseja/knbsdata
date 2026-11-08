@@ -34,6 +34,29 @@
   finds them. Reading them needs the suggested packages pdftools and
   qpdf.
 
+### County budgets from the Controller of Budget
+
+- New
+  [`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md):
+  each county’s approved budget and actual spending, recurrent and
+  development, and absorption rates, FY 2013/14 to 2023/24, from the
+  Office of the Controller of Budget’s annual County Governments Budget
+  Implementation Review Reports, with census county codes and, on every
+  row, the report table and pages it came from. Money is in KSh million
+  throughout. The Controller of Budget’s website answers programs with a
+  bot check, so the verified figures ship with the package (built by
+  `data-raw/county-budget.R`);
+  [`knbs_report_table()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_table.md)
+  re-reads any of the reports from a copy you pass as `file`.
+- The PDF table engine now checks the row identities a table prints
+  (total = recurrent + development) on every row; reunites rows whose
+  wider figures the PDF sets on another line, by their positions under
+  the columns; joins rows printed over two or three lines; reads
+  percentages and dashes that mean nil; and takes misprints and blank
+  cells only where a recipe names them. A figure printed inconsistently
+  with its row is kept as printed and marked `status = "misprint"` (one,
+  in FY 2015/16).
+
 ### Sources that go down
 
 - [`knbs_retail_prices()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_retail_prices.md)

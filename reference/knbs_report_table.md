@@ -10,7 +10,12 @@ printed table.
 ## Usage
 
 ``` r
-knbs_report_table(table, cache = knbs_option("cache"), refresh = FALSE)
+knbs_report_table(
+  table,
+  file = NULL,
+  cache = knbs_option("cache"),
+  refresh = FALSE
+)
 ```
 
 ## Arguments
@@ -21,6 +26,11 @@ knbs_report_table(table, cache = knbs_option("cache"), refresh = FALSE)
   [`knbs_report_tables()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_report_tables.md),
   such as `"gcp-2025-current"`, or enough of its title to identify one
   table.
+
+- file:
+
+  For a report the package cannot fetch, the path to your copy of it.
+  Ignored for reports fetched from the KNBS library.
 
 - cache:
 
@@ -65,6 +75,14 @@ changed base year with the 2016 rebasing of the national accounts: the
 2019 edition's constant prices are 2009 prices, later editions' 2016
 prices. Each table keeps its edition and `base_year`; never splice
 constant-price figures across base years.
+
+Some reports cannot be fetched by a program: the Controller of Budget's
+website answers programs with a bot check, which the package does not
+get past. Their tables are read from a copy of the report you download
+in a browser and pass as `file`; the copy must be the edition the recipe
+was made from, and is checked like any other. The verified data from
+those reports also ship with the package: see
+[`knbs_county_budget()`](https://Mustapha-Wasseja.github.io/knbsdata/reference/knbs_county_budget.md).
 
 ## See also
 
